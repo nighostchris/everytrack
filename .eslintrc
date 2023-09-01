@@ -1,0 +1,48 @@
+{
+  "env": {
+    "es6": true,
+    "browser": true,
+    "commonjs": true
+  },
+  "globals": {
+    "JSX": true
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["@lib", "./src/lib"],
+          ["@hooks", "./src/hooks"],
+          ["@utils", "./src/utils"],
+          ["@pages", "./src/pages"],
+          ["@assets", "./src/assets"],
+          ["@ettypes", "./src/types"],
+          ["@layouts", "./src/layouts"],
+          ["@features", "./src/features"],
+          ["@components", "./src/components"]
+        ],
+        "extensions": [".js", ".ts", ".jsx", ".tsx", ".json"]
+      },
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    },
+    "react": {
+      "version": "detect"
+    }
+  },
+  "plugins": ["react", "import", "jsx-a11y", "@typescript-eslint"],
+  "extends": ["eslint:recommended", "eslint-config-prettier"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": "latest",
+    "project": ["./tsconfig.json"]
+  },
+  "rules": {
+    "linebreak-style": "off",
+    "no-unused-vars": "warn",
+    "max-len": ["error", { "code": 140 }]
+  }
+}
