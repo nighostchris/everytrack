@@ -4,6 +4,6 @@
   "printWidth": 140,
   "singleQuote": true,
   "trailingComma": "all",
-  "tailwindConfig": "./tailwind.config.js",
+  "tailwindConfig": "./tailwind.config.cjs",
   "plugins": ["prettier-plugin-tailwindcss"]
 }
