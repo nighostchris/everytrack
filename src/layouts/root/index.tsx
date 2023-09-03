@@ -13,7 +13,7 @@ const Root: React.FC<RootProps> = ({ children }) => {
     <div className="h-full w-full">
       <SideBar />
       <OpenSideBarButton />
-      <div className="h-full w-full md:ml-64 md:w-[calc(100%-256px)]">{children}</div>
+      <div className="h-full w-full pt-[54px] md:ml-64 md:w-[calc(100%-256px)] md:pt-0">{children}</div>
     </div>
   );
 };
