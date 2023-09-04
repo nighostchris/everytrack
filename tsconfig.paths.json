@@ -9,6 +9,7 @@
       "@assets/*": ["src/assets/*"],
       "@tftypes/*": ["src/types/*"],
       "@layouts/*": ["src/layouts/*"],
+      "@pages": ["src/pages/index.ts"],
       "@features/*": ["src/features/*"],
       "@components/*": ["src/components/*"],
       "@components": ["src/components/index.ts"]

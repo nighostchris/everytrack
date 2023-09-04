@@ -2,7 +2,7 @@ import React from 'react';
 
 import Root from '@layouts/root';
 
-const DashboardPage: React.FC = () => {
+export const DashboardPage: React.FC = () => {
   return (
     <>
       <Root>

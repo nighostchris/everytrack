@@ -1,11 +1,10 @@
 import { Route, Outlet, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
-import SavingsPage from '@pages/savings_page';
-import DashboardPage from '@pages/dashboard_page';
+import { HomePage, SavingsPage, DashboardPage } from '@pages';
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<Outlet />}>
-    <Route index element={<></>} />
+    <Route index element={<HomePage />} />
     <Route path="savings" element={<SavingsPage />} />
     <Route path="dashboard" element={<DashboardPage />} />
   </Route>,
