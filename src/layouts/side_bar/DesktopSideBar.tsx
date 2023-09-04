@@ -1,14 +1,13 @@
-/* eslint-disable max-len */
+import clsx from 'clsx';
 import React from 'react';
-import { BsPiggyBank } from 'react-icons/bs';
-import { RxDashboard } from 'react-icons/rx';
-import { RiStockLine } from 'react-icons/ri';
-import { FaCreditCard } from 'react-icons/fa';
-import { MdSubscriptions } from 'react-icons/md';
+import { Link, useLocation } from 'react-router-dom';
 
 import ProfileBar from './ProfileBar';
+import { SIDE_BAR_TABS } from './consts';
 
 const DesktopSideBar: React.FC = () => {
+  const { pathname } = useLocation();
+
   return (
     <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
@@ -21,38 +20,21 @@ const DesktopSideBar: React.FC = () => {
             />
           </div>
           <nav className="mt-5 flex-1 space-y-1 px-2">
-            <a href="#" className="group flex items-center rounded-md bg-gray-900 px-2 py-2 text-sm font-medium text-white">
-              <RxDashboard className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
-              Dashboard
-            </a>
-            <a
-              href="#"
-              className="group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <BsPiggyBank className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
-              Savings
-            </a>
-            <a
-              href="#"
-              className="group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <FaCreditCard className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
-              Credit
-            </a>
-            <a
-              href="#"
-              className="group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <RiStockLine className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
-              Brokers
-            </a>
-            <a
-              href="#"
-              className="group flex items-center rounded-md px-2 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <MdSubscriptions className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
-              Subscriptions
-            </a>
+            {SIDE_BAR_TABS.map(({ name, icon: Icon, link }) => (
+              <Link
+                to={link}
+                className={clsx(
+                  {
+                    'bg-gray-900 text-white': pathname.includes(link),
+                    'text-gray-300 hover:bg-gray-700 hover:text-white': !pathname.includes(link),
+                  },
+                  'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
+                )}
+              >
+                <Icon className="mr-3 h-6 w-6 text-gray-400 group-hover:text-gray-300" />
+                {name}
+              </Link>
+            ))}
           </nav>
         </div>
         <ProfileBar />

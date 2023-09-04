@@ -3,9 +3,12 @@ import React from 'react';
 import MobileSideBar from './MobileSideBar';
 import DesktopSideBar from './DesktopSideBar';
 
-const SideBar: React.FC = () => {
-  const [open, setOpen] = React.useState<boolean>(true);
+interface SideBarProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
+const SideBar: React.FC<SideBarProps> = ({ open, setOpen }) => {
   return (
     <>
       <MobileSideBar open={open} setOpen={setOpen} />
