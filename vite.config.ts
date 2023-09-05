@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     resolve: {
       alias: {
+        '@api': path.resolve(__dirname, './src/api'),
         '@lib': path.resolve(__dirname, './src/lib'),
         '@hooks': path.resolve(__dirname, './src/hooks'),
         '@utils': path.resolve(__dirname, './src/utils'),

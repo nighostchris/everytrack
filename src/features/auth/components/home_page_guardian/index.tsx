@@ -3,6 +3,7 @@ import { Navigate, Outlet, redirect } from 'react-router-dom';
 
 import { store } from '../../zustand';
 import { Spinner } from '@components';
+import { verify } from 'src/api/everytrack_backend';
 
 export const HomePageGuardian: React.FC = () => {
   const { accessToken } = store();
@@ -13,6 +14,7 @@ export const HomePageGuardian: React.FC = () => {
     const verifyAccessToken = async () => {
       // make remote call to verify endpoint
       // if verify success => redirect to dashboard page
+      // const result = await verify();
       // redirect('/dashboard');
       setIsLoading(false);
     };
