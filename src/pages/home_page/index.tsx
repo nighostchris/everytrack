@@ -1,7 +1,39 @@
-/* eslint-disable max-len */
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { redirect } from 'react-router-dom';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { login } from '@api/everytrack_backend';
+import { LoadingButton, TextInput } from '@components';
+import { LoginFormSchema, loginFormSchema } from '@features/auth/validations';
 
 export const HomePage: React.FC = () => {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [loginError, setLoginError] = React.useState<string | undefined>();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormSchema>({
+    resolver: zodResolver(loginFormSchema),
+  });
+
+  const onSubmitLoginForm = async ({ email, password }: LoginFormSchema) => {
+    setIsLoading(true);
+    try {
+      const { success } = await login({ email, password });
+      if (success) {
+        setLoginError(undefined);
+        setIsLoading(false);
+        redirect('/dashboard');
+      }
+    } catch (error: any) {
+      setLoginError(error.message);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -9,44 +41,12 @@ export const HomePage: React.FC = () => {
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmitLoginForm)}>
+            <TextInput type="email" label="email" register={register} displayLabel="Email Address" error={errors['email']?.message} />
+            <TextInput type="password" label="password" register={register} displayLabel="Password" error={errors['password']?.message} />
+            {typeof loginError !== 'undefined' ? <p className="mt-1 text-sm text-red-700">{loginError}</p> : null}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Sign in
-              </button>
+              <LoadingButton label="Login" type="submit" isLoading={isLoading} />
             </div>
           </form>
         </div>
