@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { login } from '@api/everytrack_backend';
@@ -8,6 +8,7 @@ import { LoadingButton, TextInput } from '@components';
 import { LoginFormSchema, loginFormSchema } from '@features/auth/validations';
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [loginError, setLoginError] = React.useState<string | undefined>();
 
@@ -26,7 +27,7 @@ export const HomePage: React.FC = () => {
       if (success) {
         setLoginError(undefined);
         setIsLoading(false);
-        redirect('/dashboard');
+        navigate('/dashboard');
       }
     } catch (error: any) {
       setLoginError(error.message);

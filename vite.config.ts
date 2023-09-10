@@ -10,10 +10,13 @@ export default defineConfig(({ mode }) => {
     server: {
       host: env.VITE_HOST,
       port: parseInt(env.VITE_PORT, 10),
-      https: {
-        key: fs.readFileSync(path.resolve(__dirname, './.cert/key.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, './.cert/cert.pem')),
-      },
+      https:
+        env.VITE_NODE_ENV === 'development'
+          ? {
+              key: fs.readFileSync(path.resolve(__dirname, './.cert/key.pem')),
+              cert: fs.readFileSync(path.resolve(__dirname, './.cert/cert.pem')),
+            }
+          : undefined,
     },
     plugins: [react()],
     resolve: {
@@ -23,6 +26,7 @@ export default defineConfig(({ mode }) => {
         '@hooks': path.resolve(__dirname, './src/hooks'),
         '@utils': path.resolve(__dirname, './src/utils'),
         '@pages': path.resolve(__dirname, './src/pages'),
+        '@config': path.resolve(__dirname, './src/config'),
         '@assets': path.resolve(__dirname, './src/assets'),
         '@tftypes': path.resolve(__dirname, './src/types'),
         '@layouts': path.resolve(__dirname, './src/layouts'),

@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-const BACKEND_HOST: String = import.meta.env.VITE_BACKEND_HOST;
-const BACKEND_PORT: String = import.meta.env.VITE_BACKEND_PORT;
+import { env } from '@config';
 
 export const client = axios.create({
-  baseURL: `${BACKEND_HOST}:${BACKEND_PORT}`,
+  baseURL: env.VITE_NODE_ENV === 'development' ? `${env.VITE_BACKEND_HOST}:${env.VITE_BACKEND_PORT}` : env.VITE_BACKEND_HOST,
   withCredentials: true,
 });

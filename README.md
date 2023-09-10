@@ -6,9 +6,9 @@ Track everything
 
 ```bash
 ❯ npm --version
-10.0.0
+10.1.0
 ❯ node --version
-v20.5.0
+v18.17.0
 ```
 
 ## How to use

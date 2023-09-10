@@ -2,9 +2,29 @@
 import React from 'react';
 
 import Root from '@layouts/root';
+import { AccountType, getAllBankDetails } from '@api/everytrack_backend';
 import { SavingProviderTable } from '@features/savings/components/saving_provider_table';
 
 export const SavingsPage: React.FC = () => {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [allBankDetails, setAllBankDetails] = React.useState<Record<string, AccountType[]>>({});
+
+  React.useEffect(() => {
+    const initializeData = async () => {
+      try {
+        const { success, data } = await getAllBankDetails();
+        setAllBankDetails(data);
+      } catch (error: any) {
+        console.log(error);
+      }
+      setIsLoading(false);
+    };
+
+    initializeData();
+  }, []);
+
+  console.log(allBankDetails);
+
   return (
     <>
       <Root>
