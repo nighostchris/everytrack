@@ -23,6 +23,7 @@ const DesktopSideBar: React.FC = () => {
             {SIDE_BAR_TABS.map(({ name, icon: Icon, link }) => (
               <Link
                 to={link}
+                key={`desktop-side-nav-${name}`}
                 className={clsx(
                   {
                     'bg-gray-900 text-white': pathname.includes(link),

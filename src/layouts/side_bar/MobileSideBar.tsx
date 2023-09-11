@@ -45,6 +45,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({ open, setOpen }) => {
               <Link
                 to={link}
                 onClick={() => setOpen(false)}
+                key={`mobile-side-nav-tab-${name}`}
                 className={clsx(
                   {
                     'bg-gray-900 text-white': pathname.includes(link),
