@@ -9,7 +9,6 @@ export const createBankDetailsSlice: StateCreator<
   BankDetailsSlice
 > = (set) => ({
   bankDetails: undefined,
-  // TODO: enhance types later
   updateBankDetails: (newBankDetails) =>
     set((state) => {
       state.bankDetails = newBankDetails;

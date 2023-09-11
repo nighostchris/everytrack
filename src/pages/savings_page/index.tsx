@@ -1,14 +1,47 @@
 /* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
 import Root from '@layouts/root';
+import { store } from '@features/savings/zustand';
 import useSavingsState from '@features/savings/hooks/use_savings_state';
 import AddNewProviderModal from '@features/savings/components/add_new_provider_modal';
 import { SavingProviderTable } from '@features/savings/components/saving_provider_table';
 
+import 'react-toastify/dist/ReactToastify.css';
+
 export const SavingsPage: React.FC = () => {
   const { isLoading, openModal, setOpenModal } = useSavingsState();
+  const { bankAccounts, bankDetails, currencies } = store();
+
+  const generateProviderTableRows = React.useMemo(() => {
+    const accountMap = new Map();
+    const currenciesMap = new Map();
+    const result: { name: string; icon: string; accounts: { type: string; balance: string }[] }[] = [];
+    if (bankDetails && bankAccounts && currencies) {
+      // Generate a currency map
+      currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
+      // Generate a bank account map
+      bankAccounts.forEach(({ balance, currencyId, accountTypeId }) => {
+        accountMap.set(accountTypeId, `${currenciesMap.get(currencyId)}${balance}`);
+      });
+      // Generate a bank detail map
+      bankDetails.forEach(({ name, icon, accountTypes }) => {
+        const owned: { type: string; balance: string }[] = [];
+        accountTypes.forEach(({ id, name }) => {
+          if (accountMap.has(id)) {
+            owned.push({ type: name, balance: accountMap.get(id) });
+          }
+        });
+        if (owned.length > 0) {
+          result.push({ name, icon, accounts: owned });
+        }
+      });
+      return result;
+    }
+    return result;
+  }, [bankDetails, bankAccounts, currencies]);
 
   return (
     <Root>
@@ -34,19 +67,15 @@ export const SavingsPage: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="mt-8 flex flex-col">
-          <div className="overflow-x-auto rounded-lg border border-gray-300">
-            <SavingProviderTable
-              name="Chase Bank UK"
-              icon="/chase_bank.svg"
-              accounts={[
-                { type: 'Current Account', balance: '10' },
-                { type: 'Savings Account', balance: '10' },
-              ]}
-            />
+        {generateProviderTableRows.map(({ name, icon, accounts }) => (
+          <div className="mt-8 flex flex-col">
+            <div className="overflow-x-auto rounded-lg border border-gray-300">
+              <SavingProviderTable name={name} icon={icon} accounts={accounts} />
+            </div>
           </div>
-        </div>
+        ))}
       </div>
+      <ToastContainer />
     </Root>
   );
 };

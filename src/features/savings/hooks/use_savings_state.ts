@@ -1,14 +1,24 @@
 import React from 'react';
 
 import { store } from '../zustand';
-import { getAllBankDetails } from '@api/everytrack_backend';
-import { getAllCurrencies } from '@api/everytrack_backend/currency';
+import { getAllBankAccounts, getAllBankDetails, getAllCurrencies } from '@api/everytrack_backend';
 
 export const useSavingsState = () => {
-  const { updateBankDetails, updateCurrencies } = store();
+  const { updateBankAccounts, updateBankDetails, updateCurrencies } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+
+  const initBankAccounts = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllBankAccounts();
+      if (success) {
+        updateBankAccounts(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
 
   const initBankDetails = React.useCallback(async () => {
     try {
@@ -34,10 +44,11 @@ export const useSavingsState = () => {
 
   React.useEffect(() => {
     setIsLoading(true);
+    initBankAccounts();
     initBankDetails();
     initCurrencies();
     setIsLoading(false);
-  }, [initBankDetails, initCurrencies]);
+  }, [initBankAccounts, initBankDetails, initCurrencies]);
 
   return { isLoading, openModal, setOpenModal };
 };

@@ -1,16 +1,19 @@
-import { AccountType } from '@api/everytrack_backend';
+/* eslint-disable no-unused-vars */
+import { BankAccount, Currency, SavingProvider } from '@api/everytrack_backend';
 
-export type BankAccountsSlice = {};
+export type BankAccountsSlice = {
+  bankAccounts?: BankAccount[];
+  updateBankAccounts: (newBankAccounts: BankAccount[]) => void;
+};
 
 export type BankDetailsSlice = {
-  bankDetails?: Record<string, AccountType[]>;
-  updateBankDetails: (newBankDetails: Record<string, AccountType[]>) => void;
+  bankDetails?: SavingProvider[];
+  updateBankDetails: (newBankDetails: SavingProvider[]) => void;
 };
 
 export type CurrenciesSlice = {
-  // TODO: enhance types by using API endpoint response later
-  currencies?: any[];
-  updateCurrencies: (newCurrencies: any[]) => void;
+  currencies?: Currency[];
+  updateCurrencies: (newCurrencies: Currency[]) => void;
 };
 
 export type SavingsState = BankAccountsSlice & BankDetailsSlice & CurrenciesSlice;

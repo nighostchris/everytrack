@@ -20,7 +20,11 @@ export interface LoginResponse extends BaseResponse {}
 // ============================================================
 // GET /v1/savings/
 export interface GetAllBankDetailsResponse extends BaseResponse {
-  data: Record<string, AccountType[]>;
+  data: SavingProvider[];
+}
+// GET /v1/savings/account
+export interface GetAllBankAccountsResponse extends BaseResponse {
+  data: BankAccount[];
 }
 // POST /v1/savings/account
 export interface CreateNewAccountRequest {
@@ -40,6 +44,12 @@ export interface GetAllCurrenciesResponse extends BaseResponse {
 // ============================================================
 // Helper Types
 // ============================================================
+export interface SavingProvider {
+  name: string;
+  icon: string;
+  accountTypes: AccountType[];
+}
+
 export interface AccountType {
   id: string;
   name: string;
@@ -49,4 +59,10 @@ export interface Currency {
   id: string;
   ticker: string;
   symbol: string;
+}
+
+export interface BankAccount {
+  balance: string;
+  currencyId: string;
+  accountTypeId: string;
 }
