@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { Select, SelectOption } from '@components';
+import { createNewAccount } from '@api/everytrack_backend';
 
 interface AddNewProviderModalProps {
   open: boolean;
@@ -53,10 +54,16 @@ export const AddNewProviderModal: React.FC<AddNewProviderModalProps> = ({ open, 
     [currencies],
   );
 
-  const onSubmitAddNewProviderForm = (data: any) => {
+  const onSubmitAddNewProviderForm = async (data: any) => {
     const { currencyId, accountTypeId } = data as z.infer<typeof addNewProviderFormSchema>;
-    console.log({ currencyId, accountTypeId });
-    // TODO: call external API endpoint
+    try {
+      const { success } = await createNewAccount({ currencyId, accountTypeId });
+      if (success) {
+        // TODO: call external API to update accounts
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

@@ -1,36 +1,23 @@
 import { AxiosError } from 'axios';
 
 import { client } from '../client';
-
-interface AuthVerifyResponse {
-  success: boolean;
-}
+import { LoginRequest, LoginResponse, VerifyResponse } from '../types';
 
 export async function verify() {
   const { data } = await client.post('/v1/auth/verify');
-  return data as AuthVerifyResponse;
+  return data as VerifyResponse;
 }
 
-interface AuthLoginRequest {
-  email: string;
-  password: string;
-}
-
-interface AuthLoginResponse {
-  success: boolean;
-  error?: string;
-}
-
-export async function login(params: AuthLoginRequest) {
+export async function login(params: LoginRequest) {
   const { email, password } = params;
   try {
     const { data } = await client.post('/v1/auth/login', { email, password });
-    return data as AuthLoginResponse;
+    return data as LoginResponse;
   } catch (error) {
     const { response } = error as AxiosError;
     if (!response) {
       throw new Error('Unexpected error. Please try again.');
     }
-    throw new Error((response.data as AuthLoginResponse).error);
+    throw new Error((response.data as LoginResponse).error);
   }
 }
