@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 
 import { Root } from '@layouts/root';
 import { store } from '@features/savings/zustand';
+import { store as globalStore } from '@lib/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal } from '@features/savings/components';
 
@@ -12,8 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
   const { isLoading } = useSavingsState();
-  const { bankAccounts, bankDetails, currencies, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } =
-    store();
+  const { currencies } = globalStore();
+  const { bankAccounts, bankDetails, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } = store();
 
   const generateProviderTableRows = React.useMemo(() => {
     const accountMap = new Map();

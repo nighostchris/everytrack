@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { Select, SelectOption } from '@components';
+import { store as globalStore } from '@lib/zustand';
 import { createNewAccount, getAllBankAccounts } from '@api/everytrack_backend';
 
 const addNewProviderFormSchema = z.object({
@@ -17,7 +18,8 @@ const addNewProviderFormSchema = z.object({
 });
 
 export const AddNewProviderModal: React.FC = () => {
-  const { bankDetails, currencies, updateBankAccounts, openAddNewProviderModal: open, updateOpenAddNewProviderModal: setOpen } = store();
+  const { currencies } = globalStore();
+  const { bankDetails, updateBankAccounts, openAddNewProviderModal: open, updateOpenAddNewProviderModal: setOpen } = store();
 
   const {
     watch,

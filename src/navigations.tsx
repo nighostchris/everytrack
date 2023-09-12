@@ -1,6 +1,6 @@
 import { Route, Outlet, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
-import { HomePage, SavingsPage, DashboardPage } from '@pages';
+import { HomePage, SavingsPage, SettingsPage, DashboardPage } from '@pages';
 import { HomePageGuardian, PrivateRouteGuardian } from '@features/auth/components';
 
 const routes = createRoutesFromElements(
@@ -10,6 +10,7 @@ const routes = createRoutesFromElements(
     </Route>
     <Route element={<PrivateRouteGuardian />}>
       <Route path="savings" element={<SavingsPage />} />
+      <Route path="settings" element={<SettingsPage />} />
       <Route path="dashboard" element={<DashboardPage />} />
     </Route>
   </Route>,

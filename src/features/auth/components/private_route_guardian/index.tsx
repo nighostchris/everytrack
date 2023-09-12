@@ -1,12 +1,38 @@
 import React from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 
+import { store } from '@lib/zustand';
 import { Spinner } from '@components';
-import { verify } from '@api/everytrack_backend';
+import { getAllClientSettings, getAllCurrencies, verify } from '@api/everytrack_backend';
 
 export const PrivateRouteGuardian: React.FC = () => {
   const navigate = useNavigate();
+  const { updateUsername, updateCurrencyId, updateCurrencies } = store();
+
   const [isLoading, setIsLoading] = React.useState(true);
+
+  const initCurrencies = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllCurrencies();
+      if (success) {
+        updateCurrencies(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
+
+  const initClientSettings = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllClientSettings();
+      if (success) {
+        updateUsername(data.username);
+        updateCurrencyId(data.currencyId);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
 
   React.useEffect(() => {
     const verifyAccessToken = async () => {
@@ -24,7 +50,9 @@ export const PrivateRouteGuardian: React.FC = () => {
     };
 
     verifyAccessToken();
-  }, []);
+    initCurrencies();
+    initClientSettings();
+  }, [initCurrencies, initClientSettings]);
 
   return isLoading ? (
     <div className="flex h-full w-full items-center justify-center">

@@ -49,6 +49,20 @@ export interface GetAllCurrenciesResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/settings endpoints
+// ============================================================
+// GET /v1/settings/
+export interface GetAllClientSettingsResponse extends BaseResponse {
+  data: ClientSettings;
+}
+// PUT /v1/settings/
+export interface UpdateSettingsRequest {
+  username: string;
+  currencyId: string;
+}
+export interface UpdateSettingsResponse extends BaseResponse {}
+
+// ============================================================
 // Helper Types
 // ============================================================
 export interface SavingProvider {
@@ -72,4 +86,9 @@ export interface BankAccount {
   balance: string;
   currencyId: string;
   accountTypeId: string;
+}
+
+export interface ClientSettings {
+  username: string;
+  currencyId: string;
 }

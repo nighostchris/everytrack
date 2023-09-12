@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { store } from '../zustand';
-import { getAllBankAccounts, getAllBankDetails, getAllCurrencies } from '@api/everytrack_backend';
+import { getAllBankAccounts, getAllBankDetails } from '@api/everytrack_backend';
 
 export const useSavingsState = () => {
-  const { updateBankAccounts, updateBankDetails, updateCurrencies } = store();
+  const { updateBankAccounts, updateBankDetails } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
@@ -30,24 +30,12 @@ export const useSavingsState = () => {
     }
   }, []);
 
-  const initCurrencies = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllCurrencies();
-      if (success) {
-        updateCurrencies(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
   React.useEffect(() => {
     setIsLoading(true);
     initBankAccounts();
     initBankDetails();
-    initCurrencies();
     setIsLoading(false);
-  }, [initBankAccounts, initBankDetails, initCurrencies]);
+  }, [initBankAccounts, initBankDetails]);
 
   return { isLoading };
 };
