@@ -1,11 +1,36 @@
+import { z } from 'zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { login } from '@api/everytrack_backend';
-import { LoadingButton, TextInput } from '@components';
-import { LoginFormSchema, loginFormSchema } from '@features/auth/validations';
+import { Input, LoadingButton } from '@components';
+
+const loginFormSchema = z.object({
+  email: z
+    .string({
+      invalid_type_error: 'Email must be of type string.',
+      required_error: 'Email is required.',
+    })
+    .email({
+      message: 'Invalid email.',
+    }),
+  password: z
+    .string({
+      invalid_type_error: 'Password must be of type string.',
+      required_error: 'Password is required.',
+    })
+    .min(9, {
+      message: 'Password must contain at least 9 characters.',
+    })
+    .max(20, {
+      message: 'Password must not contain more than 20 characters.',
+    })
+    .regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$&*])/, {
+      message: 'Password should contain at least 1 lower case letter, 1 upper case letter, 1 decimal and 1 special character.',
+    }),
+});
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,11 +41,12 @@ export const HomePage: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormSchema>({
+  } = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
   });
 
-  const onSubmitLoginForm = async ({ email, password }: LoginFormSchema) => {
+  const onSubmitLoginForm = async (data: any) => {
+    const { email, password } = data as z.infer<typeof loginFormSchema>;
     setIsLoading(true);
     try {
       const { success } = await login({ email, password });
@@ -43,8 +69,8 @@ export const HomePage: React.FC = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmitLoginForm)}>
-            <TextInput type="email" label="email" register={register} displayLabel="Email Address" error={errors['email']?.message} />
-            <TextInput type="password" label="password" register={register} displayLabel="Password" error={errors['password']?.message} />
+            <Input type="email" label="Email Address" formId="email" register={register} error={errors['email']?.message} />
+            <Input type="password" label="Password" formId="password" register={register} error={errors['password']?.message} />
             {typeof loginError !== 'undefined' ? <p className="mt-1 text-sm text-red-700">{loginError}</p> : null}
             <div>
               <LoadingButton label="Login" type="submit" isLoading={isLoading} />

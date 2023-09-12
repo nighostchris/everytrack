@@ -32,6 +32,13 @@ export interface CreateNewAccountRequest {
   accountTypeId: string;
 }
 export interface CreateNewAccountResponse extends BaseResponse {}
+// PUT /v1/savings/account
+export interface UpdateAccountRequest {
+  balance: string;
+  currencyId: string;
+  accountTypeId: string;
+}
+export interface UpdateAccountResponse extends BaseResponse {}
 
 // ============================================================
 // /v1/currency endpoints

@@ -8,7 +8,7 @@ interface RootProps {
   children?: React.ReactNode;
 }
 
-const Root: React.FC<RootProps> = ({ children }) => {
+export const Root: React.FC<RootProps> = ({ children }) => {
   const [openSideBar, setOpenSideBar] = React.useState<boolean>(false);
 
   return (

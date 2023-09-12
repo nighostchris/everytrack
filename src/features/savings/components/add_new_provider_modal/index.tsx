@@ -10,19 +10,14 @@ import { store } from '@features/savings/zustand';
 import { Select, SelectOption } from '@components';
 import { createNewAccount, getAllBankAccounts } from '@api/everytrack_backend';
 
-interface AddNewProviderModalProps {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
 const addNewProviderFormSchema = z.object({
   bank: z.string(),
   currencyId: z.string(),
   accountTypeId: z.string(),
 });
 
-export const AddNewProviderModal: React.FC<AddNewProviderModalProps> = ({ open, setOpen }) => {
-  const { bankDetails, currencies, updateBankAccounts } = store();
+export const AddNewProviderModal: React.FC = () => {
+  const { bankDetails, currencies, updateBankAccounts, openAddNewProviderModal: open, updateOpenAddNewProviderModal: setOpen } = store();
 
   const {
     watch,

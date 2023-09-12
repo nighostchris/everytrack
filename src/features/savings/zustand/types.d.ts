@@ -16,4 +16,20 @@ export type CurrenciesSlice = {
   updateCurrencies: (newCurrencies: Currency[]) => void;
 };
 
-export type SavingsState = BankAccountsSlice & BankDetailsSlice & CurrenciesSlice;
+export type EditAccountBalanceModalStateSlice = {
+  accountTypeId?: string;
+  originalBalance?: string;
+  originalCurrencyId?: string;
+  updateAccountTypeId: (newAccountTypeId: string) => void;
+  updateOriginalBalance: (newOriginalBalance: string) => void;
+  updateOriginalCurrencyId: (newOriginalCurrencyId: string) => void;
+};
+
+export type ModalStateSlice = {
+  openAddNewProviderModal: boolean;
+  openEditAccountBalanceModal: boolean;
+  updateOpenAddNewProviderModal: (newModalState: boolean) => void;
+  updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
+};
+
+export type SavingsState = BankAccountsSlice & BankDetailsSlice & CurrenciesSlice & EditAccountBalanceModalStateSlice & ModalStateSlice;

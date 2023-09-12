@@ -1,7 +1,14 @@
 import { AxiosError } from 'axios';
 
+import {
+  UpdateAccountRequest,
+  UpdateAccountResponse,
+  CreateNewAccountRequest,
+  CreateNewAccountResponse,
+  GetAllBankDetailsResponse,
+  GetAllBankAccountsResponse,
+} from '../types';
 import { client } from '../client';
-import { CreateNewAccountRequest, CreateNewAccountResponse, GetAllBankAccountsResponse, GetAllBankDetailsResponse } from '../types';
 
 export async function getAllBankDetails() {
   try {
@@ -40,5 +47,19 @@ export async function createNewAccount(params: CreateNewAccountRequest) {
       throw new Error('Unexpected error. Please try again.');
     }
     throw new Error((response.data as CreateNewAccountResponse).error);
+  }
+}
+
+export async function updateAccount(params: UpdateAccountRequest) {
+  const { balance, currencyId, accountTypeId } = params;
+  try {
+    const { data } = await client.put('/v1/savings/account', { balance, currencyId, accountTypeId });
+    return data as UpdateAccountResponse;
+  } catch (error) {
+    const { response } = error as AxiosError;
+    if (!response) {
+      throw new Error('Unexpected error. Please try again.');
+    }
+    throw new Error((response.data as UpdateAccountResponse).error);
   }
 }

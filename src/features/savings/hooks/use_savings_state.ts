@@ -7,7 +7,6 @@ export const useSavingsState = () => {
   const { updateBankAccounts, updateBankDetails, updateCurrencies } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
 
   const initBankAccounts = React.useCallback(async () => {
     try {
@@ -50,7 +49,7 @@ export const useSavingsState = () => {
     setIsLoading(false);
   }, [initBankAccounts, initBankDetails, initCurrencies]);
 
-  return { isLoading, openModal, setOpenModal };
+  return { isLoading };
 };
 
 export default useSavingsState;
