@@ -12,7 +12,7 @@ import { client } from '../client';
 
 export async function getAllBankDetails() {
   try {
-    const { data } = await client.get('/v1/savings/');
+    const { data } = await client.get('/v1/savings');
     return data as GetAllBankDetailsResponse;
   } catch (error) {
     const { response } = error as AxiosError;

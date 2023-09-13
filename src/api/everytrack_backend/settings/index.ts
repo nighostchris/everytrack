@@ -5,7 +5,7 @@ import { GetAllClientSettingsResponse, UpdateSettingsRequest, UpdateSettingsResp
 
 export async function getAllClientSettings() {
   try {
-    const { data } = await client.get('/v1/settings/');
+    const { data } = await client.get('/v1/settings');
     return data as GetAllClientSettingsResponse;
   } catch (error) {
     const { response } = error as AxiosError;
@@ -19,7 +19,7 @@ export async function getAllClientSettings() {
 export async function updateSettings(params: UpdateSettingsRequest) {
   const { username, currencyId } = params;
   try {
-    const { data } = await client.put('/v1/settings/', { username, currencyId });
+    const { data } = await client.put('/v1/settings', { username, currencyId });
     return data as UpdateSettingsResponse;
   } catch (error) {
     const { response } = error as AxiosError;

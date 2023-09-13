@@ -5,7 +5,7 @@ import { GetAllCurrenciesResponse } from '../types';
 
 export async function getAllCurrencies() {
   try {
-    const { data } = await client.get('/v1/currency/');
+    const { data } = await client.get('/v1/currencies');
     return data as GetAllCurrenciesResponse;
   } catch (error) {
     const { response } = error as AxiosError;

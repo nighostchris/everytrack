@@ -100,7 +100,7 @@ export const SavingsPage: React.FC = () => {
         </div>
         <div className="mt-6 max-w-xs rounded-lg border border-gray-300 px-6 py-4">
           <h3 className="font-semibold">Total</h3>
-          <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-extrabold">{`${displayCurrency} ${totalBalance}`}</p>
+          <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
         </div>
         {providerTableRows.map(({ name, icon, accounts }) => (
           <div className="mt-8 flex flex-col">

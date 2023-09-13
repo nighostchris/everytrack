@@ -13,12 +13,16 @@ export interface LoginRequest {
   email: string;
   password: string;
 }
-export interface LoginResponse extends BaseResponse {}
+export interface LoginResponse extends BaseResponse {
+  data: {
+    token: string;
+  };
+}
 
 // ============================================================
 // /v1/savings endpoints
 // ============================================================
-// GET /v1/savings/
+// GET /v1/savings
 export interface GetAllBankDetailsResponse extends BaseResponse {
   data: SavingProvider[];
 }
@@ -41,9 +45,9 @@ export interface UpdateAccountRequest {
 export interface UpdateAccountResponse extends BaseResponse {}
 
 // ============================================================
-// /v1/currency endpoints
+// /v1/currencies endpoints
 // ============================================================
-// GET /v1/currency/
+// GET /v1/currencies
 export interface GetAllCurrenciesResponse extends BaseResponse {
   data: Currency[];
 }
@@ -51,11 +55,11 @@ export interface GetAllCurrenciesResponse extends BaseResponse {
 // ============================================================
 // /v1/settings endpoints
 // ============================================================
-// GET /v1/settings/
+// GET /v1/settings
 export interface GetAllClientSettingsResponse extends BaseResponse {
   data: ClientSettings;
 }
-// PUT /v1/settings/
+// PUT /v1/settings
 export interface UpdateSettingsRequest {
   username: string;
   currencyId: string;
@@ -65,7 +69,7 @@ export interface UpdateSettingsResponse extends BaseResponse {}
 // ============================================================
 // /v1/exrate endpoints
 // ============================================================
-// GET /v1/exrate/
+// GET /v1/exrate
 export interface GetAllExchangeRatesResponse extends BaseResponse {
   data: ExchangeRate[];
 }

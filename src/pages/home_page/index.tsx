@@ -49,10 +49,14 @@ export const HomePage: React.FC = () => {
     const { email, password } = data as z.infer<typeof loginFormSchema>;
     setIsLoading(true);
     try {
-      const { success } = await login({ email, password });
+      const {
+        success,
+        data: { token },
+      } = await login({ email, password });
       if (success) {
         setLoginError(undefined);
         setIsLoading(false);
+        localStorage.setItem('token', token);
         navigate('/dashboard');
       }
     } catch (error: any) {
