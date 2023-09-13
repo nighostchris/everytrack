@@ -7,6 +7,7 @@ import { createCurrenciesSlice } from './slices/currencies_slice';
 import { createModalStateSlice } from './slices/modal_state_slice';
 import { createBankDetailsSlice } from './slices/bank_details_slice';
 import { createBankAccountsSlice } from './slices/bank_accounts_slice';
+import { createAddNewAccountModalStateSlice } from './slices/add_new_account_modal_state_slice';
 import { createEditAccountBalanceModalStateSlice } from './slices/edit_account_balance_modal_state_slice';
 
 export const store = create<SavingsState, [['zustand/devtools', never], ['zustand/immer', never]]>(
@@ -16,6 +17,7 @@ export const store = create<SavingsState, [['zustand/devtools', never], ['zustan
       ...createCurrenciesSlice(...a),
       ...createBankDetailsSlice(...a),
       ...createBankAccountsSlice(...a),
+      ...createAddNewAccountModalStateSlice(...a),
       ...createEditAccountBalanceModalStateSlice(...a),
     })),
   ),

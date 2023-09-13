@@ -21,27 +21,37 @@ interface SavingProviderTableProps {
 }
 
 export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, icon, accounts }) => {
-  const { updateAccountTypeId, updateOriginalBalance, updateOriginalCurrencyId, updateOpenEditAccountBalanceModal: setOpen } = store();
+  const {
+    updateProviderName,
+    updateAccountTypeId,
+    updateOriginalBalance,
+    updateOriginalCurrencyId,
+    updateOpenAddNewAccountModal,
+    updateOpenEditAccountBalanceModal,
+  } = store();
 
   return (
     <table className="min-w-full">
       <tbody className="bg-white">
         <tr>
           <th colSpan={5} scope="colgroup" className="bg-gray-100 px-4">
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row items-center justify-between">
               <img src={icon} alt={name} className="h-16 w-24" />
-              {/* TODO: Feature to be added later */}
-              {/* <button
-                type="button"
-                className="my-4 rounded-md bg-indigo-600 px-4 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  updateProviderName(name);
+                  updateOpenAddNewAccountModal(true);
+                }}
+                className="text-sm font-medium text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
               >
                 Add New Account
-              </button> */}
+              </a>
             </div>
           </th>
         </tr>
         {accounts.map(({ id, type, balance, currency: { id: currencyId, symbol } }) => (
-          <tr className="border-t border-gray-300">
+          <tr key={id} className="border-t border-gray-300">
             <td className="w-1/4 whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">{type}</td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(balance).toFormat(2)}`}</td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
@@ -51,7 +61,7 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
                   updateAccountTypeId(id);
                   updateOriginalBalance(balance);
                   updateOriginalCurrencyId(currencyId);
-                  setOpen(true);
+                  updateOpenEditAccountBalanceModal(true);
                 }}
                 className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
               >

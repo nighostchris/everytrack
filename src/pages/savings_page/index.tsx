@@ -8,17 +8,24 @@ import { Root } from '@layouts/root';
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
-import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal } from '@features/savings/components';
+import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal, AddNewAccountModal } from '@features/savings/components';
 
 import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
+  const {
+    bankAccounts,
+    bankDetails,
+    openAddNewAccountModal,
+    openAddNewProviderModal,
+    openEditAccountBalanceModal,
+    updateOpenAddNewProviderModal,
+  } = store();
   const { isLoading } = useSavingsState();
   const { currencyId, currencies, exchangeRates } = globalStore();
-  const { bankAccounts, bankDetails, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } = store();
 
   const displayCurrency = React.useMemo(
-    () => (currencies ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
+    () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
     [currencyId, currencies],
   );
 
@@ -49,9 +56,8 @@ export const SavingsPage: React.FC = () => {
           result.push({ name, icon, accounts: owned });
         }
       });
-      return result;
     }
-    return result;
+    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [bankDetails, bankAccounts, currencies]);
 
   const totalBalance = React.useMemo(() => {
@@ -71,16 +77,15 @@ export const SavingsPage: React.FC = () => {
     return totalBalance.toFormat(2);
   }, [currencyId, bankAccounts, exchangeRates]);
 
-  console.log({ currencies, exchangeRates });
-
   return (
     <Root>
+      <AddNewAccountModal />
       <AddNewProviderModal />
       <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8', {
-          'z-0': openAddNewProviderModal || openEditAccountBalanceModal,
-          'z-10': !openAddNewProviderModal && !openEditAccountBalanceModal,
+          'z-0': openAddNewProviderModal || openEditAccountBalanceModal || openAddNewAccountModal,
+          'z-10': !openAddNewProviderModal && !openEditAccountBalanceModal && !openAddNewAccountModal,
         })}
       >
         <div className="sm:flex sm:items-center">
@@ -103,7 +108,7 @@ export const SavingsPage: React.FC = () => {
           <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
         </div>
         {providerTableRows.map(({ name, icon, accounts }) => (
-          <div className="mt-8 flex flex-col">
+          <div key={`provider-table-${name.toLowerCase().replaceAll(/\\s|(|)/g, '-')}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
               <SavingProviderTable name={name} icon={icon} accounts={accounts} />
             </div>

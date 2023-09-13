@@ -8,8 +8,13 @@ export const createModalStateSlice: StateCreator<
   [],
   ModalStateSlice
 > = (set) => ({
+  openAddNewAccountModal: false,
   openAddNewProviderModal: false,
   openEditAccountBalanceModal: false,
+  updateOpenAddNewAccountModal: (newModalState) =>
+    set((state) => {
+      state.openAddNewAccountModal = newModalState;
+    }),
   updateOpenAddNewProviderModal: (newModalState) =>
     set((state) => {
       state.openAddNewProviderModal = newModalState;

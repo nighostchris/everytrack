@@ -11,6 +11,12 @@ export const createEditAccountBalanceModalStateSlice: StateCreator<
   accountTypeId: undefined,
   originalBalance: undefined,
   originalCurrencyId: undefined,
+  resetEditAccountBalanceModalState: () =>
+    set((state) => {
+      state.accountTypeId = undefined;
+      state.originalBalance = undefined;
+      state.originalCurrencyId = undefined;
+    }),
   updateAccountTypeId: (newAccountTypeId) =>
     set((state) => {
       state.accountTypeId = newAccountTypeId;
@@ -22,11 +28,5 @@ export const createEditAccountBalanceModalStateSlice: StateCreator<
   updateOriginalCurrencyId: (newOriginalCurrencyId) =>
     set((state) => {
       state.originalCurrencyId = newOriginalCurrencyId;
-    }),
-  reset: () =>
-    set((state) => {
-      state.accountTypeId = undefined;
-      state.originalBalance = undefined;
-      state.originalCurrencyId = undefined;
     }),
 });

@@ -5,7 +5,7 @@ import { GetAllExchangeRatesResponse } from '../types';
 
 export async function getAllExchangeRates() {
   try {
-    const { data } = await client.get('/v1/exrate');
+    const { data } = await client.get('/v1/exrates');
     return data as GetAllExchangeRatesResponse;
   } catch (error) {
     const { response } = error as AxiosError;
