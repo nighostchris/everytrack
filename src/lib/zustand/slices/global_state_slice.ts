@@ -11,6 +11,7 @@ export const createGlobalStateSlice: StateCreator<
   username: undefined,
   currencyId: undefined,
   currencies: undefined,
+  exchangeRates: undefined,
   updateUsername: (newUsername) =>
     set((state) => {
       state.username = newUsername;
@@ -22,6 +23,10 @@ export const createGlobalStateSlice: StateCreator<
   updateCurrencies: (newCurrencies) =>
     set((state) => {
       state.currencies = newCurrencies;
+    }),
+  updateExchangeRates: (newExchangeRates) =>
+    set((state) => {
+      state.exchangeRates = newExchangeRates;
     }),
   updateClientSettings: ({ username, currencyId }) =>
     set((state) => {

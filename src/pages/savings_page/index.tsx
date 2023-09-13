@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
+import BigNumber from 'bignumber.js';
 import { ToastContainer } from 'react-toastify';
 
 import { Root } from '@layouts/root';
@@ -13,10 +14,15 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
   const { isLoading } = useSavingsState();
-  const { currencies } = globalStore();
+  const { currencyId, currencies, exchangeRates } = globalStore();
   const { bankAccounts, bankDetails, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } = store();
 
-  const generateProviderTableRows = React.useMemo(() => {
+  const displayCurrency = React.useMemo(
+    () => (currencies ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
+    [currencyId, currencies],
+  );
+
+  const providerTableRows = React.useMemo(() => {
     const accountMap = new Map();
     const currenciesMap = new Map();
     const result: {
@@ -48,12 +54,31 @@ export const SavingsPage: React.FC = () => {
     return result;
   }, [bankDetails, bankAccounts, currencies]);
 
+  const totalBalance = React.useMemo(() => {
+    if (!bankAccounts || !exchangeRates || !currencyId) return '0';
+    let totalBalance = new BigNumber(0);
+    bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
+      if (accountCurrencyId === currencyId) {
+        totalBalance = totalBalance.plus(balance);
+      } else {
+        const exchangeRate = exchangeRates.filter(
+          ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === accountCurrencyId && targetCurrencyId === currencyId,
+        )[0];
+        const convertedBalance = new BigNumber(balance).multipliedBy(exchangeRate.rate);
+        totalBalance = totalBalance.plus(convertedBalance);
+      }
+    });
+    return totalBalance.toFormat(2);
+  }, [currencyId, bankAccounts, exchangeRates]);
+
+  console.log({ currencies, exchangeRates });
+
   return (
     <Root>
       <AddNewProviderModal />
       <EditAccountBalanceModal />
       <div
-        className={clsx('relative h-full px-4 py-6 sm:px-6 lg:px-8', {
+        className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8', {
           'z-0': openAddNewProviderModal || openEditAccountBalanceModal,
           'z-10': !openAddNewProviderModal && !openEditAccountBalanceModal,
         })}
@@ -73,7 +98,11 @@ export const SavingsPage: React.FC = () => {
             </button>
           </div>
         </div>
-        {generateProviderTableRows.map(({ name, icon, accounts }) => (
+        <div className="mt-6 max-w-xs rounded-lg border border-gray-300 px-6 py-4">
+          <h3 className="font-semibold">Total</h3>
+          <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-extrabold">{`${displayCurrency} ${totalBalance}`}</p>
+        </div>
+        {providerTableRows.map(({ name, icon, accounts }) => (
           <div className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
               <SavingProviderTable name={name} icon={icon} accounts={accounts} />

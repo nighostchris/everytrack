@@ -63,6 +63,14 @@ export interface UpdateSettingsRequest {
 export interface UpdateSettingsResponse extends BaseResponse {}
 
 // ============================================================
+// /v1/exrate endpoints
+// ============================================================
+// GET /v1/exrate/
+export interface GetAllExchangeRatesResponse extends BaseResponse {
+  data: ExchangeRate[];
+}
+
+// ============================================================
 // Helper Types
 // ============================================================
 export interface SavingProvider {
@@ -91,4 +99,10 @@ export interface BankAccount {
 export interface ClientSettings {
   username: string;
   currencyId: string;
+}
+
+export interface ExchangeRate {
+  rate: string;
+  baseCurrencyId: string;
+  targetCurrencyId: string;
 }
