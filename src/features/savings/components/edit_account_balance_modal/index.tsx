@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { Dialog, Input, Select, SelectOption } from '@components';
 import { getAllAccounts, updateAccount } from '@api/everytrack_backend';
+import { Button, Dialog, Input, Select, SelectOption } from '@components';
 
 const editAccountBalanceFormSchema = z.object({
   balance: z.string(),
@@ -25,6 +25,8 @@ export const EditAccountBalanceModal: React.FC = () => {
     openEditAccountBalanceModal: open,
     updateOpenEditAccountBalanceModal: setOpen,
   } = store();
+
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const {
     reset,
@@ -43,6 +45,7 @@ export const EditAccountBalanceModal: React.FC = () => {
   );
 
   const onSubmitEditAccountBalanceForm = async (data: any) => {
+    setIsLoading(true);
     const { balance, currencyId } = data as z.infer<typeof editAccountBalanceFormSchema>;
     if (accountTypeId) {
       try {
@@ -52,12 +55,14 @@ export const EditAccountBalanceModal: React.FC = () => {
           const { data } = await getAllAccounts('savings');
           updateBankAccounts(data);
         }
+        setIsLoading(false);
         toast('Success!');
       } catch (error: any) {
-        console.error(error);
+        setIsLoading(false);
         toast(error.message);
       }
     } else {
+      setIsLoading(false);
       toast('Unexpected error');
     }
   };
@@ -84,13 +89,15 @@ export const EditAccountBalanceModal: React.FC = () => {
         />
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-        <button
+        <Button
           type="button"
+          variant="contained"
+          isLoading={isLoading}
           onClick={handleSubmit(onSubmitEditAccountBalanceForm)}
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+          className="w-full sm:ml-2 sm:w-fit"
         >
           Submit
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setOpen(false)}

@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { Dialog, Select, SelectOption } from '@components';
+import { Button, Dialog, Select, SelectOption } from '@components';
 import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewAccountFormSchema = z.object({
@@ -18,6 +18,8 @@ const addNewAccountFormSchema = z.object({
 export const AddNewAccountModal: React.FC = () => {
   const { currencies } = globalStore();
   const { bankDetails, providerName, updateBankAccounts, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
+
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const {
     watch,
@@ -49,6 +51,7 @@ export const AddNewAccountModal: React.FC = () => {
   );
 
   const onSubmitAddNewAccountForm = async (data: any) => {
+    setIsLoading(true);
     const { currencyId, accountTypeId } = data as z.infer<typeof addNewAccountFormSchema>;
     try {
       const { success } = await createNewAccount({ currencyId, accountTypeId });
@@ -58,9 +61,10 @@ export const AddNewAccountModal: React.FC = () => {
         const { data } = await getAllAccounts('savings');
         updateBankAccounts(data);
       }
+      setIsLoading(false);
       toast('Success!');
     } catch (error: any) {
-      console.error(error);
+      setIsLoading(false);
       toast(error.message);
     }
   };
@@ -91,13 +95,15 @@ export const AddNewAccountModal: React.FC = () => {
         )}
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-        <button
+        <Button
           type="button"
+          variant="contained"
+          isLoading={isLoading}
           onClick={handleSubmit(onSubmitAddNewAccountForm)}
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+          className="w-full sm:ml-2 sm:w-fit"
         >
           Submit
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setOpen(false)}

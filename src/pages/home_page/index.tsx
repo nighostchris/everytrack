@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Input, Button } from '@components';
 import { login } from '@api/everytrack_backend';
-import { Input, LoadingButton } from '@components';
 
 const loginFormSchema = z.object({
   email: z
@@ -76,7 +76,9 @@ export const HomePage: React.FC = () => {
             <Input type="password" label="Password" formId="password" register={register} error={errors['password']?.message} />
             {typeof loginError !== 'undefined' ? <p className="mt-1 text-sm text-red-700">{loginError}</p> : null}
             <div>
-              <LoadingButton label="Login" type="submit" isLoading={isLoading} />
+              <Button type="submit" variant="contained" isLoading={isLoading} className="w-full">
+                Login
+              </Button>
             </div>
           </form>
         </div>
