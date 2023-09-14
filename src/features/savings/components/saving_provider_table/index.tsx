@@ -36,7 +36,7 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
         <tr>
           <th colSpan={5} scope="colgroup" className="bg-gray-100 px-4">
             <div className="flex flex-row items-center justify-between">
-              <img src={icon} alt={name} className="h-16 w-24" />
+              <img src={icon} alt={name} className="h-16 w-24 object-scale-down" />
               <a
                 onClick={(e) => {
                   e.preventDefault();

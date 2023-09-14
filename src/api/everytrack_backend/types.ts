@@ -4,6 +4,27 @@ interface BaseResponse {
 }
 
 // ============================================================
+// /v1/accounts endpoints
+// ============================================================
+// GET /v1/accounts
+export interface GetAllAccountsResponse extends BaseResponse {
+  data: Account[];
+}
+// POST /v1/accounts
+export interface CreateNewAccountRequest {
+  currencyId: string;
+  accountTypeId: string;
+}
+export interface CreateNewAccountResponse extends BaseResponse {}
+// PUT /v1/accounts
+export interface UpdateAccountRequest {
+  balance: string;
+  currencyId: string;
+  accountTypeId: string;
+}
+export interface UpdateAccountResponse extends BaseResponse {}
+
+// ============================================================
 // /v1/auth endpoints
 // ============================================================
 // POST /v1/auth/verify
@@ -18,27 +39,6 @@ export interface LoginResponse extends BaseResponse {
     token: string;
   };
 }
-
-// ============================================================
-// /v1/savings endpoints
-// ============================================================
-// GET /v1/savings/account
-export interface GetAllBankAccountsResponse extends BaseResponse {
-  data: BankAccount[];
-}
-// POST /v1/savings/account
-export interface CreateNewAccountRequest {
-  currencyId: string;
-  accountTypeId: string;
-}
-export interface CreateNewAccountResponse extends BaseResponse {}
-// PUT /v1/savings/account
-export interface UpdateAccountRequest {
-  balance: string;
-  currencyId: string;
-  accountTypeId: string;
-}
-export interface UpdateAccountResponse extends BaseResponse {}
 
 // ============================================================
 // /v1/currencies endpoints
@@ -81,12 +81,10 @@ export interface GetAllProvidersResponse extends BaseResponse {
 // ============================================================
 // Helper Types
 // ============================================================
-export type ProviderType = 'savings' | 'broker' | 'credit';
-
-export interface Provider {
-  name: string;
-  icon: string;
-  accountTypes: AccountType[];
+export interface Account {
+  balance: string;
+  currencyId: string;
+  accountTypeId: string;
 }
 
 export interface AccountType {
@@ -100,12 +98,6 @@ export interface Currency {
   symbol: string;
 }
 
-export interface BankAccount {
-  balance: string;
-  currencyId: string;
-  accountTypeId: string;
-}
-
 export interface ClientSettings {
   username: string;
   currencyId: string;
@@ -116,3 +108,11 @@ export interface ExchangeRate {
   baseCurrencyId: string;
   targetCurrencyId: string;
 }
+
+export interface Provider {
+  name: string;
+  icon: string;
+  accountTypes: AccountType[];
+}
+
+export type ProviderType = 'savings' | 'broker' | 'credit';

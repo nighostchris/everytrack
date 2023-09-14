@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { BankAccount, Currency, Provider } from '@api/everytrack_backend';
+import { Account, Currency, Provider } from '@api/everytrack_backend';
 
 export type AddNewAccountModalStateSlice = {
   providerName?: string;
@@ -7,8 +7,8 @@ export type AddNewAccountModalStateSlice = {
 };
 
 export type BankAccountsSlice = {
-  bankAccounts?: BankAccount[];
-  updateBankAccounts: (newBankAccounts: BankAccount[]) => void;
+  bankAccounts?: Account[];
+  updateBankAccounts: (newBankAccounts: Account[]) => void;
 };
 
 export type BankDetailsSlice = {

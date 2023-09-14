@@ -1,31 +1,32 @@
 import { AxiosError } from 'axios';
 
 import {
+  ProviderType,
   UpdateAccountRequest,
   UpdateAccountResponse,
+  GetAllAccountsResponse,
   CreateNewAccountRequest,
   CreateNewAccountResponse,
-  GetAllBankAccountsResponse,
 } from '../types';
 import { client } from '../client';
 
-export async function getAllBankAccounts() {
+export async function getAllAccounts(type: ProviderType) {
   try {
-    const { data } = await client.get('/v1/savings/account');
-    return data as GetAllBankAccountsResponse;
+    const { data } = await client.get('/v1/accounts', { params: { type } });
+    return data as GetAllAccountsResponse;
   } catch (error) {
     const { response } = error as AxiosError;
     if (!response) {
       throw new Error('Unexpected error. Please try again.');
     }
-    throw new Error((response.data as GetAllBankAccountsResponse).error);
+    throw new Error((response.data as GetAllAccountsResponse).error);
   }
 }
 
 export async function createNewAccount(params: CreateNewAccountRequest) {
   const { currencyId, accountTypeId } = params;
   try {
-    const { data } = await client.post('/v1/savings/account', { currencyId, accountTypeId });
+    const { data } = await client.post('/v1/accounts', { currencyId, accountTypeId });
     return data as CreateNewAccountResponse;
   } catch (error) {
     const { response } = error as AxiosError;
@@ -39,7 +40,7 @@ export async function createNewAccount(params: CreateNewAccountRequest) {
 export async function updateAccount(params: UpdateAccountRequest) {
   const { balance, currencyId, accountTypeId } = params;
   try {
-    const { data } = await client.put('/v1/savings/account', { balance, currencyId, accountTypeId });
+    const { data } = await client.put('/v1/accounts', { balance, currencyId, accountTypeId });
     return data as UpdateAccountResponse;
   } catch (error) {
     const { response } = error as AxiosError;

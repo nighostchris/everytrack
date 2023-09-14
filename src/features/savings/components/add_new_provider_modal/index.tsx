@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '@features/savings/zustand';
 import { Select, SelectOption } from '@components';
 import { store as globalStore } from '@lib/zustand';
-import { createNewAccount, getAllBankAccounts } from '@api/everytrack_backend';
+import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewProviderFormSchema = z.object({
   bank: z.string(),
@@ -63,7 +63,7 @@ export const AddNewProviderModal: React.FC = () => {
       if (success) {
         // TODO: reset form state
         setOpen(false);
-        const { data } = await getAllBankAccounts();
+        const { data } = await getAllAccounts('savings');
         updateBankAccounts(data);
       }
       toast('Success!');

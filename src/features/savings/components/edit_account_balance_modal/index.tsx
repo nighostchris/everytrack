@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
 import { Input, Select, SelectOption } from '@components';
-import { getAllBankAccounts, updateAccount } from '@api/everytrack_backend';
+import { getAllAccounts, updateAccount } from '@api/everytrack_backend';
 
 const editAccountBalanceFormSchema = z.object({
   balance: z.string(),
@@ -50,7 +50,7 @@ export const EditAccountBalanceModal: React.FC = () => {
         const { success } = await updateAccount({ balance, currencyId, accountTypeId });
         if (success) {
           setOpen(false);
-          const { data } = await getAllBankAccounts();
+          const { data } = await getAllAccounts('savings');
           updateBankAccounts(data);
         }
         toast('Success!');
