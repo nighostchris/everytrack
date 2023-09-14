@@ -9,7 +9,7 @@ const DesktopSideBar: React.FC = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="z-10 hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+    <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
       <div className="flex min-h-0 flex-1 flex-col bg-gray-800">
         <div className="flex flex-1 flex-col overflow-y-auto pb-4 pt-5">
           <div className="flex flex-shrink-0 items-center px-4">

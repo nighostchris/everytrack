@@ -14,7 +14,7 @@ export const Root: React.FC<RootProps> = ({ children }) => {
   return (
     <div className="h-full w-full">
       <SideBar open={openSideBar} setOpen={setOpenSideBar} />
-      <div className="absolute top-0 z-10 w-full bg-gray-100 px-2 py-1 md:hidden">
+      <div className="absolute top-0 w-full bg-gray-100 px-2 py-1 md:hidden">
         <button
           type="button"
           onClick={() => setOpenSideBar(!openSideBar)}
