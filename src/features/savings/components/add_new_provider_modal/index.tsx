@@ -38,13 +38,16 @@ export const AddNewProviderModal: React.FC = () => {
   const watchSelectedAccountType = watch('accountTypeId');
 
   const bankOptions: SelectOption[] = React.useMemo(
-    () => (bankDetails ? bankDetails.map(({ name }) => ({ value: name, display: name })) : []),
+    () => (bankDetails ? bankDetails.map(({ name }) => ({ value: name, display: name })).sort((a, b) => (a.value > b.value ? 1 : -1)) : []),
     [bankDetails],
   );
   const accountTypeOptions: SelectOption[] = React.useMemo(
     () =>
       bankDetails && watchSelectedBank
-        ? bankDetails.filter(({ name }) => name === watchSelectedBank)[0].accountTypes.map(({ id, name }) => ({ value: id, display: name }))
+        ? bankDetails
+            .filter(({ name }) => name === watchSelectedBank)[0]
+            .accountTypes.map(({ id, name }) => ({ value: id, display: name }))
+            .sort((a, b) => (a.display > b.display ? 1 : -1))
         : [],
     [bankDetails, watchSelectedBank],
   );

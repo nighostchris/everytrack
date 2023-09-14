@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { store } from '../zustand';
-import { getAllBankAccounts, getAllBankDetails } from '@api/everytrack_backend';
+import { getAllBankAccounts, getAllProviders } from '@api/everytrack_backend';
 
 export const useSavingsState = () => {
   const { updateBankAccounts, updateBankDetails } = store();
@@ -21,7 +21,7 @@ export const useSavingsState = () => {
 
   const initBankDetails = React.useCallback(async () => {
     try {
-      const { success, data } = await getAllBankDetails();
+      const { success, data } = await getAllProviders('savings');
       if (success) {
         updateBankDetails(data);
       }

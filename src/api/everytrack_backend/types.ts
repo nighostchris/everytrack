@@ -22,10 +22,6 @@ export interface LoginResponse extends BaseResponse {
 // ============================================================
 // /v1/savings endpoints
 // ============================================================
-// GET /v1/savings
-export interface GetAllBankDetailsResponse extends BaseResponse {
-  data: SavingProvider[];
-}
 // GET /v1/savings/account
 export interface GetAllBankAccountsResponse extends BaseResponse {
   data: BankAccount[];
@@ -75,9 +71,19 @@ export interface GetAllExchangeRatesResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/providers endpoints
+// ============================================================
+// GET /v1/providers
+export interface GetAllProvidersResponse extends BaseResponse {
+  data: Provider[];
+}
+
+// ============================================================
 // Helper Types
 // ============================================================
-export interface SavingProvider {
+export type ProviderType = 'savings' | 'broker' | 'credit';
+
+export interface Provider {
   name: string;
   icon: string;
   accountTypes: AccountType[];

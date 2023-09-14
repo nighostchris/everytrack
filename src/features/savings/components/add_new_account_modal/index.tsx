@@ -37,7 +37,10 @@ export const AddNewAccountModal: React.FC = () => {
   const accountTypeOptions: SelectOption[] = React.useMemo(
     () =>
       providerName && bankDetails
-        ? bankDetails.filter(({ name }) => name === providerName)[0].accountTypes.map(({ id, name }) => ({ value: id, display: name }))
+        ? bankDetails
+            .filter(({ name }) => name === providerName)[0]
+            .accountTypes.map(({ id, name }) => ({ value: id, display: name }))
+            .sort((a, b) => (a.display > b.display ? 1 : -1))
         : [],
     [providerName, bankDetails],
   );

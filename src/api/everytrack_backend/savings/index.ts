@@ -5,23 +5,9 @@ import {
   UpdateAccountResponse,
   CreateNewAccountRequest,
   CreateNewAccountResponse,
-  GetAllBankDetailsResponse,
   GetAllBankAccountsResponse,
 } from '../types';
 import { client } from '../client';
-
-export async function getAllBankDetails() {
-  try {
-    const { data } = await client.get('/v1/savings');
-    return data as GetAllBankDetailsResponse;
-  } catch (error) {
-    const { response } = error as AxiosError;
-    if (!response) {
-      throw new Error('Unexpected error. Please try again.');
-    }
-    throw new Error((response.data as GetAllBankDetailsResponse).error);
-  }
-}
 
 export async function getAllBankAccounts() {
   try {
