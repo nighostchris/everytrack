@@ -8,7 +8,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Root } from '@layouts/root';
 
 import 'react-toastify/dist/ReactToastify.css';
-import { DataTable } from '@components/table';
+import { DataTable, TableColumnHeader } from '@components/table';
 
 interface TestInterface {
   id: string;
@@ -18,14 +18,14 @@ interface TestInterface {
 export const columns: ColumnDef<TestInterface>[] = [
   {
     accessorKey: 'id',
-    header: ({ column }) => <p>Id</p>,
+    header: ({ column }) => <TableColumnHeader column={column} title="Id" />,
     cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
     accessorKey: 'value',
-    header: ({ column }) => <p>Value</p>,
+    header: ({ column }) => <TableColumnHeader column={column} title="Value" />,
     cell: ({ row }) => {
       return <div className="w-[80px]">{row.getValue('value')}</div>;
     },

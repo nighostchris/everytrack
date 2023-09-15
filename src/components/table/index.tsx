@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import React from 'react';
 import {
   ColumnDef,
@@ -21,13 +20,14 @@ import { TableBody } from './TableBody';
 import { TableCell } from './TableCell';
 import { TableHead } from './TableHead';
 import { TableHeader } from './TableHeader';
+import { TableColumnHeader } from './TableColumnHeader';
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<Data, Value> {
+  data: Data[];
+  columns: ColumnDef<Data, Value>[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, Value>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -96,3 +96,5 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     </div>
   );
 }
+
+export { TableColumnHeader };
