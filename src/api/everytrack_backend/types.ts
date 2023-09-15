@@ -87,7 +87,7 @@ export interface GetAllStocksResponse extends BaseResponse {
 }
 // GET /v1/stocks/holdings
 export interface GetAllStockHoldingsResponse extends BaseResponse {
-  data: StockHolding[];
+  data: AccountStockHolding[];
 }
 // POST /v1/stocks/holdings
 export interface CreateNewStockHoldingRequest {
@@ -102,6 +102,7 @@ export interface CreateNewStockHoldingResponse extends BaseResponse {}
 // Helper Types
 // ============================================================
 export interface Account {
+  id: string;
   balance: string;
   currencyId: string;
   accountTypeId: string;

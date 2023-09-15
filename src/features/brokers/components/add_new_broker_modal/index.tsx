@@ -23,6 +23,7 @@ export const AddNewBrokerModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const {
+    reset,
     watch,
     control,
     handleSubmit,
@@ -64,10 +65,10 @@ export const AddNewBrokerModal: React.FC = () => {
     try {
       const { success } = await createNewAccount({ currencyId, accountTypeId });
       if (success) {
-        // TODO: reset form state
         setOpen(false);
         const { data } = await getAllAccounts('broker');
         updateBrokerAccounts(data);
+        reset();
       }
       setIsLoading(false);
       toast('Success!');

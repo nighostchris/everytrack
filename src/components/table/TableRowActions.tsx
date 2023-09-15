@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
+import React from 'react';
 import { Row } from '@tanstack/react-table';
 import { RxDotsHorizontal } from 'react-icons/rx';
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../dropdown_menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../dropdown_menu';
 
 interface TableRowActionsProps<Data> {
   row: Row<Data>;
+  actions?: React.ReactNode[];
 }
 
-export function TableRowActions<Data>({ row }: TableRowActionsProps<Data>) {
-  // console.log(row);
-
+export function TableRowActions<Data>({ row, actions }: TableRowActionsProps<Data>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -19,9 +19,7 @@ export function TableRowActions<Data>({ row }: TableRowActionsProps<Data>) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
+        {actions && actions.map((DropdownMenuItem) => DropdownMenuItem)}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -14,21 +14,21 @@ import {
   getFacetedUniqueValues,
 } from '@tanstack/react-table';
 
-import { Table } from './BaseTable';
 import { TableRow } from './TableRow';
 import { TableBody } from './TableBody';
 import { TableCell } from './TableCell';
 import { TableHead } from './TableHead';
+import { BaseTable } from './BaseTable';
 import { TableHeader } from './TableHeader';
 import { TableRowActions } from './TableRowActions';
 import { TableColumnHeader } from './TableColumnHeader';
 
-interface DataTableProps<Data, Value> {
+interface TableProps<Data, Value> {
   data: Data[];
   columns: ColumnDef<Data, Value>[];
 }
 
-export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, Value>) {
+export function Table<Data, Value>({ columns, data }: TableProps<Data, Value>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -60,7 +60,7 @@ export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, V
     <div className="space-y-4">
       {/* <DataTableToolbar table={table} /> */}
       <div className="rounded-md border">
-        <Table>
+        <BaseTable>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -91,7 +91,7 @@ export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, V
               </TableRow>
             )}
           </TableBody>
-        </Table>
+        </BaseTable>
       </div>
       {/* <DataTablePagination table={table} /> */}
     </div>

@@ -9,8 +9,13 @@ export const createModalStateSlice: StateCreator<
   ModalStateSlice
 > = (set) => ({
   openAddNewBrokerModal: false,
+  openAddNewStockHoldingModal: false,
   updateOpenAddNewBrokerModal: (newModalState) =>
     set((state) => {
       state.openAddNewBrokerModal = newModalState;
+    }),
+  updateOpenAddNewStockHoldingModal: (newModalState) =>
+    set((state) => {
+      state.openAddNewStockHoldingModal = newModalState;
     }),
 });
