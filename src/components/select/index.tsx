@@ -4,9 +4,9 @@ import { camelCase } from 'lodash';
 import { Root, Value } from '@radix-ui/react-select';
 import { Control, Controller, FieldValues } from 'react-hook-form';
 
-import { SelectItem } from './select_item';
-import { SelectTrigger } from './select_trigger';
-import { SelectContent } from './select_content';
+import { SelectItem } from './SelectItem';
+import { SelectTrigger } from './SelectTrigger';
+import { SelectContent } from './SelectContent';
 
 export interface SelectOption {
   value: string;
