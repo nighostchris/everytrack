@@ -79,12 +79,39 @@ export interface GetAllProvidersResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/stocks endpoints
+// ============================================================
+// GET /v1/stocks
+export interface GetAllStocksResponse extends BaseResponse {
+  data: Stock[];
+}
+// GET /v1/stocks/holdings
+export interface GetAllStockHoldingsResponse extends BaseResponse {
+  data: StockHolding[];
+}
+// POST /v1/stocks/holdings
+export interface CreateNewStockHoldingRequest {
+  unit: string;
+  cost: string;
+  stockId: string;
+  accountId: string;
+}
+export interface CreateNewStockHoldingResponse extends BaseResponse {}
+
+// ============================================================
 // Helper Types
 // ============================================================
 export interface Account {
   balance: string;
   currencyId: string;
   accountTypeId: string;
+}
+
+export interface StockHolding {
+  id: string;
+  unit: string;
+  cost: string;
+  stockId: string;
 }
 
 export interface AccountType {
@@ -116,3 +143,17 @@ export interface Provider {
 }
 
 export type ProviderType = 'savings' | 'broker' | 'credit';
+
+export interface Stock {
+  id: string;
+  name: string;
+  ticker: string;
+  countryId: string;
+  currencyId: string;
+  currentPrice: string;
+}
+
+export interface AccountStockHolding {
+  accountId: string;
+  holdings: StockHolding[];
+}
