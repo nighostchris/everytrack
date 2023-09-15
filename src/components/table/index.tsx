@@ -20,6 +20,7 @@ import { TableBody } from './TableBody';
 import { TableCell } from './TableCell';
 import { TableHead } from './TableHead';
 import { TableHeader } from './TableHeader';
+import { TableRowActions } from './TableRowActions';
 import { TableColumnHeader } from './TableColumnHeader';
 
 interface DataTableProps<Data, Value> {
@@ -97,4 +98,4 @@ export function DataTable<Data, Value>({ columns, data }: DataTableProps<Data, V
   );
 }
 
-export { TableColumnHeader };
+export { TableRowActions, TableColumnHeader };

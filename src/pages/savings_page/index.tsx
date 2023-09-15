@@ -13,6 +13,7 @@ import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal, AddN
 import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
+  const { isLoading } = useSavingsState();
   const {
     bankAccounts,
     bankDetails,
@@ -21,7 +22,6 @@ export const SavingsPage: React.FC = () => {
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
   } = store();
-  const { isLoading } = useSavingsState();
   const { currencyId, currencies, exchangeRates } = globalStore();
 
   const displayCurrency = React.useMemo(
