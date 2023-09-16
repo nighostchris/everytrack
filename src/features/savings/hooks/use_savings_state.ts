@@ -1,10 +1,23 @@
 import React from 'react';
+import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
+import { store as globalStore } from '@lib/zustand';
 import { getAllAccounts, getAllProviders } from '@api/everytrack_backend';
 
+export interface SavingProviderTableAccount {
+  id: string;
+  type: string;
+  balance: string;
+  currency: {
+    id: string;
+    symbol: string;
+  };
+}
+
 export const useSavingsState = () => {
-  const { updateBankAccounts, updateBankDetails } = store();
+  const { currencyId, currencies, exchangeRates } = globalStore();
+  const { bankDetails, bankAccounts, updateBankAccounts, updateBankDetails } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
@@ -30,6 +43,51 @@ export const useSavingsState = () => {
     }
   }, []);
 
+  const totalBalance = React.useMemo(() => {
+    let totalBalance = new BigNumber(0);
+    if (bankAccounts && exchangeRates && currencyId) {
+      bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
+        if (accountCurrencyId === currencyId) {
+          totalBalance = totalBalance.plus(balance);
+        } else {
+          const exchangeRate = exchangeRates.filter(
+            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === accountCurrencyId && targetCurrencyId === currencyId,
+          )[0];
+          const convertedBalance = new BigNumber(balance).multipliedBy(exchangeRate.rate);
+          totalBalance = totalBalance.plus(convertedBalance);
+        }
+      });
+    }
+    return totalBalance.toFormat(2);
+  }, [currencyId, bankAccounts, exchangeRates]);
+
+  const savingProviderTableRows = React.useMemo(() => {
+    const accountMap = new Map();
+    const currenciesMap = new Map();
+    const result: { name: string; icon: string; accounts: SavingProviderTableAccount[] }[] = [];
+    if (bankDetails && bankAccounts && currencies) {
+      // Generate a currency map
+      currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
+      // Generate a bank account map
+      bankAccounts.forEach(({ balance, currencyId, accountTypeId }) => {
+        accountMap.set(accountTypeId, { balance, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) } });
+      });
+      // Generate a bank detail map
+      bankDetails.forEach(({ name, icon, accountTypes }) => {
+        const owned: { id: string; type: string; balance: string; currency: { id: string; symbol: string } }[] = [];
+        accountTypes.forEach(({ id, name }) => {
+          if (accountMap.has(id)) {
+            owned.push({ id, type: name, ...accountMap.get(id) });
+          }
+        });
+        if (owned.length > 0) {
+          result.push({ name, icon, accounts: owned });
+        }
+      });
+    }
+    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
+  }, [bankDetails, bankAccounts, currencies]);
+
   React.useEffect(() => {
     setIsLoading(true);
     initBankAccounts();
@@ -37,7 +95,7 @@ export const useSavingsState = () => {
     setIsLoading(false);
   }, [initBankAccounts, initBankDetails]);
 
-  return { isLoading };
+  return { isLoading, totalBalance, savingProviderTableRows };
 };
 
 export default useSavingsState;

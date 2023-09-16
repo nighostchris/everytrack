@@ -53,10 +53,10 @@ export const SettingsPage: React.FC = () => {
         const { data } = await getAllClientSettings();
         updateClientSettings(data);
       }
-      toast('Success!');
+      toast.info('Success!');
     } catch (error: any) {
       console.error(error);
-      toast(error.message);
+      toast.error(error.message);
     }
   };
 

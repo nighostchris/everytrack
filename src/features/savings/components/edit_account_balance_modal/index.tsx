@@ -18,9 +18,9 @@ const editAccountBalanceFormSchema = z.object({
 export const EditAccountBalanceModal: React.FC = () => {
   const { currencies } = globalStore();
   const {
+    balance,
+    currencyId,
     accountTypeId,
-    originalBalance,
-    originalCurrencyId,
     updateBankAccounts,
     openEditAccountBalanceModal: open,
     updateOpenEditAccountBalanceModal: setOpen,
@@ -54,24 +54,25 @@ export const EditAccountBalanceModal: React.FC = () => {
           setOpen(false);
           const { data } = await getAllAccounts('savings');
           updateBankAccounts(data);
+          reset();
         }
         setIsLoading(false);
-        toast('Success!');
+        toast.info('Success!');
       } catch (error: any) {
         setIsLoading(false);
-        toast(error.message);
+        toast.error(error.message);
       }
     } else {
       setIsLoading(false);
-      toast('Unexpected error');
+      toast.error('Unexpected error');
     }
   };
 
   React.useEffect(() => {
-    if (originalBalance && originalCurrencyId) {
-      reset({ balance: originalBalance, currencyId: originalCurrencyId });
+    if (balance && currencyId) {
+      reset({ balance, currencyId });
     }
-  }, [originalBalance, originalCurrencyId]);
+  }, [balance, currencyId]);
 
   return (
     <Dialog open={open}>

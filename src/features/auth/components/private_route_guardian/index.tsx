@@ -7,7 +7,7 @@ import { getAllClientSettings, getAllCurrencies, getAllExchangeRates, verify } f
 
 export const PrivateRouteGuardian: React.FC = () => {
   const navigate = useNavigate();
-  const { updateUsername, updateCurrencyId, updateCurrencies, updateExchangeRates } = store();
+  const { currencies, currencyId, updateUsername, updateCurrencyId, updateCurrencies, updateExchangeRates } = store();
 
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -45,6 +45,11 @@ export const PrivateRouteGuardian: React.FC = () => {
     }
   }, []);
 
+  const displayCurrency = React.useMemo(
+    () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
+    [currencyId, currencies],
+  );
+
   React.useEffect(() => {
     const verifyAccessToken = async () => {
       try {
@@ -71,7 +76,7 @@ export const PrivateRouteGuardian: React.FC = () => {
       <Spinner isLoading={isLoading} size="lg" />
     </div>
   ) : (
-    <Outlet />
+    <Outlet context={{ displayCurrency }} />
   );
 };
 

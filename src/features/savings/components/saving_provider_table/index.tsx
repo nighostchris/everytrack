@@ -3,29 +3,20 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { store } from '@features/savings/zustand';
-
-interface Account {
-  id: string;
-  type: string;
-  balance: string;
-  currency: {
-    id: string;
-    symbol: string;
-  };
-}
+import { SavingProviderTableAccount } from '../../hooks/use_savings_state';
 
 interface SavingProviderTableProps {
   name: string;
   icon: string;
-  accounts: Account[];
+  accounts: SavingProviderTableAccount[];
 }
 
 export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, icon, accounts }) => {
   const {
+    updateBalance,
+    updateCurrencyId,
     updateProviderName,
     updateAccountTypeId,
-    updateOriginalBalance,
-    updateOriginalCurrencyId,
     updateOpenAddNewAccountModal,
     updateOpenEditAccountBalanceModal,
   } = store();
@@ -58,9 +49,9 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
               <a
                 onClick={(e) => {
                   e.preventDefault();
+                  updateBalance(balance);
                   updateAccountTypeId(id);
-                  updateOriginalBalance(balance);
-                  updateOriginalCurrencyId(currencyId);
+                  updateCurrencyId(currencyId);
                   updateOpenEditAccountBalanceModal(true);
                 }}
                 className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"

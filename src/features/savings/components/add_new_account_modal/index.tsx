@@ -23,10 +23,11 @@ export const AddNewAccountModal: React.FC = () => {
 
   const {
     watch,
+    reset,
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.infer<typeof addNewAccountFormSchema>>({
     defaultValues: {
       currencyId: undefined,
       accountTypeId: undefined,
@@ -56,16 +57,16 @@ export const AddNewAccountModal: React.FC = () => {
     try {
       const { success } = await createNewAccount({ currencyId, accountTypeId });
       if (success) {
-        // TODO: reset form state
         setOpen(false);
         const { data } = await getAllAccounts('savings');
         updateBankAccounts(data);
+        reset();
       }
       setIsLoading(false);
-      toast('Success!');
+      toast.info('Success!');
     } catch (error: any) {
       setIsLoading(false);
-      toast(error.message);
+      toast.error(error.message);
     }
   };
 

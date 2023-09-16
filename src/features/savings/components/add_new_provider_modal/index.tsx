@@ -23,11 +23,12 @@ export const AddNewProviderModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const {
+    reset,
     watch,
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.infer<typeof addNewProviderFormSchema>>({
     defaultValues: {
       bank: undefined,
       currencyId: undefined,
@@ -63,16 +64,16 @@ export const AddNewProviderModal: React.FC = () => {
     try {
       const { success } = await createNewAccount({ currencyId, accountTypeId });
       if (success) {
-        // TODO: reset form state
         setOpen(false);
         const { data } = await getAllAccounts('savings');
         updateBankAccounts(data);
+        reset();
       }
       setIsLoading(false);
-      toast('Success!');
+      toast.info('Success!');
     } catch (error: any) {
       setIsLoading(false);
-      toast(error.message);
+      toast.error(error.message);
     }
   };
 

@@ -1,81 +1,20 @@
 /* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
-import BigNumber from 'bignumber.js';
 import { ToastContainer } from 'react-toastify';
+import { useOutletContext } from 'react-router-dom';
 
 import { Root } from '@layouts/root';
 import { store } from '@features/savings/zustand';
-import { store as globalStore } from '@lib/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal, AddNewAccountModal } from '@features/savings/components';
 
 import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
-  const { isLoading } = useSavingsState();
-  const {
-    bankAccounts,
-    bankDetails,
-    openAddNewAccountModal,
-    openAddNewProviderModal,
-    openEditAccountBalanceModal,
-    updateOpenAddNewProviderModal,
-  } = store();
-  const { currencyId, currencies, exchangeRates } = globalStore();
-
-  const displayCurrency = React.useMemo(
-    () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
-    [currencyId, currencies],
-  );
-
-  const providerTableRows = React.useMemo(() => {
-    const accountMap = new Map();
-    const currenciesMap = new Map();
-    const result: {
-      name: string;
-      icon: string;
-      accounts: { id: string; type: string; balance: string; currency: { id: string; symbol: string } }[];
-    }[] = [];
-    if (bankDetails && bankAccounts && currencies) {
-      // Generate a currency map
-      currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
-      // Generate a bank account map
-      bankAccounts.forEach(({ balance, currencyId, accountTypeId }) => {
-        accountMap.set(accountTypeId, { balance, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) } });
-      });
-      // Generate a bank detail map
-      bankDetails.forEach(({ name, icon, accountTypes }) => {
-        const owned: { id: string; type: string; balance: string; currency: { id: string; symbol: string } }[] = [];
-        accountTypes.forEach(({ id, name }) => {
-          if (accountMap.has(id)) {
-            owned.push({ id, type: name, ...accountMap.get(id) });
-          }
-        });
-        if (owned.length > 0) {
-          result.push({ name, icon, accounts: owned });
-        }
-      });
-    }
-    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
-  }, [bankDetails, bankAccounts, currencies]);
-
-  const totalBalance = React.useMemo(() => {
-    if (!bankAccounts || !exchangeRates || !currencyId) return '0';
-    let totalBalance = new BigNumber(0);
-    bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
-      if (accountCurrencyId === currencyId) {
-        totalBalance = totalBalance.plus(balance);
-      } else {
-        const exchangeRate = exchangeRates.filter(
-          ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === accountCurrencyId && targetCurrencyId === currencyId,
-        )[0];
-        const convertedBalance = new BigNumber(balance).multipliedBy(exchangeRate.rate);
-        totalBalance = totalBalance.plus(convertedBalance);
-      }
-    });
-    return totalBalance.toFormat(2);
-  }, [currencyId, bankAccounts, exchangeRates]);
+  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const { isLoading, totalBalance, savingProviderTableRows } = useSavingsState();
+  const { openAddNewAccountModal, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } = store();
 
   return (
     <Root>
@@ -107,7 +46,7 @@ export const SavingsPage: React.FC = () => {
           <h3 className="font-semibold">Total</h3>
           <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
         </div>
-        {providerTableRows.map(({ name, icon, accounts }) => (
+        {savingProviderTableRows.map(({ name, icon, accounts }) => (
           <div key={`provider-table-${name.toLowerCase().replaceAll(/\\s|(|)/g, '-')}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
               <SavingProviderTable name={name} icon={icon} accounts={accounts} />

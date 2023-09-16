@@ -71,10 +71,10 @@ export const AddNewBrokerModal: React.FC = () => {
         reset();
       }
       setIsLoading(false);
-      toast('Success!');
+      toast.info('Success!');
     } catch (error: any) {
       setIsLoading(false);
-      toast(error.message);
+      toast.error(error.message);
     }
   };
 
