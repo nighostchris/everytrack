@@ -69,11 +69,25 @@ export const HomePage: React.FC = () => {
     <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* <div className="sm:mx-auto sm:w-full sm:max-w-md"> */}
       {/* </div> */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8 px-8 sm:mx-auto sm:w-full sm:max-w-sm sm:px-0">
+        <div className="rounded-lg bg-white px-8 py-8 shadow sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmitLoginForm)}>
-            <Input type="email" label="Email Address" formId="email" register={register} error={errors['email']?.message} />
-            <Input type="password" label="Password" formId="password" register={register} error={errors['password']?.message} />
+            <Input
+              type="email"
+              label="Email Address"
+              formId="email"
+              register={register}
+              error={errors['email']?.message}
+              className="!max-w-none"
+            />
+            <Input
+              type="password"
+              label="Password"
+              formId="password"
+              register={register}
+              error={errors['password']?.message}
+              className="!max-w-none"
+            />
             {typeof loginError !== 'undefined' ? <p className="mt-1 text-sm text-red-700">{loginError}</p> : null}
             <div>
               <Button type="submit" variant="contained" isLoading={isLoading} className="w-full">

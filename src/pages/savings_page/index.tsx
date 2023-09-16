@@ -32,17 +32,15 @@ export const SavingsPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Savings</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your bank accounts</p>
           </div>
-          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button
-              type="button"
-              onClick={() => updateOpenAddNewProviderModal(true)}
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-            >
-              Add New Provider
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => updateOpenAddNewProviderModal(true)}
+            className="mt-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto"
+          >
+            Add New Provider
+          </button>
         </div>
-        <div className="mt-6 max-w-xs rounded-lg border border-gray-300 px-6 py-4">
+        <div className="mt-6 rounded-lg border border-gray-300 px-6 py-4 sm:max-w-xs">
           <h3 className="font-semibold">Total</h3>
           <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
         </div>

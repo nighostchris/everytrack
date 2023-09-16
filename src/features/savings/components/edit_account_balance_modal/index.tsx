@@ -99,13 +99,14 @@ export const EditAccountBalanceModal: React.FC = () => {
         >
           Submit
         </Button>
-        <button
+        <Button
           type="button"
+          variant="outlined"
           onClick={() => setOpen(false)}
-          className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
+          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 sm:w-fit"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </Dialog>
   );
