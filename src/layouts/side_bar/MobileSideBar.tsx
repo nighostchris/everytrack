@@ -34,11 +34,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({ open, setOpen }) => {
         </div>
         <div className={`h-0 overflow-y-auto pb-4 pt-5 ${open ? 'flex-1' : 'hidden'}`}>
           <div className="flex flex-shrink-0 items-center px-4">
-            <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
-              alt="Workflow"
-            />
+            <img className="w-full" src="/logo.svg" alt="Everytrack" />
           </div>
           <nav className="mt-5 space-y-1 px-2">
             {SIDE_BAR_TABS.map(({ name, icon: Icon, link }) => (
