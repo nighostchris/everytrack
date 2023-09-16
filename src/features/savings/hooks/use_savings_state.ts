@@ -9,6 +9,7 @@ export interface SavingProviderTableAccount {
   id: string;
   type: string;
   balance: string;
+  accountTypeId: string;
   currency: {
     id: string;
     symbol: string;
@@ -69,15 +70,15 @@ export const useSavingsState = () => {
       // Generate a currency map
       currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
       // Generate a bank account map
-      bankAccounts.forEach(({ balance, currencyId, accountTypeId }) => {
-        accountMap.set(accountTypeId, { balance, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) } });
+      bankAccounts.forEach(({ id, balance, currencyId, accountTypeId }) => {
+        accountMap.set(accountTypeId, { id, balance, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) } });
       });
       // Generate a bank detail map
       bankDetails.forEach(({ name, icon, accountTypes }) => {
-        const owned: { id: string; type: string; balance: string; currency: { id: string; symbol: string } }[] = [];
+        const owned: { id: string; type: string; balance: string; accountTypeId: string; currency: { id: string; symbol: string } }[] = [];
         accountTypes.forEach(({ id, name }) => {
           if (accountMap.has(id)) {
-            owned.push({ id, type: name, ...accountMap.get(id) });
+            owned.push({ type: name, accountTypeId: id, ...accountMap.get(id) });
           }
         });
         if (owned.length > 0) {

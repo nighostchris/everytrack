@@ -5,26 +5,39 @@ import { ToastContainer } from 'react-toastify';
 import { useOutletContext } from 'react-router-dom';
 
 import { Root } from '@layouts/root';
+import {
+  AddNewAccountModal,
+  DeleteAccountModal,
+  AddNewProviderModal,
+  SavingProviderTable,
+  EditAccountBalanceModal,
+} from '@features/savings/components';
 import { store } from '@features/savings/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
-import { SavingProviderTable, AddNewProviderModal, EditAccountBalanceModal, AddNewAccountModal } from '@features/savings/components';
 
 import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { isLoading, totalBalance, savingProviderTableRows } = useSavingsState();
-  const { openAddNewAccountModal, openAddNewProviderModal, openEditAccountBalanceModal, updateOpenAddNewProviderModal } = store();
+  const {
+    openAddNewAccountModal,
+    openAddNewProviderModal,
+    openDeleteAccountModal,
+    openEditAccountBalanceModal,
+    updateOpenAddNewProviderModal,
+  } = store();
 
   return (
     <Root>
       <AddNewAccountModal />
+      <DeleteAccountModal />
       <AddNewProviderModal />
       <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8', {
-          'z-0': openAddNewProviderModal || openEditAccountBalanceModal || openAddNewAccountModal,
-          'z-10': !openAddNewProviderModal && !openEditAccountBalanceModal && !openAddNewAccountModal,
+          'z-0': openAddNewProviderModal || openDeleteAccountModal || openEditAccountBalanceModal || openAddNewAccountModal,
+          'z-10': !openAddNewProviderModal && !openDeleteAccountModal && !openEditAccountBalanceModal && !openAddNewAccountModal,
         })}
       >
         <div className="sm:flex sm:items-center">

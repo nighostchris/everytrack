@@ -23,6 +23,12 @@ export interface UpdateAccountRequest {
   accountTypeId: string;
 }
 export interface UpdateAccountResponse extends BaseResponse {}
+// DELETE /v1/accounts
+export interface DeleteAccountRequest {
+  accountId: string;
+  providerType: ProviderType;
+}
+export interface DeleteAccountResponse extends BaseResponse {}
 
 // ============================================================
 // /v1/auth endpoints

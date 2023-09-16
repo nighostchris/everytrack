@@ -9,12 +9,21 @@ export const createSavingsPageStateSlice: StateCreator<
   SavingsPageStateSlice
 > = (set) => ({
   balance: undefined,
+  accountId: undefined,
   currencyId: undefined,
   bankDetails: undefined,
   accountTypeId: undefined,
   updateBalance: (newBalance) =>
     set((state) => {
       state.balance = newBalance;
+    }),
+  updateAccountId: (newAccountId) =>
+    set((state) => {
+      state.accountId = newAccountId;
+    }),
+  resetDeleteAccountModalState: () =>
+    set((state) => {
+      state.accountId = undefined;
     }),
   updateCurrencyId: (newCurrencyId) =>
     set((state) => {

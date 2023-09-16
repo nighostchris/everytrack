@@ -2,7 +2,9 @@ import { AxiosError } from 'axios';
 
 import {
   ProviderType,
+  DeleteAccountRequest,
   UpdateAccountRequest,
+  DeleteAccountResponse,
   UpdateAccountResponse,
   GetAllAccountsResponse,
   CreateNewAccountRequest,
@@ -48,5 +50,19 @@ export async function updateAccount(params: UpdateAccountRequest) {
       throw new Error('Unexpected error. Please try again.');
     }
     throw new Error((response.data as UpdateAccountResponse).error);
+  }
+}
+
+export async function deleteAccount(params: DeleteAccountRequest) {
+  const { accountId: id, providerType: type } = params;
+  try {
+    const { data } = await client.delete('/v1/accounts', { params: { id, type } });
+    return data as DeleteAccountResponse;
+  } catch (error) {
+    const { response } = error as AxiosError;
+    if (!response) {
+      throw new Error('Unexpected error. Please try again.');
+    }
+    throw new Error((response.data as DeleteAccountResponse).error);
   }
 }

@@ -13,11 +13,14 @@ export type BankAccountsSlice = {
 
 export type SavingsPageStateSlice = {
   balance?: string;
+  accountId?: string;
   currencyId?: string;
   accountTypeId?: string;
   bankDetails?: Provider[];
+  resetDeleteAccountModalState: () => void;
   updateBalance: (newBalance: string) => void;
   resetEditAccountBalanceModalState: () => void;
+  updateAccountId: (newAccountId: string) => void;
   updateCurrencyId: (newCurrencyId: string) => void;
   updateBankDetails: (newBankDetails: Provider[]) => void;
   updateAccountTypeId: (newAccountTypeId: string) => void;
@@ -25,8 +28,10 @@ export type SavingsPageStateSlice = {
 
 export type ModalStateSlice = {
   openAddNewAccountModal: boolean;
+  openDeleteAccountModal: boolean;
   openAddNewProviderModal: boolean;
   openEditAccountBalanceModal: boolean;
+  updateOpenDeleteAccountModal: (newModalState: boolean) => void;
   updateOpenAddNewAccountModal: (newModalState: boolean) => void;
   updateOpenAddNewProviderModal: (newModalState: boolean) => void;
   updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
