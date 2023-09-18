@@ -2,6 +2,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { ResponsivePie } from '@nivo/pie';
 import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
 import { ColumnDef } from '@tanstack/react-table';
@@ -22,7 +23,6 @@ import {
   TableColumnHeader,
 } from '@components';
 import { Root } from '@layouts/root';
-import { Stock } from '@api/everytrack_backend';
 import { store } from '@features/brokers/zustand';
 import { store as globalStore } from '@lib/zustand';
 import { AddNewBrokerModal, AddNewStockHoldingModal } from '@features/brokers/components';
@@ -71,60 +71,14 @@ export const columns: ColumnDef<BrokerAccountTableHolding>[] = [
 ];
 
 export const BrokersPage: React.FC = () => {
-  const { isLoading, brokerAccountTableRows } = useBrokersState();
-  const { currencyId, currencies, exchangeRates } = globalStore();
-  const { stocks, accountStockHoldings, updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
+  const { currencyId, currencies } = globalStore();
+  const { updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
+  const { isLoading, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
 
   const displayCurrency = React.useMemo(
     () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
     [currencyId, currencies],
   );
-
-  const totalBalance = React.useMemo(() => {
-    if (!accountStockHoldings || !exchangeRates || !currencyId || !stocks) return '0';
-    const stocksMap: { [id: string]: Stock } = {};
-    stocks.forEach((stock) => (stocksMap[stock.id] = stock));
-    let totalBalance = new BigNumber(0);
-    accountStockHoldings.forEach(({ holdings }) => {
-      holdings.forEach(({ unit, cost, stockId }) => {
-        const { currencyId: stockCurrencyId } = stocksMap[stockId];
-        if (stockCurrencyId === currencyId) {
-          totalBalance = totalBalance.plus(new BigNumber(unit).multipliedBy(cost));
-        } else {
-          const exchangeRate = exchangeRates.filter(
-            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === stockCurrencyId && targetCurrencyId === currencyId,
-          )[0];
-          const convertedBalance = new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate);
-          totalBalance = totalBalance.plus(convertedBalance);
-        }
-      });
-    });
-    return totalBalance.toFormat(2);
-  }, [stocks, currencyId, exchangeRates, accountStockHoldings]);
-
-  const winLoseAmount = React.useMemo(() => {
-    if (!accountStockHoldings || !exchangeRates || !currencyId || !stocks) return '0';
-    const stocksMap: { [id: string]: Stock } = {};
-    stocks.forEach((stock) => (stocksMap[stock.id] = stock));
-    let amount = new BigNumber(0);
-    accountStockHoldings.forEach(({ holdings }) => {
-      holdings.forEach(({ unit, cost, stockId }) => {
-        const { currentPrice, currencyId: stockCurrencyId } = stocksMap[stockId];
-        if (stockCurrencyId === currencyId) {
-          amount = amount.plus(new BigNumber(unit).multipliedBy(new BigNumber(currentPrice).minus(cost)));
-        } else {
-          const exchangeRate = exchangeRates.filter(
-            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === stockCurrencyId && targetCurrencyId === currencyId,
-          )[0];
-          const convertedBalance = new BigNumber(unit)
-            .multipliedBy(new BigNumber(currentPrice).minus(cost))
-            .multipliedBy(exchangeRate.rate);
-          amount = amount.plus(convertedBalance);
-        }
-      });
-    });
-    return amount.toFormat(2);
-  }, [stocks, currencyId, exchangeRates, accountStockHoldings]);
 
   return (
     <Root>
@@ -146,7 +100,7 @@ export const BrokersPage: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="mt-8 grid grid-cols-2 space-x-8">
+        <div className="mt-8 grid grid-cols-2 gap-x-4">
           <div className="flex flex-col space-y-5">
             <StatCard title="Total Balance" icon={FaSackDollar}>
               <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
@@ -168,7 +122,29 @@ export const BrokersPage: React.FC = () => {
               </div>
             </StatCard>
           </div>
-          <div className="rounded-lg border border-gray-400">Chart to be constructed</div>
+          <div className="flex flex-col rounded-lg border border-gray-300">
+            <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
+            <div className="h-full w-full">
+              <ResponsivePie
+                // @ts-ignore
+                data={assetDistribution}
+                padAngle={0.7}
+                borderWidth={1}
+                cornerRadius={3}
+                innerRadius={0.5}
+                arcLabelsSkipAngle={10}
+                arcLinkLabelsThickness={2}
+                activeOuterRadiusOffset={8}
+                arcLinkLabelsSkipAngle={10}
+                arcLinkLabelsTextColor="#333333"
+                arcLabel={(item) => `${item.value}%`}
+                arcLinkLabelsColor={{ from: 'color' }}
+                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+                arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+              />
+            </div>
+          </div>
         </div>
         <div className="mt-10 flex flex-col">
           <h2 className="text-lg font-medium text-gray-900">Stocks</h2>
@@ -183,8 +159,8 @@ export const BrokersPage: React.FC = () => {
                 <TabsContent value={providerId}>
                   {accounts.map(({ id: accountId, name, holdings }) => (
                     <>
-                      <div className="flex flex-row items-center justify-between">
-                        <h3 className="text-md my-4 text-gray-900">{name}</h3>
+                      <div className="mb-4 mt-2 flex flex-row items-center justify-between">
+                        <h3 className="text-md text-gray-900">{name}</h3>
                         <Button
                           variant="contained"
                           className="h-8 text-xs"

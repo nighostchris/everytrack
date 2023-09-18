@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
 import { BiHide } from 'react-icons/bi';
@@ -22,7 +23,10 @@ export function TableColumnHeader<Data, Value>({ column, title, className }: Tab
     <div className={clsx('flex items-center space-x-2', className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="contained" className="-ml-4 h-8 bg-transparent data-[state=open]:bg-gray-100">
+          <Button
+            variant="contained"
+            className="-ml-4 h-8 bg-transparent data-[state=open]:bg-gray-100 dark:bg-transparent dark:text-slate-700 dark:hover:bg-gray-200 dark:hover:text-slate-900"
+          >
             <span>{title}</span>
             {column.getIsSorted() === 'desc' ? (
               <FaArrowDownAZ className="ml-2 h-4 w-4" />
