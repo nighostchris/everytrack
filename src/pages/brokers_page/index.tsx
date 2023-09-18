@@ -9,25 +9,26 @@ import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import {
+  Tabs,
+  Table,
+  Button,
+  StatCard,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  TableRowActions,
+  DropdownMenuItem,
+  TableColumnHeader,
+} from '@components';
 import { Root } from '@layouts/root';
 import { Stock } from '@api/everytrack_backend';
 import { store } from '@features/brokers/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { DropdownMenuItem } from '@components/dropdown_menu';
-import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
-import { Button, Table, TableRowActions, TableColumnHeader } from '@components';
 import { AddNewBrokerModal, AddNewStockHoldingModal } from '@features/brokers/components';
-import { StatCard } from '@components/card';
+import { useBrokersState, BrokerAccountTableHolding } from '@features/brokers/hooks/use_brokers_state';
 
-interface AccountStockHoldingTableRow {
-  unit: string;
-  cost: string;
-  name: string;
-  ticker: string;
-  currentPrice: string;
-}
-
-export const columns: ColumnDef<AccountStockHoldingTableRow>[] = [
+export const columns: ColumnDef<BrokerAccountTableHolding>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
@@ -46,7 +47,7 @@ export const columns: ColumnDef<AccountStockHoldingTableRow>[] = [
     accessorKey: 'currentPrice',
     header: ({ column }) => <TableColumnHeader column={column} title="Current Price" />,
     cell: ({ row }) => {
-      return <div className="w-[80px]">{row.getValue('currentPrice')}</div>;
+      return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('currentPrice')}`}</div>;
     },
   },
   {
@@ -60,7 +61,7 @@ export const columns: ColumnDef<AccountStockHoldingTableRow>[] = [
     accessorKey: 'cost',
     header: ({ column }) => <TableColumnHeader column={column} title="Cost" />,
     cell: ({ row }) => {
-      return <div className="w-[80px]">{row.getValue('cost')}</div>;
+      return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('cost')}`}</div>;
     },
   },
   {
@@ -70,45 +71,9 @@ export const columns: ColumnDef<AccountStockHoldingTableRow>[] = [
 ];
 
 export const BrokersPage: React.FC = () => {
-  const { isLoading } = useBrokersState();
-  const {
-    stocks,
-    brokerDetails,
-    brokerAccounts,
-    accountStockHoldings,
-    updateAccountId,
-    updateOpenAddNewBrokerModal,
-    updateOpenAddNewStockHoldingModal,
-  } = store();
+  const { isLoading, brokerAccountTableRows } = useBrokersState();
   const { currencyId, currencies, exchangeRates } = globalStore();
-
-  const stocksTableTitleMap = React.useMemo(() => {
-    const map: { [accountTypeId: string]: { icon: string; title: string } } = {};
-    if (brokerDetails) {
-      brokerDetails.forEach(({ name, icon, accountTypes }) => {
-        accountTypes.forEach(({ id, name: accountTypeName }) => {
-          map[id] = { icon, title: `${name} - ${accountTypeName}` };
-        });
-      });
-    }
-    return map;
-  }, [brokerDetails, brokerAccounts]);
-
-  const constructAccountStockHoldingTableRowMap = React.useMemo(() => {
-    const stocksMap: { [id: string]: Stock } = {};
-    const map: { [accountId: string]: AccountStockHoldingTableRow[] } = {};
-    if (stocks && brokerAccounts && accountStockHoldings) {
-      stocks.forEach((stock) => (stocksMap[stock.id] = stock));
-      accountStockHoldings.forEach(({ accountId, holdings }) => {
-        map[accountId] = [];
-        holdings.forEach(({ unit, cost, stockId }) => {
-          const { name, ticker, currentPrice } = stocksMap[stockId];
-          map[accountId].push({ name, ticker, currentPrice, unit, cost });
-        });
-      });
-    }
-    return map;
-  }, [stocks, brokerAccounts, accountStockHoldings]);
+  const { stocks, accountStockHoldings, updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
 
   const displayCurrency = React.useMemo(
     () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
@@ -207,26 +172,37 @@ export const BrokersPage: React.FC = () => {
         </div>
         <div className="mt-10 flex flex-col">
           <h2 className="text-lg font-medium text-gray-900">Stocks</h2>
-          {brokerDetails &&
-            brokerAccounts &&
-            brokerAccounts.map(({ id, accountTypeId }) => (
-              <>
-                <div className="flex flex-row items-center justify-between">
-                  <h3 className="text-md my-4 text-gray-900">{stocksTableTitleMap[accountTypeId].title}</h3>
-                  <Button
-                    variant="contained"
-                    className="h-8 text-xs"
-                    onClick={() => {
-                      updateOpenAddNewStockHoldingModal(true);
-                      updateAccountId(id);
-                    }}
-                  >
-                    Add New Holding
-                  </Button>
-                </div>
-                <Table columns={columns} data={constructAccountStockHoldingTableRowMap[id] ?? []} />
-              </>
-            ))}
+          {brokerAccountTableRows.length > 0 && (
+            <Tabs defaultValue={brokerAccountTableRows[0].id} className="mt-2 space-y-4">
+              <TabsList>
+                {brokerAccountTableRows.map(({ id, name }) => (
+                  <TabsTrigger value={id}>{name}</TabsTrigger>
+                ))}
+              </TabsList>
+              {brokerAccountTableRows.map(({ id: providerId, accounts }) => (
+                <TabsContent value={providerId}>
+                  {accounts.map(({ id: accountId, name, holdings }) => (
+                    <>
+                      <div className="flex flex-row items-center justify-between">
+                        <h3 className="text-md my-4 text-gray-900">{name}</h3>
+                        <Button
+                          variant="contained"
+                          className="h-8 text-xs"
+                          onClick={() => {
+                            updateOpenAddNewStockHoldingModal(true);
+                            updateAccountId(accountId);
+                          }}
+                        >
+                          Add New Holding
+                        </Button>
+                      </div>
+                      <Table columns={columns} data={holdings ?? []} />
+                    </>
+                  ))}
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
         </div>
       </div>
       <ToastContainer />

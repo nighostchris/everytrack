@@ -16,6 +16,12 @@ export interface SavingProviderTableAccount {
   };
 }
 
+export interface SavingProviderTableRow {
+  name: string;
+  icon: string;
+  accounts: SavingProviderTableAccount[];
+}
+
 export const useSavingsState = () => {
   const { currencyId, currencies, exchangeRates } = globalStore();
   const { bankDetails, bankAccounts, updateBankAccounts, updateBankDetails } = store();
@@ -65,7 +71,7 @@ export const useSavingsState = () => {
   const savingProviderTableRows = React.useMemo(() => {
     const accountMap = new Map();
     const currenciesMap = new Map();
-    const result: { name: string; icon: string; accounts: SavingProviderTableAccount[] }[] = [];
+    const result: SavingProviderTableRow[] = [];
     if (bankDetails && bankAccounts && currencies) {
       // Generate a currency map
       currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
