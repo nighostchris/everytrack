@@ -2,9 +2,10 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { AiOutlineRise } from 'react-icons/ai';
+import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
 import { ColumnDef } from '@tanstack/react-table';
+import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,6 +17,7 @@ import { DropdownMenuItem } from '@components/dropdown_menu';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import { Button, Table, TableRowActions, TableColumnHeader } from '@components';
 import { AddNewBrokerModal, AddNewStockHoldingModal } from '@features/brokers/components';
+import { StatCard } from '@components/card';
 
 interface AccountStockHoldingTableRow {
   unit: string;
@@ -180,20 +182,26 @@ export const BrokersPage: React.FC = () => {
           </div>
         </div>
         <div className="mt-8 grid grid-cols-2 space-x-8">
-          <div className="flex flex-col">
-            <div className="rounded-lg border border-gray-300 px-6 py-4">
-              <h3 className="font-semibold">Total</h3>
-              <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
-            </div>
-            <div className="mt-6 rounded-lg border border-gray-300 px-6 py-4">
-              <h3 className="font-semibold">W / L</h3>
+          <div className="flex flex-col space-y-5">
+            <StatCard title="Total Balance" icon={FaSackDollar}>
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
+            </StatCard>
+            <StatCard title="W / L" icon={AiOutlineStock}>
               <div className="mt-1 flex flex-row items-center">
-                <AiOutlineRise className="h-6 w-6 font-bold text-green-600" />
+                <AiOutlineRise
+                  className={clsx('h-6 w-6 font-bold', {
+                    'text-green-600': new BigNumber(winLoseAmount).isPositive(),
+                    'text-red-600': new BigNumber(winLoseAmount).isNegative(),
+                  })}
+                />
                 <p
-                  className={clsx('ml-2 overflow-hidden text-ellipsis whitespace-nowrap text-2xl text-green-600')}
+                  className={clsx('ml-2 overflow-hidden text-ellipsis whitespace-nowrap text-2xl', {
+                    'text-green-600': new BigNumber(winLoseAmount).isPositive(),
+                    'text-red-600': new BigNumber(winLoseAmount).isNegative(),
+                  })}
                 >{`${displayCurrency} ${winLoseAmount}`}</p>
               </div>
-            </div>
+            </StatCard>
           </div>
           <div className="rounded-lg border border-gray-400">Chart to be constructed</div>
         </div>
