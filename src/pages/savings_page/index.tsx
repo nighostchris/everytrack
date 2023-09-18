@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
+import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
 import { useOutletContext } from 'react-router-dom';
 
@@ -16,6 +17,7 @@ import { store } from '@features/savings/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 
 import 'react-toastify/dist/ReactToastify.css';
+import { StatCard } from '@components/card';
 
 export const SavingsPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
@@ -53,10 +55,9 @@ export const SavingsPage: React.FC = () => {
             Add New Provider
           </button>
         </div>
-        <div className="mt-6 rounded-lg border border-gray-300 px-6 py-4 sm:max-w-xs">
-          <h3 className="font-semibold">Total</h3>
-          <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-2xl">{`${displayCurrency} ${totalBalance}`}</p>
-        </div>
+        <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
+        </StatCard>
         {savingProviderTableRows.map(({ name, icon, accounts }) => (
           <div key={`provider-table-${name.toLowerCase().replaceAll(/\\s|(|)/g, '-')}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
