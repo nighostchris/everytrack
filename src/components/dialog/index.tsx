@@ -13,11 +13,11 @@ export const Dialog: React.FC<DialogProps> = ({ open, className, children }) => 
   return (
     <RadixDialog.Root open={open}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="animate-dialog-overlay fixed inset-0 bg-gray-700/[.7]" />
+        <RadixDialog.Overlay className="fixed inset-0 animate-dialog-overlay bg-gray-700/[.7]" />
         <RadixDialog.Content
           className={clsx(
             className,
-            'animate-dialog-content fixed left-2/4 top-2/4 w-full max-w-md -translate-x-2/4 -translate-y-2/4 overflow-hidden rounded-md bg-white focus:outline-none',
+            'fixed left-2/4 top-2/4 w-full max-w-xs -translate-x-2/4 -translate-y-2/4 animate-dialog-content overflow-hidden rounded-md bg-white focus:outline-none sm:max-w-md',
           )}
         >
           {children}
