@@ -140,21 +140,19 @@ export const useBrokersState = () => {
             account.holdings.push(row);
           });
           // Generate provider to acccounts map
-          if (account.holdings.length > 0) {
-            const providerAccounts = brokerProviderToAccountsMap.get(providerId);
-            if (!providerAccounts) {
-              brokerProviderToAccountsMap.set(providerId, {
-                id: providerId,
-                name: providerName,
-                icon,
-                accounts: [account],
-              });
-            } else {
-              brokerProviderToAccountsMap.set(providerId, {
-                ...providerAccounts,
-                accounts: [...providerAccounts.accounts, account],
-              });
-            }
+          const providerAccounts = brokerProviderToAccountsMap.get(providerId);
+          if (!providerAccounts) {
+            brokerProviderToAccountsMap.set(providerId, {
+              id: providerId,
+              name: providerName,
+              icon,
+              accounts: [account],
+            });
+          } else {
+            brokerProviderToAccountsMap.set(providerId, {
+              ...providerAccounts,
+              accounts: [...providerAccounts.accounts, account],
+            });
           }
         }
       });
@@ -163,6 +161,14 @@ export const useBrokersState = () => {
     return [];
   }, [stocks, currencies, brokerDetails, brokerAccounts, accountStockHoldings]);
 
+  const canAddNewBroker = React.useMemo(() => {
+    if (!brokerDetails || !brokerAccounts) {
+      return false;
+    }
+    const supportedBrokerAccountTypes = brokerDetails.reduce((acc, current) => acc + current.accountTypes.length, 0);
+    return brokerAccounts.length < supportedBrokerAccountTypes;
+  }, [brokerDetails, brokerAccounts]);
+
   React.useEffect(() => {
     setIsLoading(true);
     initBrokerAccounts();
@@ -170,7 +176,7 @@ export const useBrokersState = () => {
     setIsLoading(false);
   }, [initBrokerAccounts, initBrokerDetails]);
 
-  return { isLoading, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
+  return { isLoading, canAddNewBroker, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
 };
 
 export default useBrokersState;

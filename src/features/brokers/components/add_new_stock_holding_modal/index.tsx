@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { store as globalStore } from '@lib/zustand';
-import { createNewStockHolding } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { createNewStockHolding, getAllStockHoldings } from '@api/everytrack_backend';
 
 const addNewStockHoldingFormSchema = z.object({
   unit: z.string(),
@@ -18,7 +18,7 @@ const addNewStockHoldingFormSchema = z.object({
 });
 
 export const AddNewStockHoldingModal: React.FC = () => {
-  const { stocks } = globalStore();
+  const { stocks, accountStockHoldings, updateAccountStockHoldings } = globalStore();
   const { accountId, openAddNewStockHoldingModal: open, updateOpenAddNewStockHoldingModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -41,9 +41,21 @@ export const AddNewStockHoldingModal: React.FC = () => {
   });
   const watchSelectedStock = watch('stockId');
 
+  const accountStockHoldingsMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    (accountStockHoldings ?? []).forEach(({ accountId: id, holdings }) => holdings.forEach(({ stockId }) => map.set(stockId, id)));
+    return map;
+  }, [accountStockHoldings]);
+
   const stockOptions: SelectOption[] = React.useMemo(
-    () => (stocks ? stocks.map(({ id, name }) => ({ value: id, display: name })).sort((a, b) => (a.display > b.display ? 1 : -1)) : []),
-    [stocks],
+    () =>
+      stocks && accountStockHoldings
+        ? stocks
+            .filter(({ id }) => !accountStockHoldingsMap.get(id))
+            .map(({ id, name }) => ({ value: id, display: name }))
+            .sort((a, b) => (a.display > b.display ? 1 : -1))
+        : [],
+    [stocks, accountStockHoldings],
   );
 
   const onSubmitAddNewStockHoldingForm = async (data: any) => {
@@ -52,8 +64,10 @@ export const AddNewStockHoldingModal: React.FC = () => {
     try {
       const { success } = await createNewStockHolding({ stockId, accountId, unit, cost });
       if (success) {
-        // TODO: reset form state
         setOpen(false);
+        const { data } = await getAllStockHoldings();
+        updateAccountStockHoldings(data);
+        reset();
       }
       setIsLoading(false);
       toast.info('Success!');

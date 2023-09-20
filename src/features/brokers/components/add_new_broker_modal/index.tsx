@@ -18,7 +18,13 @@ const addNewBrokerFormSchema = z.object({
 
 export const AddNewBrokerModal: React.FC = () => {
   const { currencies } = globalStore();
-  const { brokerDetails, updateBrokerAccounts, openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
+  const {
+    brokerDetails,
+    brokerAccounts,
+    updateBrokerAccounts,
+    openAddNewBrokerModal: open,
+    updateOpenAddNewBrokerModal: setOpen,
+  } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -39,20 +45,32 @@ export const AddNewBrokerModal: React.FC = () => {
   const watchSelectedBroker = watch('broker');
   const watchSelectedAccountType = watch('accountTypeId');
 
+  const brokerAccountsMap = React.useMemo(() => {
+    const map = new Map<string, boolean>();
+    (brokerAccounts ?? []).forEach(({ accountTypeId }) => map.set(accountTypeId, true));
+    return map;
+  }, [brokerAccounts]);
+
   const brokerOptions: SelectOption[] = React.useMemo(
     () =>
-      brokerDetails ? brokerDetails.map(({ name }) => ({ value: name, display: name })).sort((a, b) => (a.value > b.value ? 1 : -1)) : [],
-    [brokerDetails],
+      brokerDetails && brokerAccounts
+        ? brokerDetails
+            .filter(({ accountTypes }) => !accountTypes.every(({ id }) => brokerAccountsMap.get(id)))
+            .map(({ name }) => ({ value: name, display: name }))
+            .sort((a, b) => (a.value > b.value ? 1 : -1))
+        : [],
+    [brokerDetails, brokerAccounts],
   );
   const accountTypeOptions: SelectOption[] = React.useMemo(
     () =>
-      brokerDetails && watchSelectedBroker
+      brokerDetails && brokerAccounts && watchSelectedBroker
         ? brokerDetails
             .filter(({ name }) => name === watchSelectedBroker)[0]
-            .accountTypes.map(({ id, name }) => ({ value: id, display: name }))
+            .accountTypes.filter((accountType) => !brokerAccountsMap.get(accountType.id))
+            .map(({ id, name }) => ({ value: id, display: name }))
             .sort((a, b) => (a.display > b.display ? 1 : -1))
         : [],
-    [brokerDetails, watchSelectedBroker],
+    [brokerDetails, brokerAccounts, watchSelectedBroker],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -81,7 +99,7 @@ export const AddNewBrokerModal: React.FC = () => {
   return (
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900">Add New Provider</h3>
+        <h3 className="text-lg font-medium text-gray-900">Add New Broker</h3>
         <Select
           label="Broker"
           formId="broker"

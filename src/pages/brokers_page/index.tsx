@@ -72,10 +72,10 @@ export const columns: ColumnDef<BrokerAccountTableHolding>[] = [
 ];
 
 export const BrokersPage: React.FC = () => {
-  const { currencyId, currencies } = globalStore();
+  const { stocks } = globalStore();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
-  const { isLoading, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
+  const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
 
   return (
     <Root>
@@ -87,17 +87,19 @@ export const BrokersPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Broker Assets</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your broker accounts</p>
           </div>
-          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button
-              type="button"
-              onClick={() => updateOpenAddNewBrokerModal(true)}
-              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-            >
-              Add New Broker
-            </button>
-          </div>
+          {canAddNewBroker && (
+            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+              <button
+                type="button"
+                onClick={() => updateOpenAddNewBrokerModal(true)}
+                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+              >
+                Add New Broker
+              </button>
+            </div>
+          )}
         </div>
-        <div className="mt-8 grid grid-cols-2 gap-x-4">
+        <div className="mt-8 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
             <StatCard title="Total Balance" icon={FaSackDollar}>
               <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
@@ -119,9 +121,9 @@ export const BrokersPage: React.FC = () => {
               </div>
             </StatCard>
           </div>
-          <div className="flex flex-col rounded-lg border border-gray-300">
+          <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
             <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
-            <div className="h-full w-full">
+            <div className="h-full w-full p-6 pt-0">
               <ResponsivePie
                 // @ts-ignore
                 data={assetDistribution}
@@ -136,7 +138,7 @@ export const BrokersPage: React.FC = () => {
                 arcLinkLabelsTextColor="#333333"
                 arcLabel={(item) => `${item.value}%`}
                 arcLinkLabelsColor={{ from: 'color' }}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                margin={{ top: 30, right: 20, bottom: 30, left: 20 }}
                 borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
                 arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
               />
@@ -158,16 +160,18 @@ export const BrokersPage: React.FC = () => {
                     <>
                       <div className="mb-4 mt-2 flex flex-row items-center justify-between">
                         <h3 className="text-md text-gray-900">{name}</h3>
-                        <Button
-                          variant="contained"
-                          className="h-8 text-xs"
-                          onClick={() => {
-                            updateOpenAddNewStockHoldingModal(true);
-                            updateAccountId(accountId);
-                          }}
-                        >
-                          Add New Holding
-                        </Button>
+                        {stocks && holdings.length < stocks.length && (
+                          <Button
+                            variant="contained"
+                            className="h-8 text-xs"
+                            onClick={() => {
+                              updateOpenAddNewStockHoldingModal(true);
+                              updateAccountId(accountId);
+                            }}
+                          >
+                            Add New Holding
+                          </Button>
+                        )}
                       </div>
                       <Table columns={columns} data={holdings ?? []} />
                     </>
