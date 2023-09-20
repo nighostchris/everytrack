@@ -26,7 +26,12 @@ import { Root } from '@layouts/root';
 import { store } from '@features/brokers/zustand';
 import { store as globalStore } from '@lib/zustand';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
-import { AddNewBrokerModal, AddNewStockHoldingModal, EditStockHoldingCostModal } from '@features/brokers/components';
+import {
+  AddNewBrokerModal,
+  AddNewStockHoldingModal,
+  DeleteStockHoldingModal,
+  EditStockHoldingCostModal,
+} from '@features/brokers/components';
 
 export const BrokersPage: React.FC = () => {
   const { stocks } = globalStore();
@@ -35,9 +40,11 @@ export const BrokersPage: React.FC = () => {
     updateCost,
     updateStockId,
     updateAccountId,
+    updateAccountStockId,
     updateOpenAddNewBrokerModal,
+    updateOpenEditStockHoldingModal,
     updateOpenAddNewStockHoldingModal,
-    updateOpenEditStockHoldingCostModal,
+    updateOpenDeleteStockHoldingModal,
   } = store();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
@@ -45,6 +52,7 @@ export const BrokersPage: React.FC = () => {
   return (
     <Root>
       <AddNewBrokerModal />
+      <DeleteStockHoldingModal />
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />
       <div className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8')}>
@@ -188,10 +196,18 @@ export const BrokersPage: React.FC = () => {
                                       updateCost(row.original.cost);
                                       updateUnit(row.original.unit);
                                       updateStockId(row.original.stockId);
-                                      updateOpenEditStockHoldingCostModal(true);
+                                      updateOpenEditStockHoldingModal(true);
                                     }}
                                   >
                                     Edit
+                                  </DropdownMenuItem>,
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      updateAccountStockId(row.original.id);
+                                      updateOpenDeleteStockHoldingModal(true);
+                                    }}
+                                  >
+                                    Delete
                                   </DropdownMenuItem>,
                                 ]}
                               />
