@@ -6,10 +6,12 @@ import { store as globalStore } from '@lib/zustand';
 import { getAllAccounts, getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
 export interface BrokerAccountTableHolding {
+  id: string;
   unit: string;
   cost: string;
   name: string;
   ticker: string;
+  stockId: string;
   currency: {
     id: string;
     symbol: string;
@@ -133,12 +135,13 @@ export const useBrokersState = () => {
           const account: BrokerAccountDetails = { id: accountId, name: accountTypeName, holdings: [] };
           const holdings = accountStockHoldingsMap.get(accountId) ?? [];
           // Generate a broker account map
-          holdings.forEach(({ unit, cost, stockId }) => {
+          holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
             const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;
             const { id, symbol } = currenciesMap.get(currencyId) as Currency;
-            const row = { unit, cost, name, ticker, currentPrice, currency: { id, symbol } };
+            const row = { id: holdingId, unit, cost, name, ticker, stockId, currentPrice, currency: { id, symbol } };
             account.holdings.push(row);
           });
+          account.holdings = account.holdings.sort((a, b) => (a.name > b.name ? 1 : -1));
           // Generate provider to acccounts map
           const providerAccounts = brokerProviderToAccountsMap.get(providerId);
           if (!providerAccounts) {

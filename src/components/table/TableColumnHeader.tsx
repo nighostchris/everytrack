@@ -25,7 +25,7 @@ export function TableColumnHeader<Data, Value>({ column, title, className }: Tab
         <DropdownMenuTrigger asChild>
           <Button
             variant="contained"
-            className="-ml-4 h-8 bg-transparent data-[state=open]:bg-gray-100 dark:bg-transparent dark:text-slate-700 dark:hover:bg-gray-200 dark:hover:text-slate-900"
+            className="-ml-4 h-8 bg-transparent data-[state=open]:bg-gray-100 dark:bg-transparent dark:text-slate-700 dark:hover:!bg-gray-200 dark:hover:!text-slate-900"
           >
             <span>{title}</span>
             {column.getIsSorted() === 'desc' ? (

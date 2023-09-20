@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import { ResponsivePie } from '@nivo/pie';
 import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
-import { ColumnDef } from '@tanstack/react-table';
 import { useOutletContext } from 'react-router-dom';
 import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
@@ -26,61 +25,28 @@ import {
 import { Root } from '@layouts/root';
 import { store } from '@features/brokers/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { AddNewBrokerModal, AddNewStockHoldingModal } from '@features/brokers/components';
-import { useBrokersState, BrokerAccountTableHolding } from '@features/brokers/hooks/use_brokers_state';
-
-export const columns: ColumnDef<BrokerAccountTableHolding>[] = [
-  {
-    accessorKey: 'name',
-    header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
-    cell: ({ row }) => {
-      return <div className="w-[80px]">{row.getValue('name')}</div>;
-    },
-  },
-  {
-    accessorKey: 'ticker',
-    header: ({ column }) => <TableColumnHeader column={column} title="Ticker" />,
-    cell: ({ row }) => {
-      return <div className="w-[80px]">{row.getValue('ticker')}</div>;
-    },
-  },
-  {
-    accessorKey: 'currentPrice',
-    header: ({ column }) => <TableColumnHeader column={column} title="Current Price" />,
-    cell: ({ row }) => {
-      return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('currentPrice')}`}</div>;
-    },
-  },
-  {
-    accessorKey: 'unit',
-    header: ({ column }) => <TableColumnHeader column={column} title="Unit" />,
-    cell: ({ row }) => {
-      return <div className="w-[80px]">{row.getValue('unit')}</div>;
-    },
-  },
-  {
-    accessorKey: 'cost',
-    header: ({ column }) => <TableColumnHeader column={column} title="Cost" />,
-    cell: ({ row }) => {
-      return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('cost')}`}</div>;
-    },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <TableRowActions row={row} actions={[<DropdownMenuItem>Edit</DropdownMenuItem>]} />,
-  },
-];
+import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
+import { AddNewBrokerModal, AddNewStockHoldingModal, EditStockHoldingCostModal } from '@features/brokers/components';
 
 export const BrokersPage: React.FC = () => {
   const { stocks } = globalStore();
+  const {
+    updateUnit,
+    updateCost,
+    updateStockId,
+    updateAccountId,
+    updateOpenAddNewBrokerModal,
+    updateOpenAddNewStockHoldingModal,
+    updateOpenEditStockHoldingCostModal,
+  } = store();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
 
   return (
     <Root>
       <AddNewBrokerModal />
       <AddNewStockHoldingModal />
+      <EditStockHoldingCostModal />
       <div className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8')}>
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
@@ -173,7 +139,67 @@ export const BrokersPage: React.FC = () => {
                           </Button>
                         )}
                       </div>
-                      <Table columns={columns} data={holdings ?? []} />
+                      <Table
+                        columns={[
+                          {
+                            accessorKey: 'name',
+                            header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
+                            cell: ({ row }) => {
+                              return <div className="w-[80px]">{row.getValue('name')}</div>;
+                            },
+                          },
+                          {
+                            accessorKey: 'ticker',
+                            header: ({ column }) => <TableColumnHeader column={column} title="Ticker" />,
+                            cell: ({ row }) => {
+                              return <div className="w-[80px]">{row.getValue('ticker')}</div>;
+                            },
+                          },
+                          {
+                            accessorKey: 'currentPrice',
+                            header: ({ column }) => <TableColumnHeader column={column} title="Current Price" />,
+                            cell: ({ row }) => {
+                              return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('currentPrice')}`}</div>;
+                            },
+                          },
+                          {
+                            accessorKey: 'unit',
+                            header: ({ column }) => <TableColumnHeader column={column} title="Unit" />,
+                            cell: ({ row }) => {
+                              return <div className="w-[80px]">{row.getValue('unit')}</div>;
+                            },
+                          },
+                          {
+                            accessorKey: 'cost',
+                            header: ({ column }) => <TableColumnHeader column={column} title="Cost" />,
+                            cell: ({ row }) => {
+                              return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('cost')}`}</div>;
+                            },
+                          },
+                          {
+                            id: 'actions',
+                            cell: ({ row }) => (
+                              <TableRowActions
+                                row={row}
+                                actions={[
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      updateAccountId(accountId);
+                                      updateCost(row.original.cost);
+                                      updateUnit(row.original.unit);
+                                      updateStockId(row.original.stockId);
+                                      updateOpenEditStockHoldingCostModal(true);
+                                    }}
+                                  >
+                                    Edit
+                                  </DropdownMenuItem>,
+                                ]}
+                              />
+                            ),
+                          },
+                        ]}
+                        data={holdings ?? []}
+                      />
                     </>
                   ))}
                 </TabsContent>

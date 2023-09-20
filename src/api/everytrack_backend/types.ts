@@ -103,6 +103,19 @@ export interface CreateNewStockHoldingRequest {
   accountId: string;
 }
 export interface CreateNewStockHoldingResponse extends BaseResponse {}
+// PUT /v1/stocks/holdings
+export interface UpdateStockHoldingRequest {
+  unit: string;
+  cost: string;
+  stockId: string;
+  accountId: string;
+}
+export interface UpdateStockHoldingResponse extends BaseResponse {}
+// DELETE /v1/stocks/holdings
+export interface DeleteStockHoldingRequest {
+  accountStockId: string;
+}
+export interface DeleteStockHoldingResponse extends BaseResponse {}
 
 // ============================================================
 // Helper Types

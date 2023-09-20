@@ -13,11 +13,22 @@ export type BrokersPageStateSlice = {
   updateBrokerAccounts: (newBrokerAccounts: Account[]) => void;
 };
 
+export type EditStockHoldingModalStateSlice = {
+  unit?: string;
+  cost?: string;
+  stockId?: string;
+  updateUnit: (newUnit: string) => void;
+  updateCost: (newCost: string) => void;
+  updateStockId: (newStockId: string) => void;
+};
+
 export type ModalStateSlice = {
   openAddNewBrokerModal: boolean;
   openAddNewStockHoldingModal: boolean;
+  openEditStockHoldingCostModal: boolean;
   updateOpenAddNewBrokerModal: (newModalState: boolean) => void;
   updateOpenAddNewStockHoldingModal: (newModalState: boolean) => void;
+  updateOpenEditStockHoldingCostModal: (newModalState: boolean) => void;
 };
 
-export type BrokersState = AddNewStockHoldingModalStateSlice & BrokersPageStateSlice & ModalStateSlice;
+export type BrokersState = AddNewStockHoldingModalStateSlice & BrokersPageStateSlice & EditStockHoldingModalStateSlice & ModalStateSlice;

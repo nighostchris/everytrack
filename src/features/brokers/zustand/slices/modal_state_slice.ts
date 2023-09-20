@@ -10,6 +10,7 @@ export const createModalStateSlice: StateCreator<
 > = (set) => ({
   openAddNewBrokerModal: false,
   openAddNewStockHoldingModal: false,
+  openEditStockHoldingCostModal: false,
   updateOpenAddNewBrokerModal: (newModalState) =>
     set((state) => {
       state.openAddNewBrokerModal = newModalState;
@@ -17,5 +18,9 @@ export const createModalStateSlice: StateCreator<
   updateOpenAddNewStockHoldingModal: (newModalState) =>
     set((state) => {
       state.openAddNewStockHoldingModal = newModalState;
+    }),
+  updateOpenEditStockHoldingCostModal: (newModalState) =>
+    set((state) => {
+      state.openEditStockHoldingCostModal = newModalState;
     }),
 });

@@ -1,7 +1,16 @@
 import { AxiosError } from 'axios';
 
+import {
+  GetAllStocksResponse,
+  UpdateStockHoldingRequest,
+  UpdateStockHoldingResponse,
+  GetAllStockHoldingsResponse,
+  CreateNewStockHoldingRequest,
+  CreateNewStockHoldingResponse,
+  DeleteStockHoldingRequest,
+  DeleteStockHoldingResponse,
+} from '../types';
 import { client } from '../client';
-import { GetAllStocksResponse, GetAllStockHoldingsResponse, CreateNewStockHoldingRequest, CreateNewStockHoldingResponse } from '../types';
 
 export async function getAllStocks() {
   try {
@@ -40,5 +49,33 @@ export async function createNewStockHolding(params: CreateNewStockHoldingRequest
       throw new Error('Unexpected error. Please try again.');
     }
     throw new Error((response.data as CreateNewStockHoldingResponse).error);
+  }
+}
+
+export async function updateStockHolding(params: UpdateStockHoldingRequest) {
+  const { accountId, stockId, unit, cost } = params;
+  try {
+    const { data } = await client.put('/v1/stocks/holdings', { accountId, stockId, unit, cost });
+    return data as UpdateStockHoldingResponse;
+  } catch (error) {
+    const { response } = error as AxiosError;
+    if (!response) {
+      throw new Error('Unexpected error. Please try again.');
+    }
+    throw new Error((response.data as UpdateStockHoldingResponse).error);
+  }
+}
+
+export async function deleteStockHolding(params: DeleteStockHoldingRequest) {
+  const { accountStockId: id } = params;
+  try {
+    const { data } = await client.delete('/v1/stocks/holdings', { params: { id } });
+    return data as DeleteStockHoldingResponse;
+  } catch (error) {
+    const { response } = error as AxiosError;
+    if (!response) {
+      throw new Error('Unexpected error. Please try again.');
+    }
+    throw new Error((response.data as DeleteStockHoldingResponse).error);
   }
 }
