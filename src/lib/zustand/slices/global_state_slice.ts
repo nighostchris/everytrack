@@ -8,10 +8,17 @@ export const createGlobalStateSlice: StateCreator<
   [],
   GlobalStateSlice
 > = (set) => ({
+  stocks: undefined,
   username: undefined,
   currencyId: undefined,
   currencies: undefined,
+  bankAccounts: undefined,
   exchangeRates: undefined,
+  accountStockHoldings: undefined,
+  updateStocks: (newStocks) =>
+    set((state) => {
+      state.stocks = newStocks;
+    }),
   updateUsername: (newUsername) =>
     set((state) => {
       state.username = newUsername;
@@ -24,6 +31,10 @@ export const createGlobalStateSlice: StateCreator<
     set((state) => {
       state.currencies = newCurrencies;
     }),
+  updateBankAccounts: (newBankAccounts) =>
+    set((state) => {
+      state.bankAccounts = newBankAccounts;
+    }),
   updateExchangeRates: (newExchangeRates) =>
     set((state) => {
       state.exchangeRates = newExchangeRates;
@@ -32,5 +43,9 @@ export const createGlobalStateSlice: StateCreator<
     set((state) => {
       state.username = username;
       state.currencyId = currencyId;
+    }),
+  updateAccountStockHoldings: (newAccountStockHoldings) =>
+    set((state) => {
+      state.accountStockHoldings = newAccountStockHoldings;
     }),
 });

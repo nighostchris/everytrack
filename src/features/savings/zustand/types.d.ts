@@ -6,11 +6,6 @@ export type AddNewAccountModalStateSlice = {
   updateProviderName: (newProviderName: string) => void;
 };
 
-export type BankAccountsSlice = {
-  bankAccounts?: Account[];
-  updateBankAccounts: (newBankAccounts: Account[]) => void;
-};
-
 export type SavingsPageStateSlice = {
   balance?: string;
   accountId?: string;
@@ -37,4 +32,4 @@ export type ModalStateSlice = {
   updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
 };
 
-export type SavingsState = AddNewAccountModalStateSlice & BankAccountsSlice & SavingsPageStateSlice & ModalStateSlice;
+export type SavingsState = AddNewAccountModalStateSlice & SavingsPageStateSlice & ModalStateSlice;

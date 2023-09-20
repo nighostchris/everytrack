@@ -1,21 +1,73 @@
 import React from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 
+import {
+  verify,
+  getAllStocks,
+  getAllAccounts,
+  getAllCurrencies,
+  getAllExchangeRates,
+  getAllStockHoldings,
+  getAllClientSettings,
+} from '@api/everytrack_backend';
 import { store } from '@lib/zustand';
 import { Spinner } from '@components';
-import { getAllClientSettings, getAllCurrencies, getAllExchangeRates, verify } from '@api/everytrack_backend';
 
 export const PrivateRouteGuardian: React.FC = () => {
   const navigate = useNavigate();
-  const { currencies, currencyId, updateUsername, updateCurrencyId, updateCurrencies, updateExchangeRates } = store();
+  const {
+    currencies,
+    currencyId,
+    updateStocks,
+    updateUsername,
+    updateCurrencyId,
+    updateCurrencies,
+    updateBankAccounts,
+    updateExchangeRates,
+    updateAccountStockHoldings,
+  } = store();
 
   const [isLoading, setIsLoading] = React.useState(true);
+
+  const initAccountStockHoldings = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllStockHoldings();
+      if (success) {
+        updateAccountStockHoldings(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
+
+  const initBankAccounts = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllAccounts('savings');
+      if (success) {
+        updateBankAccounts(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
 
   const initCurrencies = React.useCallback(async () => {
     try {
       const { success, data } = await getAllCurrencies();
       if (success) {
         updateCurrencies(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
+
+  const initClientSettings = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllClientSettings();
+      if (success) {
+        updateUsername(data.username);
+        updateCurrencyId(data.currencyId);
       }
     } catch (error: any) {
       console.error(error);
@@ -33,12 +85,11 @@ export const PrivateRouteGuardian: React.FC = () => {
     }
   }, []);
 
-  const initClientSettings = React.useCallback(async () => {
+  const initStocks = React.useCallback(async () => {
     try {
-      const { success, data } = await getAllClientSettings();
+      const { success, data } = await getAllStocks();
       if (success) {
-        updateUsername(data.username);
-        updateCurrencyId(data.currencyId);
+        updateStocks(data);
       }
     } catch (error: any) {
       console.error(error);
@@ -66,10 +117,13 @@ export const PrivateRouteGuardian: React.FC = () => {
     };
 
     verifyAccessToken();
+    initStocks();
     initCurrencies();
+    initBankAccounts();
     initExchangeRates();
     initClientSettings();
-  }, [initCurrencies, initClientSettings, initExchangeRates]);
+    initAccountStockHoldings();
+  }, [initStocks, initBankAccounts, initCurrencies, initClientSettings, initExchangeRates, initAccountStockHoldings]);
 
   return isLoading ? (
     <div className="flex h-full w-full items-center justify-center">

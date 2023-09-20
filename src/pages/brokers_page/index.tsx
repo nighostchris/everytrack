@@ -6,6 +6,7 @@ import { ResponsivePie } from '@nivo/pie';
 import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
 import { ColumnDef } from '@tanstack/react-table';
+import { useOutletContext } from 'react-router-dom';
 import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -72,13 +73,9 @@ export const columns: ColumnDef<BrokerAccountTableHolding>[] = [
 
 export const BrokersPage: React.FC = () => {
   const { currencyId, currencies } = globalStore();
+  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { updateAccountId, updateOpenAddNewBrokerModal, updateOpenAddNewStockHoldingModal } = store();
   const { isLoading, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
-
-  const displayCurrency = React.useMemo(
-    () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
-    [currencyId, currencies],
-  );
 
   return (
     <Root>

@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
 import { store as globalStore } from '@lib/zustand';
-import { getAllAccounts, getAllProviders, getAllStocks, getAllStockHoldings, Stock, Currency, StockHolding } from '@api/everytrack_backend';
+import { getAllAccounts, getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
 export interface BrokerAccountTableHolding {
   unit: string;
@@ -31,17 +31,8 @@ export interface BrokerAccountTableRow {
 }
 
 export const useBrokersState = () => {
-  const {
-    stocks,
-    brokerDetails,
-    brokerAccounts,
-    accountStockHoldings,
-    updateStocks,
-    updateBrokerAccounts,
-    updateBrokerDetails,
-    updateAccountStockHoldings,
-  } = store();
-  const { currencyId, currencies, exchangeRates } = globalStore();
+  const { brokerDetails, brokerAccounts, updateBrokerAccounts, updateBrokerDetails } = store();
+  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
@@ -61,28 +52,6 @@ export const useBrokersState = () => {
       const { success, data } = await getAllProviders('broker');
       if (success) {
         updateBrokerDetails(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initStocks = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllStocks();
-      if (success) {
-        updateStocks(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initAccountStockHoldings = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllStockHoldings();
-      if (success) {
-        updateAccountStockHoldings(data);
       }
     } catch (error: any) {
       console.error(error);
@@ -119,7 +88,7 @@ export const useBrokersState = () => {
         holdings.forEach(({ unit, cost, stockId }) => {
           const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
           if (stockCurrencyId === currencyId) {
-            totalBalance = totalBalance.plus(new BigNumber(unit).multipliedBy(cost));
+            totalBalance = totalBalance.plus(new BigNumber(unit).multipliedBy(currentPrice));
             winLoseAmount = winLoseAmount.plus(new BigNumber(unit).multipliedBy(new BigNumber(currentPrice).minus(cost)));
           } else {
             const exchangeRate = exchangeRates.filter(
@@ -128,7 +97,7 @@ export const useBrokersState = () => {
             const convertedWinLoseAmount = new BigNumber(unit)
               .multipliedBy(new BigNumber(currentPrice).minus(cost))
               .multipliedBy(exchangeRate.rate);
-            const convertedBalance = new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate);
+            const convertedBalance = new BigNumber(unit).multipliedBy(currentPrice).multipliedBy(exchangeRate.rate);
             totalBalance = totalBalance.plus(convertedBalance);
             winLoseAmount = winLoseAmount.plus(convertedWinLoseAmount);
           }
@@ -196,12 +165,10 @@ export const useBrokersState = () => {
 
   React.useEffect(() => {
     setIsLoading(true);
-    initAccountStockHoldings();
     initBrokerAccounts();
     initBrokerDetails();
-    initStocks();
     setIsLoading(false);
-  }, [initStocks, initBrokerAccounts, initBrokerDetails, initAccountStockHoldings]);
+  }, [initBrokerAccounts, initBrokerDetails]);
 
   return { isLoading, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
 };

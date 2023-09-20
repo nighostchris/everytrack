@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
 import { store as globalStore } from '@lib/zustand';
-import { getAllAccounts, getAllProviders } from '@api/everytrack_backend';
+import { getAllProviders } from '@api/everytrack_backend';
 
 export interface SavingProviderTableAccount {
   id: string;
@@ -23,21 +23,10 @@ export interface SavingProviderTableRow {
 }
 
 export const useSavingsState = () => {
-  const { currencyId, currencies, exchangeRates } = globalStore();
-  const { bankDetails, bankAccounts, updateBankAccounts, updateBankDetails } = store();
+  const { bankDetails, updateBankDetails } = store();
+  const { bankAccounts, currencyId, currencies, exchangeRates } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-
-  const initBankAccounts = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllAccounts('savings');
-      if (success) {
-        updateBankAccounts(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
 
   const initBankDetails = React.useCallback(async () => {
     try {
@@ -97,10 +86,9 @@ export const useSavingsState = () => {
 
   React.useEffect(() => {
     setIsLoading(true);
-    initBankAccounts();
     initBankDetails();
     setIsLoading(false);
-  }, [initBankAccounts, initBankDetails]);
+  }, [initBankDetails]);
 
   return { isLoading, totalBalance, savingProviderTableRows };
 };

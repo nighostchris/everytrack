@@ -8,14 +8,8 @@ export const createBrokersPageStateSlice: StateCreator<
   [],
   BrokersPageStateSlice
 > = (set) => ({
-  stocks: undefined,
   brokerDetails: undefined,
   brokerAccounts: undefined,
-  accountStockHoldings: undefined,
-  updateStocks: (newStocks) =>
-    set((state) => {
-      state.stocks = newStocks;
-    }),
   updateBrokerDetails: (newBrokerDetails) =>
     set((state) => {
       state.brokerDetails = newBrokerDetails;
@@ -23,9 +17,5 @@ export const createBrokersPageStateSlice: StateCreator<
   updateBrokerAccounts: (newBrokerAccounts) =>
     set((state) => {
       state.brokerAccounts = newBrokerAccounts;
-    }),
-  updateAccountStockHoldings: (newAccountStockHoldings) =>
-    set((state) => {
-      state.accountStockHoldings = newAccountStockHoldings;
     }),
 });

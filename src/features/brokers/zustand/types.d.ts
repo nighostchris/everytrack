@@ -7,14 +7,10 @@ export type AddNewStockHoldingModalStateSlice = {
 };
 
 export type BrokersPageStateSlice = {
-  stocks?: Stock[];
   brokerAccounts?: Account[];
   brokerDetails?: Provider[];
-  accountStockHoldings?: AccountStockHolding[];
-  updateStocks: (newStocks: Stock[]) => void;
   updateBrokerDetails: (newBrokerDetails: Provider[]) => void;
   updateBrokerAccounts: (newBrokerAccounts: Account[]) => void;
-  updateAccountStockHoldings: (newAccountStockHoldings: AccountStockHolding[]) => void;
 };
 
 export type ModalStateSlice = {
