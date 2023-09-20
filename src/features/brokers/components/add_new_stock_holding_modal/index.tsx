@@ -6,6 +6,7 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
+import { store as globalStore } from '@lib/zustand';
 import { createNewStockHolding } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
 
@@ -17,7 +18,8 @@ const addNewStockHoldingFormSchema = z.object({
 });
 
 export const AddNewStockHoldingModal: React.FC = () => {
-  const { stocks, accountId, openAddNewStockHoldingModal: open, updateOpenAddNewStockHoldingModal: setOpen } = store();
+  const { stocks } = globalStore();
+  const { accountId, openAddNewStockHoldingModal: open, updateOpenAddNewStockHoldingModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

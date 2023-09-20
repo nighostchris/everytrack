@@ -16,15 +16,8 @@ const editAccountBalanceFormSchema = z.object({
 });
 
 export const EditAccountBalanceModal: React.FC = () => {
-  const { currencies } = globalStore();
-  const {
-    balance,
-    currencyId,
-    accountTypeId,
-    updateBankAccounts,
-    openEditAccountBalanceModal: open,
-    updateOpenEditAccountBalanceModal: setOpen,
-  } = store();
+  const { currencies, updateBankAccounts } = globalStore();
+  const { balance, currencyId, accountTypeId, openEditAccountBalanceModal: open, updateOpenEditAccountBalanceModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
