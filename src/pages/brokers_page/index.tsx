@@ -36,15 +36,13 @@ import {
 export const BrokersPage: React.FC = () => {
   const { stocks } = globalStore();
   const {
-    updateUnit,
-    updateCost,
-    updateStockId,
-    updateAccountId,
-    updateAccountStockId,
     updateOpenAddNewBrokerModal,
     updateOpenEditStockHoldingModal,
     updateOpenAddNewStockHoldingModal,
     updateOpenDeleteStockHoldingModal,
+    populateEditStockHoldingModalState,
+    populateAddNewStockHoldingModalState,
+    populateDeleteStockHoldingModalState,
   } = store();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
@@ -140,7 +138,7 @@ export const BrokersPage: React.FC = () => {
                             className="h-8 text-xs"
                             onClick={() => {
                               updateOpenAddNewStockHoldingModal(true);
-                              updateAccountId(accountId);
+                              populateAddNewStockHoldingModalState(accountId);
                             }}
                           >
                             Add New Holding
@@ -192,10 +190,12 @@ export const BrokersPage: React.FC = () => {
                                 actions={[
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      updateAccountId(accountId);
-                                      updateCost(row.original.cost);
-                                      updateUnit(row.original.unit);
-                                      updateStockId(row.original.stockId);
+                                      populateEditStockHoldingModalState({
+                                        accountId,
+                                        unit: row.original.unit,
+                                        cost: row.original.cost,
+                                        stockId: row.original.stockId,
+                                      });
                                       updateOpenEditStockHoldingModal(true);
                                     }}
                                   >
@@ -203,7 +203,10 @@ export const BrokersPage: React.FC = () => {
                                   </DropdownMenuItem>,
                                   <DropdownMenuItem
                                     onClick={() => {
-                                      updateAccountStockId(row.original.id);
+                                      populateDeleteStockHoldingModalState({
+                                        stockId: row.original.stockId,
+                                        accountStockId: row.original.id,
+                                      });
                                       updateOpenDeleteStockHoldingModal(true);
                                     }}
                                   >

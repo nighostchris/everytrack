@@ -140,7 +140,7 @@ export const AddNewBrokerModal: React.FC = () => {
           onClick={handleSubmit(onSubmitAddNewBrokerForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
-          Submit
+          Add
         </Button>
         <Button
           type="button"

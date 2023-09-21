@@ -1,11 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Account, AccountStockHolding, Provider, Stock } from '@api/everytrack_backend';
 
-export type AddNewStockHoldingModalStateSlice = {
-  accountId?: string;
-  updateAccountId: (newAccountId: string) => void;
-};
-
 export type BrokersPageStateSlice = {
   brokerAccounts?: Account[];
   brokerDetails?: Provider[];
@@ -13,34 +8,36 @@ export type BrokersPageStateSlice = {
   updateBrokerAccounts: (newBrokerAccounts: Account[]) => void;
 };
 
-export type DeleteStockHoldingModalStateSlice = {
-  accountStockId?: string;
-  resetDeleteStockHoldingModalState: () => void;
-  updateAccountStockId: (newAccountStockId: string) => void;
-};
-
-export type EditStockHoldingModalStateSlice = {
+export type ModalStateSlice = {
   unit?: string;
   cost?: string;
   stockId?: string;
-  updateUnit: (newUnit: string) => void;
-  updateCost: (newCost: string) => void;
-  updateStockId: (newStockId: string) => void;
-};
-
-export type ModalStateSlice = {
+  accountId?: string;
+  accountStockId?: string;
   openAddNewBrokerModal: boolean;
   openEditStockHoldingModal: boolean;
   openDeleteStockHoldingModal: boolean;
   openAddNewStockHoldingModal: boolean;
+  populateEditStockHoldingModalState: ({
+    unit,
+    cost,
+    stockId,
+    accountId,
+  }: {
+    unit: string;
+    cost: string;
+    stockId: string;
+    accountId: string;
+  }) => void;
+  resetEditStockHoldingModalState: () => void;
+  resetAddNewStockHoldingModalState: () => void;
+  resetDeleteStockHoldingModalState: () => void;
   updateOpenAddNewBrokerModal: (newModalState: boolean) => void;
+  populateAddNewStockHoldingModalState: (accountId: string) => void;
   updateOpenEditStockHoldingModal: (newModalState: boolean) => void;
   updateOpenAddNewStockHoldingModal: (newModalState: boolean) => void;
   updateOpenDeleteStockHoldingModal: (newModalState: boolean) => void;
+  populateDeleteStockHoldingModalState: ({ stockId, accountStockId }: { stockId: string; accountStockId: string }) => void;
 };
 
-export type BrokersState = AddNewStockHoldingModalStateSlice &
-  BrokersPageStateSlice &
-  DeleteStockHoldingModalStateSlice &
-  EditStockHoldingModalStateSlice &
-  ModalStateSlice;
+export type BrokersState = BrokersPageStateSlice & ModalStateSlice;

@@ -17,8 +17,16 @@ const editStockHoldingFormSchema = z.object({
 });
 
 export const EditStockHoldingCostModal: React.FC = () => {
-  const { updateAccountStockHoldings } = globalStore();
-  const { unit, cost, stockId, accountId, openEditStockHoldingModal: open, updateOpenEditStockHoldingModal: setOpen } = store();
+  const { stocks, updateAccountStockHoldings } = globalStore();
+  const {
+    unit,
+    cost,
+    stockId,
+    accountId,
+    resetEditStockHoldingModalState,
+    openEditStockHoldingModal: open,
+    updateOpenEditStockHoldingModal: setOpen,
+  } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -44,6 +52,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
       const { success } = await updateStockHolding({ stockId, accountId, unit, cost });
       if (success) {
         setOpen(false);
+        resetEditStockHoldingModalState();
         const { data } = await getAllStockHoldings();
         updateAccountStockHoldings(data);
         reset();
@@ -56,6 +65,14 @@ export const EditStockHoldingCostModal: React.FC = () => {
     }
   };
 
+  const stockName = React.useMemo(() => {
+    let name = '';
+    if (stocks && stockId) {
+      name = stocks.filter(({ id }) => id === stockId)[0].name;
+    }
+    return name;
+  }, [stocks, stockId]);
+
   React.useEffect(() => {
     reset({ unit, cost, stockId, accountId });
   }, [unit, cost, stockId, accountId]);
@@ -64,6 +81,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Edit Stock Holding</h3>
+        <h4 className="mt-2">{stockName}</h4>
         <Input label="Unit" formId="unit" register={register} error={errors['unit']?.message} className="mt-4 !max-w-none" />
         <Input label="Cost" formId="cost" register={register} error={errors['cost']?.message} className="mt-4 !max-w-none" />
       </div>
@@ -75,7 +93,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
           onClick={handleSubmit(onSubmitEditStockHoldingCostForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
-          Submit
+          Edit
         </Button>
         <Button
           type="button"

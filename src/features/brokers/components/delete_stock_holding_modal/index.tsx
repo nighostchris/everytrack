@@ -8,12 +8,13 @@ import { deleteStockHolding, getAllStockHoldings } from '@api/everytrack_backend
 
 export const DeleteStockHoldingModal: React.FC = () => {
   const {
+    stockId,
     accountStockId,
     resetDeleteStockHoldingModalState,
     openDeleteStockHoldingModal: open,
     updateOpenDeleteStockHoldingModal: setOpen,
   } = store();
-  const { updateAccountStockHoldings } = globalStore();
+  const { stocks, updateAccountStockHoldings } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -40,12 +41,20 @@ export const DeleteStockHoldingModal: React.FC = () => {
     }
   }, [accountStockId]);
 
+  const stockName = React.useMemo(() => {
+    let name = '';
+    if (stocks && stockId) {
+      name = stocks.filter(({ id }) => id === stockId)[0].name;
+    }
+    return name;
+  }, [stocks, stockId]);
+
   return (
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Delete Stock Holding</h3>
         <p className="mt-4">{`Are you sure to delete the stock holding`}</p>
-        {/* <p className="mt-2">{accountName}</p> */}
+        <p className="mt-2">{stockName}</p>
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button

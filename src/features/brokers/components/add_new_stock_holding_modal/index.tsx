@@ -19,7 +19,12 @@ const addNewStockHoldingFormSchema = z.object({
 
 export const AddNewStockHoldingModal: React.FC = () => {
   const { stocks, accountStockHoldings, updateAccountStockHoldings } = globalStore();
-  const { accountId, openAddNewStockHoldingModal: open, updateOpenAddNewStockHoldingModal: setOpen } = store();
+  const {
+    accountId,
+    resetAddNewStockHoldingModalState,
+    openAddNewStockHoldingModal: open,
+    updateOpenAddNewStockHoldingModal: setOpen,
+  } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -65,6 +70,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
       const { success } = await createNewStockHolding({ stockId, accountId, unit, cost });
       if (success) {
         setOpen(false);
+        resetAddNewStockHoldingModalState();
         const { data } = await getAllStockHoldings();
         updateAccountStockHoldings(data);
         reset();
@@ -109,7 +115,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
           onClick={handleSubmit(onSubmitAddNewStockHoldingForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
-          Submit
+          Add
         </Button>
         <Button
           type="button"
