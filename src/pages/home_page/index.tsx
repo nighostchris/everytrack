@@ -66,12 +66,17 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* <div className="sm:mx-auto sm:w-full sm:max-w-md"> */}
-      {/* </div> */}
-      <div className="mt-8 px-8 sm:mx-auto sm:w-full sm:max-w-sm sm:px-0">
-        <div className="rounded-lg bg-white px-8 py-8 shadow sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmitLoginForm)}>
+    <div className="grid h-full grid-cols-1 lg:grid-cols-2">
+      <div className="hidden flex-col items-start justify-between bg-slate-800 p-10 lg:flex">
+        <img src="/logo.svg" alt="Everytrack" className="h-14 object-scale-down" />
+        <div className="flex flex-col gap-y-1">
+          <p className="text-xl font-semibold text-white">"Everything Tracked."</p>
+          <p className="text-sm text-slate-500">The Everytrack Team © 2023</p>
+        </div>
+      </div>
+      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="mt-8 px-8 sm:mx-auto sm:w-full sm:max-w-sm sm:px-0">
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmitLoginForm)}>
             <Input
               type="email"
               label="Email Address"
