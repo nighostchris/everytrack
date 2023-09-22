@@ -15,6 +15,7 @@ import {
   AddNewBrokerModal,
   BrokerAccountTable,
   AddNewAccountModal,
+  DeleteAccountModal,
   AddNewStockHoldingModal,
   DeleteStockHoldingModal,
   EditStockHoldingCostModal,
@@ -32,6 +33,7 @@ export const BrokersPage: React.FC = () => {
     <Root>
       <AddNewBrokerModal />
       <AddNewAccountModal />
+      <DeleteAccountModal />
       <DeleteStockHoldingModal />
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />

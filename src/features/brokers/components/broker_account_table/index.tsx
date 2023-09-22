@@ -14,7 +14,9 @@ interface BrokerAccountTableProps {
 export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { id, name, holdings }, className }) => {
   const { stocks } = globalStore();
   const {
+    updateOpenDeleteAccountModal,
     updateOpenEditStockHoldingModal,
+    populateDeleteAccountModalState,
     updateOpenAddNewStockHoldingModal,
     updateOpenDeleteStockHoldingModal,
     populateEditStockHoldingModalState,
@@ -22,23 +24,33 @@ export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { 
     populateDeleteStockHoldingModalState,
   } = store();
 
-  console.log(className);
-
   return (
     <>
-      <div className={clsx('mb-4 mt-2 flex flex-row items-center justify-between', className)}>
+      <div className={clsx('mb-4 mt-2 flex flex-col items-start sm:flex-row sm:items-center sm:justify-between', className)}>
         <h3 className="text-md text-gray-900">{name}</h3>
         {stocks && holdings.length < stocks.length && (
-          <Button
-            variant="contained"
-            className="h-8 text-xs"
-            onClick={() => {
-              updateOpenAddNewStockHoldingModal(true);
-              populateAddNewStockHoldingModalState(id);
-            }}
-          >
-            Add New Holding
-          </Button>
+          <div className="mt-1 grid w-full grid-cols-2 gap-x-4 sm:mt-0 sm:flex sm:w-fit sm:flex-row">
+            <Button
+              variant="contained"
+              className="h-8 text-xs"
+              onClick={() => {
+                updateOpenAddNewStockHoldingModal(true);
+                populateAddNewStockHoldingModalState(id);
+              }}
+            >
+              Add New Holding
+            </Button>
+            <Button
+              variant="contained"
+              className="h-8 text-xs"
+              onClick={() => {
+                updateOpenDeleteAccountModal(true);
+                populateDeleteAccountModalState(id);
+              }}
+            >
+              Delete Account
+            </Button>
+          </div>
         )}
       </div>
       <Table
