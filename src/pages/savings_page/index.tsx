@@ -60,10 +60,10 @@ export const SavingsPage: React.FC = () => {
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
         </StatCard>
-        {savingProviderTableRows.map(({ id, name, icon, accounts }) => (
-          <div key={`provider-table-${name.toLowerCase().replaceAll(/\s/g, '-').replaceAll(/\(|\)/g, '')}`} className="mt-8 flex flex-col">
+        {savingProviderTableRows.map((row) => (
+          <div key={`provider-table-${row.id}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
-              <SavingProviderTable id={id} name={name} icon={icon} accounts={accounts} />
+              <SavingProviderTable data={row} />
             </div>
           </div>
         ))}

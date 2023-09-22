@@ -74,7 +74,7 @@ export const useSavingsState = () => {
           accounts: [
             ...savingProviderTableRow.accounts,
             { id, name, balance, accountTypeId, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) as string } },
-          ],
+          ].sort((a, b) => (a.name > b.name ? 1 : -1)),
         });
       });
       // Extract all entries in bankDetailsMap into result array

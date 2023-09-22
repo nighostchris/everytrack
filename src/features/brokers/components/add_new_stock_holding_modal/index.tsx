@@ -18,13 +18,14 @@ const addNewStockHoldingFormSchema = z.object({
 });
 
 export const AddNewStockHoldingModal: React.FC = () => {
-  const { stocks, accountStockHoldings, updateAccountStockHoldings } = globalStore();
   const {
     accountId,
+    brokerAccounts,
     resetAddNewStockHoldingModalState,
     openAddNewStockHoldingModal: open,
     updateOpenAddNewStockHoldingModal: setOpen,
   } = store();
+  const { stocks, accountStockHoldings, updateAccountStockHoldings } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -51,7 +52,10 @@ export const AddNewStockHoldingModal: React.FC = () => {
     (accountStockHoldings ?? []).forEach(({ accountId: id, holdings }) => holdings.forEach(({ stockId }) => map.set(stockId, id)));
     return map;
   }, [accountStockHoldings]);
-
+  const accountName = React.useMemo(
+    () => (brokerAccounts && accountId ? brokerAccounts.filter(({ id }) => id === accountId)[0].name : ''),
+    [accountId, brokerAccounts],
+  );
   const stockOptions: SelectOption[] = React.useMemo(
     () =>
       stocks && accountStockHoldings
@@ -91,6 +95,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Stock Holding</h3>
+        <p className="mt-1 text-sm">{`You are adding stock holding for ${accountName}`}</p>
         <Select
           label="Stock"
           formId="stockId"

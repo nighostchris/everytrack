@@ -14,7 +14,9 @@ export type ModalStateSlice = {
   stockId?: string;
   accountId?: string;
   accountStockId?: string;
+  assetProviderId?: string;
   openAddNewBrokerModal: boolean;
+  openAddNewAccountModal: boolean;
   openEditStockHoldingModal: boolean;
   openDeleteStockHoldingModal: boolean;
   openAddNewStockHoldingModal: boolean;
@@ -29,12 +31,15 @@ export type ModalStateSlice = {
     stockId: string;
     accountId: string;
   }) => void;
+  resetAddNewAccountModalState: () => void;
   resetEditStockHoldingModalState: () => void;
   resetAddNewStockHoldingModalState: () => void;
   resetDeleteStockHoldingModalState: () => void;
   updateOpenAddNewBrokerModal: (newModalState: boolean) => void;
+  updateOpenAddNewAccountModal: (newModalState: boolean) => void;
   populateAddNewStockHoldingModalState: (accountId: string) => void;
   updateOpenEditStockHoldingModal: (newModalState: boolean) => void;
+  populateAddNewAccountModalState: (assetProviderId: string) => void;
   updateOpenAddNewStockHoldingModal: (newModalState: boolean) => void;
   updateOpenDeleteStockHoldingModal: (newModalState: boolean) => void;
   populateDeleteStockHoldingModalState: ({ stockId, accountStockId }: { stockId: string; accountStockId: string }) => void;

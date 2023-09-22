@@ -3,16 +3,13 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { store } from '@features/savings/zustand';
-import { SavingProviderTableAccount } from '../../hooks/use_savings_state';
+import { SavingProviderTableRow } from '../../hooks/use_savings_state';
 
 interface SavingProviderTableProps {
-  id: string;
-  name: string;
-  icon: string;
-  accounts: SavingProviderTableAccount[];
+  data: SavingProviderTableRow;
 }
 
-export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ id, name, icon, accounts }) => {
+export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data: { id, name, icon, accounts } }) => {
   const {
     updateOpenDeleteAccountModal,
     updateOpenAddNewAccountModal,

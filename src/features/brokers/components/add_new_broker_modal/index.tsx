@@ -12,13 +12,20 @@ import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewBrokerFormSchema = z.object({
   name: z.string(),
+  countryId: z.string(),
   currencyId: z.string(),
   assetProviderId: z.string(),
 });
 
 export const AddNewBrokerModal: React.FC = () => {
-  const { currencies } = globalStore();
-  const { brokerDetails, updateBrokerAccounts, openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
+  const {
+    brokerDetails,
+    brokerAccounts,
+    updateBrokerAccounts,
+    openAddNewBrokerModal: open,
+    updateOpenAddNewBrokerModal: setOpen,
+  } = store();
+  const { countries, currencies } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -32,22 +39,34 @@ export const AddNewBrokerModal: React.FC = () => {
   } = useForm<z.infer<typeof addNewBrokerFormSchema>>({
     defaultValues: {
       name: undefined,
+      countryId: undefined,
       currencyId: undefined,
       assetProviderId: undefined,
     },
     resolver: zodResolver(addNewBrokerFormSchema),
   });
+  const watchSelectedCountry = watch('countryId');
   const watchSelectedCurrency = watch('currencyId');
   const watchSelectedBroker = watch('assetProviderId');
 
-  const brokerOptions: SelectOption[] = React.useMemo(
-    () =>
-      brokerDetails ? brokerDetails.map(({ id, name }) => ({ value: id, display: name })).sort((a, b) => (a.value > b.value ? 1 : -1)) : [],
-    [brokerDetails],
+  const countryOptions: SelectOption[] = React.useMemo(
+    () => (countries ? countries.map(({ id, name }) => ({ value: id, display: name })) : []),
+    [countries],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
     [currencies],
+  );
+  const brokerOptions: SelectOption[] = React.useMemo(
+    () =>
+      brokerDetails && brokerAccounts
+        ? brokerDetails
+            .filter(({ countryId }) => countryId === watchSelectedCountry)
+            .map(({ id, name }) => ({ value: id, display: name }))
+            .filter(({ value }) => !brokerAccounts.some(({ assetProviderId }) => value === assetProviderId))
+            .sort((a, b) => (a.value > b.value ? 1 : -1))
+        : [],
+    [brokerDetails, brokerAccounts, watchSelectedCountry],
   );
 
   const onSubmitAddNewBrokerForm = async (data: any) => {
@@ -74,14 +93,25 @@ export const AddNewBrokerModal: React.FC = () => {
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Broker</h3>
         <Select
-          label="Broker"
-          formId="assetProviderId"
+          label="Country"
+          formId="countryId"
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
-          options={brokerOptions}
-          placeholder="Select broker..."
-          error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
+          options={countryOptions}
+          placeholder="Select country of bank..."
+          error={errors.countryId && errors.countryId.message?.toString()}
         />
+        {watchSelectedCountry && (
+          <Select
+            label="Broker"
+            formId="assetProviderId"
+            control={control as Control<any, any>}
+            className="mt-4 !max-w-none"
+            options={brokerOptions}
+            placeholder="Select broker..."
+            error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
+          />
+        )}
         {watchSelectedBroker && (
           <Select
             label="Currency"

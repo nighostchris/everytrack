@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { store } from '@features/savings/zustand';
+import { store } from '../../zustand';
 import { store as globalStore } from '@lib/zustand';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
 import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
@@ -17,11 +17,11 @@ const addNewAccountFormSchema = z.object({
 });
 
 export const AddNewAccountModal: React.FC = () => {
-  const { currencies, updateBankAccounts } = globalStore();
+  const { currencies } = globalStore();
   const {
-    bankDetails,
+    brokerDetails,
     assetProviderId,
-    resetAddNewAccountModalState,
+    updateBrokerAccounts,
     openAddNewAccountModal: open,
     updateOpenAddNewAccountModal: setOpen,
   } = store();
@@ -29,8 +29,8 @@ export const AddNewAccountModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const {
-    watch,
     reset,
+    watch,
     control,
     register,
     handleSubmit,
@@ -45,9 +45,9 @@ export const AddNewAccountModal: React.FC = () => {
   });
   const watchSelectedCurrency = watch('currencyId');
 
-  const bankName = React.useMemo(
-    () => (bankDetails && assetProviderId ? bankDetails.filter(({ id }) => id === assetProviderId)[0].name : ''),
-    [assetProviderId, bankDetails],
+  const brokerName = React.useMemo(
+    () => (brokerDetails && assetProviderId ? brokerDetails.filter(({ id }) => id === assetProviderId)[0].name : ''),
+    [assetProviderId, brokerDetails],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -61,9 +61,8 @@ export const AddNewAccountModal: React.FC = () => {
       const { success } = await createNewAccount({ name, currencyId, assetProviderId });
       if (success) {
         setOpen(false);
-        resetAddNewAccountModalState();
-        const { data } = await getAllAccounts('savings');
-        updateBankAccounts(data);
+        const { data } = await getAllAccounts('broker');
+        updateBrokerAccounts(data);
         reset();
       }
       setIsLoading(false);
@@ -82,7 +81,7 @@ export const AddNewAccountModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
-        <p className="mt-1 text-sm">{`You are adding account for ${bankName}`}</p>
+        <p className="mt-1 text-sm">{`You are adding account for ${brokerName}`}</p>
         <Select
           label="Currency"
           formId="currencyId"

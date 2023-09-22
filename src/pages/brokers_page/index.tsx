@@ -10,46 +10,28 @@ import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import {
-  Tabs,
-  Table,
-  Button,
-  StatCard,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  TableRowActions,
-  DropdownMenuItem,
-  TableColumnHeader,
-} from '@components';
 import { Root } from '@layouts/root';
-import { store } from '@features/brokers/zustand';
-import { store as globalStore } from '@lib/zustand';
-import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import {
   AddNewBrokerModal,
+  BrokerAccountTable,
+  AddNewAccountModal,
   AddNewStockHoldingModal,
   DeleteStockHoldingModal,
   EditStockHoldingCostModal,
 } from '@features/brokers/components';
+import { store } from '@features/brokers/zustand';
+import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
+import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
 
 export const BrokersPage: React.FC = () => {
-  const { stocks } = globalStore();
-  const {
-    updateOpenAddNewBrokerModal,
-    updateOpenEditStockHoldingModal,
-    updateOpenAddNewStockHoldingModal,
-    updateOpenDeleteStockHoldingModal,
-    populateEditStockHoldingModalState,
-    populateAddNewStockHoldingModalState,
-    populateDeleteStockHoldingModalState,
-  } = store();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
 
   return (
     <Root>
       <AddNewBrokerModal />
+      <AddNewAccountModal />
       <DeleteStockHoldingModal />
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />
@@ -128,99 +110,19 @@ export const BrokersPage: React.FC = () => {
               </TabsList>
               {brokerAccountTableRows.map(({ id: providerId, accounts }) => (
                 <TabsContent value={providerId}>
-                  {accounts.map(({ id: accountId, name, holdings }) => (
-                    <>
-                      <div className="mb-4 mt-2 flex flex-row items-center justify-between">
-                        <h3 className="text-md text-gray-900">{name}</h3>
-                        {stocks && holdings.length < stocks.length && (
-                          <Button
-                            variant="contained"
-                            className="h-8 text-xs"
-                            onClick={() => {
-                              updateOpenAddNewStockHoldingModal(true);
-                              populateAddNewStockHoldingModalState(accountId);
-                            }}
-                          >
-                            Add New Holding
-                          </Button>
-                        )}
-                      </div>
-                      <Table
-                        columns={[
-                          {
-                            accessorKey: 'name',
-                            header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
-                            cell: ({ row }) => {
-                              return <div className="w-[80px]">{row.getValue('name')}</div>;
-                            },
-                          },
-                          {
-                            accessorKey: 'ticker',
-                            header: ({ column }) => <TableColumnHeader column={column} title="Ticker" />,
-                            cell: ({ row }) => {
-                              return <div className="w-[80px]">{row.getValue('ticker')}</div>;
-                            },
-                          },
-                          {
-                            accessorKey: 'currentPrice',
-                            header: ({ column }) => <TableColumnHeader column={column} title="Current Price" />,
-                            cell: ({ row }) => {
-                              return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('currentPrice')}`}</div>;
-                            },
-                          },
-                          {
-                            accessorKey: 'unit',
-                            header: ({ column }) => <TableColumnHeader column={column} title="Unit" />,
-                            cell: ({ row }) => {
-                              return <div className="w-[80px]">{row.getValue('unit')}</div>;
-                            },
-                          },
-                          {
-                            accessorKey: 'cost',
-                            header: ({ column }) => <TableColumnHeader column={column} title="Cost" />,
-                            cell: ({ row }) => {
-                              return <div className="w-[80px]">{`${row.original.currency.symbol} ${row.getValue('cost')}`}</div>;
-                            },
-                          },
-                          {
-                            id: 'actions',
-                            cell: ({ row }) => (
-                              <TableRowActions
-                                row={row}
-                                actions={[
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      populateEditStockHoldingModalState({
-                                        accountId,
-                                        unit: row.original.unit,
-                                        cost: row.original.cost,
-                                        stockId: row.original.stockId,
-                                      });
-                                      updateOpenEditStockHoldingModal(true);
-                                    }}
-                                  >
-                                    Edit
-                                  </DropdownMenuItem>,
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      populateDeleteStockHoldingModalState({
-                                        stockId: row.original.stockId,
-                                        accountStockId: row.original.id,
-                                      });
-                                      updateOpenDeleteStockHoldingModal(true);
-                                    }}
-                                  >
-                                    Delete
-                                  </DropdownMenuItem>,
-                                ]}
-                              />
-                            ),
-                          },
-                        ]}
-                        data={holdings ?? []}
-                      />
-                    </>
+                  {accounts.map((account, accountIndex) => (
+                    <BrokerAccountTable data={account} className={accountIndex !== 0 ? 'mt-6' : undefined} />
                   ))}
+                  <Button
+                    variant="contained"
+                    className="mt-6 h-10 w-full text-xs"
+                    onClick={() => {
+                      populateAddNewAccountModalState(providerId);
+                      updateOpenAddNewAccountModal(true);
+                    }}
+                  >
+                    Add New Account
+                  </Button>
                 </TabsContent>
               ))}
             </Tabs>
