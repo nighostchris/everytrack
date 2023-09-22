@@ -7,24 +7,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { store as globalStore } from '@lib/zustand';
-import { Button, Dialog, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, Select, SelectOption } from '@components';
 import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewBrokerFormSchema = z.object({
-  broker: z.string(),
+  name: z.string(),
   currencyId: z.string(),
-  accountTypeId: z.string(),
+  assetProviderId: z.string(),
 });
 
 export const AddNewBrokerModal: React.FC = () => {
   const { currencies } = globalStore();
-  const {
-    brokerDetails,
-    brokerAccounts,
-    updateBrokerAccounts,
-    openAddNewBrokerModal: open,
-    updateOpenAddNewBrokerModal: setOpen,
-  } = store();
+  const { brokerDetails, updateBrokerAccounts, openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -32,45 +26,24 @@ export const AddNewBrokerModal: React.FC = () => {
     reset,
     watch,
     control,
+    register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.infer<typeof addNewBrokerFormSchema>>({
     defaultValues: {
-      broker: undefined,
+      name: undefined,
       currencyId: undefined,
-      accountTypeId: undefined,
+      assetProviderId: undefined,
     },
     resolver: zodResolver(addNewBrokerFormSchema),
   });
-  const watchSelectedBroker = watch('broker');
-  const watchSelectedAccountType = watch('accountTypeId');
-
-  const brokerAccountsMap = React.useMemo(() => {
-    const map = new Map<string, boolean>();
-    (brokerAccounts ?? []).forEach(({ accountTypeId }) => map.set(accountTypeId, true));
-    return map;
-  }, [brokerAccounts]);
+  const watchSelectedCurrency = watch('currencyId');
+  const watchSelectedBroker = watch('assetProviderId');
 
   const brokerOptions: SelectOption[] = React.useMemo(
     () =>
-      brokerDetails && brokerAccounts
-        ? brokerDetails
-            .filter(({ accountTypes }) => !accountTypes.every(({ id }) => brokerAccountsMap.get(id)))
-            .map(({ name }) => ({ value: name, display: name }))
-            .sort((a, b) => (a.value > b.value ? 1 : -1))
-        : [],
-    [brokerDetails, brokerAccounts],
-  );
-  const accountTypeOptions: SelectOption[] = React.useMemo(
-    () =>
-      brokerDetails && brokerAccounts && watchSelectedBroker
-        ? brokerDetails
-            .filter(({ name }) => name === watchSelectedBroker)[0]
-            .accountTypes.filter((accountType) => !brokerAccountsMap.get(accountType.id))
-            .map(({ id, name }) => ({ value: id, display: name }))
-            .sort((a, b) => (a.display > b.display ? 1 : -1))
-        : [],
-    [brokerDetails, brokerAccounts, watchSelectedBroker],
+      brokerDetails ? brokerDetails.map(({ id, name }) => ({ value: id, display: name })).sort((a, b) => (a.value > b.value ? 1 : -1)) : [],
+    [brokerDetails],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -79,9 +52,9 @@ export const AddNewBrokerModal: React.FC = () => {
 
   const onSubmitAddNewBrokerForm = async (data: any) => {
     setIsLoading(true);
-    const { currencyId, accountTypeId } = data as z.infer<typeof addNewBrokerFormSchema>;
+    const { name, currencyId, assetProviderId } = data as z.infer<typeof addNewBrokerFormSchema>;
     try {
-      const { success } = await createNewAccount({ currencyId, accountTypeId });
+      const { success } = await createNewAccount({ name, currencyId, assetProviderId });
       if (success) {
         setOpen(false);
         const { data } = await getAllAccounts('broker');
@@ -102,25 +75,14 @@ export const AddNewBrokerModal: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900">Add New Broker</h3>
         <Select
           label="Broker"
-          formId="broker"
+          formId="assetProviderId"
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
           options={brokerOptions}
           placeholder="Select broker..."
-          error={errors.broker && errors.broker.message?.toString()}
+          error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
         />
         {watchSelectedBroker && (
-          <Select
-            label="Account Type"
-            formId="accountTypeId"
-            control={control as Control<any, any>}
-            className="mt-4 !max-w-none"
-            options={accountTypeOptions}
-            placeholder="Select account type..."
-            error={errors.accountTypeId && errors.accountTypeId.message?.toString()}
-          />
-        )}
-        {watchSelectedAccountType && (
           <Select
             label="Currency"
             formId="currencyId"
@@ -130,6 +92,9 @@ export const AddNewBrokerModal: React.FC = () => {
             placeholder="Select currency..."
             error={errors.currencyId && errors.currencyId.message?.toString()}
           />
+        )}
+        {watchSelectedCurrency && (
+          <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

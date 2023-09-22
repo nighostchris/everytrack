@@ -7,7 +7,7 @@ import { getAllProviders } from '@api/everytrack_backend';
 
 export interface SavingProviderTableAccount {
   id: string;
-  type: string;
+  name: string;
   balance: string;
   accountTypeId: string;
   currency: {
@@ -17,6 +17,7 @@ export interface SavingProviderTableAccount {
 }
 
 export interface SavingProviderTableRow {
+  id: string;
   name: string;
   icon: string;
   accounts: SavingProviderTableAccount[];
@@ -58,26 +59,28 @@ export const useSavingsState = () => {
   }, [currencyId, bankAccounts, exchangeRates]);
 
   const savingProviderTableRows = React.useMemo(() => {
-    const accountMap = new Map();
-    const currenciesMap = new Map();
+    const currenciesMap = new Map<string, string>();
+    const bankDetailsMap = new Map<string, SavingProviderTableRow>();
     const result: SavingProviderTableRow[] = [];
     if (bankDetails && bankAccounts && currencies) {
       // Generate a currency map
       currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
-      // Generate a bank account map
-      bankAccounts.forEach(({ id, balance, currencyId, accountTypeId }) => {
-        accountMap.set(accountTypeId, { id, balance, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) } });
-      });
       // Generate a bank detail map
-      bankDetails.forEach(({ name, icon, accountTypes }) => {
-        const owned: { id: string; type: string; balance: string; accountTypeId: string; currency: { id: string; symbol: string } }[] = [];
-        accountTypes.forEach(({ id, name }) => {
-          if (accountMap.has(id)) {
-            owned.push({ type: name, accountTypeId: id, ...accountMap.get(id) });
-          }
+      bankDetails.forEach(({ id, name, icon }) => bankDetailsMap.set(id, { id, name, icon, accounts: [] }));
+      bankAccounts.forEach(({ id, name, balance, currencyId, accountTypeId, assetProviderId }) => {
+        const savingProviderTableRow = bankDetailsMap.get(assetProviderId) as SavingProviderTableRow;
+        bankDetailsMap.set(assetProviderId, {
+          ...savingProviderTableRow,
+          accounts: [
+            ...savingProviderTableRow.accounts,
+            { id, name, balance, accountTypeId, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) as string } },
+          ],
         });
-        if (owned.length > 0) {
-          result.push({ name, icon, accounts: owned });
+      });
+      // Extract all entries in bankDetailsMap into result array
+      Array.from(bankDetailsMap.values()).forEach((savingProviderTableRow) => {
+        if (savingProviderTableRow.accounts.length > 0) {
+          result.push(savingProviderTableRow);
         }
       });
     }

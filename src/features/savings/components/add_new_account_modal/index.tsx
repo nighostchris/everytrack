@@ -7,17 +7,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { Button, Dialog, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, Select, SelectOption } from '@components';
 import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewAccountFormSchema = z.object({
+  name: z.string(),
   currencyId: z.string(),
-  accountTypeId: z.string(),
+  assetProviderId: z.string(),
 });
 
 export const AddNewAccountModal: React.FC = () => {
   const { currencies, updateBankAccounts } = globalStore();
-  const { bankDetails, providerName, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
+  const { assetProviderId, resetAddNewAccountModalState, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -25,27 +26,19 @@ export const AddNewAccountModal: React.FC = () => {
     watch,
     reset,
     control,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof addNewAccountFormSchema>>({
     defaultValues: {
+      name: undefined,
       currencyId: undefined,
-      accountTypeId: undefined,
+      assetProviderId: undefined,
     },
     resolver: zodResolver(addNewAccountFormSchema),
   });
-  const watchSelectedAccountType = watch('accountTypeId');
+  const watchSelectedCurrency = watch('currencyId');
 
-  const accountTypeOptions: SelectOption[] = React.useMemo(
-    () =>
-      providerName && bankDetails
-        ? bankDetails
-            .filter(({ name }) => name === providerName)[0]
-            .accountTypes.map(({ id, name }) => ({ value: id, display: name }))
-            .sort((a, b) => (a.display > b.display ? 1 : -1))
-        : [],
-    [providerName, bankDetails],
-  );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
     [currencies],
@@ -53,11 +46,12 @@ export const AddNewAccountModal: React.FC = () => {
 
   const onSubmitAddNewAccountForm = async (data: any) => {
     setIsLoading(true);
-    const { currencyId, accountTypeId } = data as z.infer<typeof addNewAccountFormSchema>;
+    const { name, currencyId, assetProviderId } = data as z.infer<typeof addNewAccountFormSchema>;
     try {
-      const { success } = await createNewAccount({ currencyId, accountTypeId });
+      const { success } = await createNewAccount({ name, currencyId, assetProviderId });
       if (success) {
         setOpen(false);
+        resetAddNewAccountModalState();
         const { data } = await getAllAccounts('savings');
         updateBankAccounts(data);
         reset();
@@ -70,29 +64,25 @@ export const AddNewAccountModal: React.FC = () => {
     }
   };
 
+  React.useEffect(() => {
+    reset({ assetProviderId });
+  }, [assetProviderId]);
+
   return (
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
         <Select
-          label="Account Type"
-          formId="accountTypeId"
+          label="Currency"
+          formId="currencyId"
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
-          options={accountTypeOptions}
-          placeholder="Select account type..."
-          error={errors.accountTypeId && errors.accountTypeId.message?.toString()}
+          options={currencyOptions}
+          placeholder="Select currency..."
+          error={errors.currencyId && errors.currencyId.message?.toString()}
         />
-        {watchSelectedAccountType && (
-          <Select
-            label="Currency"
-            formId="currencyId"
-            control={control as Control<any, any>}
-            className="mt-4 !max-w-none"
-            options={currencyOptions}
-            placeholder="Select currency..."
-            error={errors.currencyId && errors.currencyId.message?.toString()}
-          />
+        {watchSelectedCurrency && (
+          <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
@@ -103,7 +93,7 @@ export const AddNewAccountModal: React.FC = () => {
           onClick={handleSubmit(onSubmitAddNewAccountForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
-          Submit
+          Add
         </Button>
         <Button
           type="button"

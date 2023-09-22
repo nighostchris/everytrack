@@ -110,66 +110,52 @@ export const useBrokersState = () => {
   }, [stocks, currencyId, exchangeRates, accountStockHoldings]);
 
   const brokerAccountTableRows = React.useMemo(() => {
-    const currenciesMap: Map<string, Currency> = new Map();
-    const accountStockHoldingsMap: Map<string, StockHolding[]> = new Map();
-    const brokerProviderToAccountsMap: Map<string, BrokerAccountTableRow> = new Map();
-    const accountTypeToBrokerDetailsMap: Map<string, { providerName: string; icon: string; accountTypeName: string }> = new Map();
+    const currenciesMap = new Map<string, Currency>();
+    const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
+    const accountStockHoldingsMap = new Map<string, StockHolding[]>();
+    const result: BrokerAccountTableRow[] = [];
     if (brokerDetails && brokerAccounts && currencies && stocks && accountStockHoldings) {
       // Generate a currency map
       currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
-      // Generate a broker detail map
-      brokerDetails.forEach(({ name: providerName, icon, accountTypes }) => {
-        accountTypes.forEach(({ id: accountTypeId, name: accountTypeName }) => {
-          accountTypeToBrokerDetailsMap.set(accountTypeId, { providerName, icon, accountTypeName });
-        });
-      });
       // Generate a account stock holding map
       accountStockHoldings.forEach(({ accountId, holdings }) => {
         accountStockHoldingsMap.set(accountId, holdings);
       });
-      brokerAccounts.forEach(({ id: accountId, accountTypeId }) => {
-        const brokerProvider = accountTypeToBrokerDetailsMap.get(accountTypeId);
-        if (brokerProvider) {
-          const { providerName, icon, accountTypeName } = brokerProvider;
-          const providerId = providerName.toLowerCase().replaceAll(/\s/g, '-').replaceAll(/\(|\)/g, '');
-          const account: BrokerAccountDetails = { id: accountId, name: accountTypeName, holdings: [] };
-          const holdings = accountStockHoldingsMap.get(accountId) ?? [];
-          // Generate a broker account map
-          holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
-            const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;
-            const { id, symbol } = currenciesMap.get(currencyId) as Currency;
-            const row = { id: holdingId, unit, cost, name, ticker, stockId, currentPrice, currency: { id, symbol } };
-            account.holdings.push(row);
-          });
-          account.holdings = account.holdings.sort((a, b) => (a.name > b.name ? 1 : -1));
-          // Generate provider to acccounts map
-          const providerAccounts = brokerProviderToAccountsMap.get(providerId);
-          if (!providerAccounts) {
-            brokerProviderToAccountsMap.set(providerId, {
-              id: providerId,
-              name: providerName,
-              icon,
-              accounts: [account],
-            });
-          } else {
-            brokerProviderToAccountsMap.set(providerId, {
-              ...providerAccounts,
-              accounts: [...providerAccounts.accounts, account],
-            });
-          }
+      // Generate a broker detail map
+      brokerDetails.forEach(({ id, name, icon }) => brokerDetailsMap.set(id, { id, name, icon, accounts: [] }));
+      brokerAccounts.forEach(({ id: accountId, name, assetProviderId }) => {
+        const brokerAccountTableRow = brokerDetailsMap.get(assetProviderId) as BrokerAccountTableRow;
+        const account: BrokerAccountDetails = { id: accountId, name, holdings: [] };
+        const holdings = accountStockHoldingsMap.get(accountId) ?? [];
+        holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
+          const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;
+          const { id, symbol } = currenciesMap.get(currencyId) as Currency;
+          const row = { id: holdingId, unit, cost, name, ticker, stockId, currentPrice, currency: { id, symbol } };
+          account.holdings.push(row);
+        });
+        account.holdings = account.holdings.sort((a, b) => (a.name > b.name ? 1 : -1));
+        brokerDetailsMap.set(assetProviderId, {
+          ...brokerAccountTableRow,
+          accounts: [...brokerAccountTableRow.accounts, account],
+        });
+      });
+      // Extract all entries in brokerDetailsMap into result array
+      Array.from(brokerDetailsMap.values()).forEach((brokerAccountTableRow) => {
+        if (brokerAccountTableRow.accounts.length > 0) {
+          result.push(brokerAccountTableRow);
         }
       });
-      return Array.from(brokerProviderToAccountsMap.values());
     }
-    return [];
+    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [stocks, currencies, brokerDetails, brokerAccounts, accountStockHoldings]);
 
   const canAddNewBroker = React.useMemo(() => {
     if (!brokerDetails || !brokerAccounts) {
       return false;
     }
-    const supportedBrokerAccountTypes = brokerDetails.reduce((acc, current) => acc + current.accountTypes.length, 0);
-    return brokerAccounts.length < supportedBrokerAccountTypes;
+    const existingBrokerMap = new Map<string, boolean>();
+    brokerAccounts.forEach(({ assetProviderId }) => existingBrokerMap.set(assetProviderId, true));
+    return Array.from(existingBrokerMap.keys()).length < brokerDetails.length;
   }, [brokerDetails, brokerAccounts]);
 
   React.useEffect(() => {

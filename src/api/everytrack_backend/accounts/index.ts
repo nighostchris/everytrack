@@ -26,9 +26,9 @@ export async function getAllAccounts(type: ProviderType) {
 }
 
 export async function createNewAccount(params: CreateNewAccountRequest) {
-  const { currencyId, accountTypeId } = params;
+  const { name, currencyId, assetProviderId } = params;
   try {
-    const { data } = await client.post('/v1/accounts', { currencyId, accountTypeId });
+    const { data } = await client.post('/v1/accounts', { name, currencyId, assetProviderId });
     return data as CreateNewAccountResponse;
   } catch (error) {
     const { response } = error as AxiosError;

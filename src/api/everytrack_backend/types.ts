@@ -12,8 +12,9 @@ export interface GetAllAccountsResponse extends BaseResponse {
 }
 // POST /v1/accounts
 export interface CreateNewAccountRequest {
+  name: string;
   currencyId: string;
-  accountTypeId: string;
+  assetProviderId: string;
 }
 export interface CreateNewAccountResponse extends BaseResponse {}
 // PUT /v1/accounts
@@ -122,9 +123,11 @@ export interface DeleteStockHoldingResponse extends BaseResponse {}
 // ============================================================
 export interface Account {
   id: string;
+  name: string;
   balance: string;
   currencyId: string;
   accountTypeId: string;
+  assetProviderId: string;
 }
 
 export interface StockHolding {
@@ -132,11 +135,6 @@ export interface StockHolding {
   unit: string;
   cost: string;
   stockId: string;
-}
-
-export interface AccountType {
-  id: string;
-  name: string;
 }
 
 export interface Currency {
@@ -157,9 +155,10 @@ export interface ExchangeRate {
 }
 
 export interface Provider {
+  id: string;
   name: string;
   icon: string;
-  accountTypes: AccountType[];
+  countryId: string;
 }
 
 export type ProviderType = 'savings' | 'broker' | 'credit';

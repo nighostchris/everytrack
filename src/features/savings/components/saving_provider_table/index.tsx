@@ -6,21 +6,20 @@ import { store } from '@features/savings/zustand';
 import { SavingProviderTableAccount } from '../../hooks/use_savings_state';
 
 interface SavingProviderTableProps {
+  id: string;
   name: string;
   icon: string;
   accounts: SavingProviderTableAccount[];
 }
 
-export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, icon, accounts }) => {
+export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ id, name, icon, accounts }) => {
   const {
-    updateBalance,
-    updateAccountId,
-    updateCurrencyId,
-    updateProviderName,
-    updateAccountTypeId,
     updateOpenDeleteAccountModal,
     updateOpenAddNewAccountModal,
+    populateDeleteAccountModalState,
+    populateAddNewAccountModalState,
     updateOpenEditAccountBalanceModal,
+    populateEditAccountBalanceModalState,
   } = store();
 
   return (
@@ -28,12 +27,12 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
       <tbody className="bg-white">
         <tr>
           <th colSpan={5} scope="colgroup" className="bg-gray-100 px-4">
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between py-2">
               <img src={icon} alt={name} className="h-16 w-24 object-scale-down" />
               <a
                 onClick={(e) => {
                   e.preventDefault();
-                  updateProviderName(name);
+                  populateAddNewAccountModalState(id);
                   updateOpenAddNewAccountModal(true);
                 }}
                 className="text-sm font-medium text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
@@ -43,18 +42,16 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
             </div>
           </th>
         </tr>
-        {accounts.map(({ id, type, balance, accountTypeId, currency: { id: currencyId, symbol } }) => (
+        {accounts.map(({ id, name, balance, accountTypeId, currency: { id: currencyId, symbol } }) => (
           <tr key={id} className="border-t border-gray-300">
-            <td className="w-1/4 whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">{type}</td>
+            <td className="w-1/4 whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">{name}</td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(balance).toFormat(2)}`}</td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
               <div className="flex flex-row justify-end">
                 <a
                   onClick={(e) => {
                     e.preventDefault();
-                    updateBalance(balance);
-                    updateCurrencyId(currencyId);
-                    updateAccountTypeId(accountTypeId);
+                    populateEditAccountBalanceModalState({ balance, currencyId, accountTypeId });
                     updateOpenEditAccountBalanceModal(true);
                   }}
                   className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
@@ -64,7 +61,7 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ name, 
                 <a
                   onClick={(e) => {
                     e.preventDefault();
-                    updateAccountId(id);
+                    populateDeleteAccountModalState(id);
                     updateOpenDeleteAccountModal(true);
                   }}
                   className="ml-4 text-indigo-600 hover:cursor-pointer hover:text-indigo-900"

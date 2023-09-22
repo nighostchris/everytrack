@@ -13,11 +13,19 @@ import { Button, Dialog, Input, Select, SelectOption } from '@components';
 const editAccountBalanceFormSchema = z.object({
   balance: z.string(),
   currencyId: z.string(),
+  accountTypeId: z.string(),
 });
 
 export const EditAccountBalanceModal: React.FC = () => {
+  const {
+    balance,
+    currencyId,
+    accountTypeId,
+    resetEditAccountBalanceModalState,
+    openEditAccountBalanceModal: open,
+    updateOpenEditAccountBalanceModal: setOpen,
+  } = store();
   const { currencies, updateBankAccounts } = globalStore();
-  const { balance, currencyId, accountTypeId, openEditAccountBalanceModal: open, updateOpenEditAccountBalanceModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -28,7 +36,11 @@ export const EditAccountBalanceModal: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof editAccountBalanceFormSchema>>({
-    defaultValues: { balance: undefined, currencyId: undefined },
+    defaultValues: {
+      balance: undefined,
+      currencyId: undefined,
+      accountTypeId: undefined,
+    },
     resolver: zodResolver(editAccountBalanceFormSchema),
   });
 
@@ -39,33 +51,29 @@ export const EditAccountBalanceModal: React.FC = () => {
 
   const onSubmitEditAccountBalanceForm = async (data: any) => {
     setIsLoading(true);
-    const { balance, currencyId } = data as z.infer<typeof editAccountBalanceFormSchema>;
-    if (accountTypeId) {
-      try {
-        const { success } = await updateAccount({ balance, currencyId, accountTypeId });
-        if (success) {
-          setOpen(false);
-          const { data } = await getAllAccounts('savings');
-          updateBankAccounts(data);
-          reset();
-        }
-        setIsLoading(false);
-        toast.info('Success!');
-      } catch (error: any) {
-        setIsLoading(false);
-        toast.error(error.message);
+    const { balance, currencyId, accountTypeId } = data as z.infer<typeof editAccountBalanceFormSchema>;
+    try {
+      const { success } = await updateAccount({ balance, currencyId, accountTypeId });
+      if (success) {
+        setOpen(false);
+        resetEditAccountBalanceModalState();
+        const { data } = await getAllAccounts('savings');
+        updateBankAccounts(data);
+        reset();
       }
-    } else {
       setIsLoading(false);
-      toast.error('Unexpected error');
+      toast.info('Success!');
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message);
     }
   };
 
   React.useEffect(() => {
-    if (balance && currencyId) {
-      reset({ balance, currencyId });
+    if (balance && currencyId && accountTypeId) {
+      reset({ balance, currencyId, accountTypeId });
     }
-  }, [balance, currencyId]);
+  }, [balance, currencyId, accountTypeId]);
 
   return (
     <Dialog open={open}>

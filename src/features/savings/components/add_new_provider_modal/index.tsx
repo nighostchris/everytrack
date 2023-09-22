@@ -7,13 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { store as globalStore } from '@lib/zustand';
-import { Button, Dialog, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, Select, SelectOption } from '@components';
 import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewProviderFormSchema = z.object({
-  bank: z.string(),
+  name: z.string(),
   currencyId: z.string(),
-  accountTypeId: z.string(),
+  assetProviderId: z.string(),
 });
 
 export const AddNewProviderModal: React.FC = () => {
@@ -26,32 +26,24 @@ export const AddNewProviderModal: React.FC = () => {
     reset,
     watch,
     control,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof addNewProviderFormSchema>>({
     defaultValues: {
-      bank: undefined,
+      name: undefined,
       currencyId: undefined,
-      accountTypeId: undefined,
+      assetProviderId: undefined,
     },
     resolver: zodResolver(addNewProviderFormSchema),
   });
-  const watchSelectedBank = watch('bank');
-  const watchSelectedAccountType = watch('accountTypeId');
+  const watchSelectedCurrency = watch('currencyId');
+  const watchSelectedBank = watch('assetProviderId');
 
   const bankOptions: SelectOption[] = React.useMemo(
-    () => (bankDetails ? bankDetails.map(({ name }) => ({ value: name, display: name })).sort((a, b) => (a.value > b.value ? 1 : -1)) : []),
-    [bankDetails],
-  );
-  const accountTypeOptions: SelectOption[] = React.useMemo(
     () =>
-      bankDetails && watchSelectedBank
-        ? bankDetails
-            .filter(({ name }) => name === watchSelectedBank)[0]
-            .accountTypes.map(({ id, name }) => ({ value: id, display: name }))
-            .sort((a, b) => (a.display > b.display ? 1 : -1))
-        : [],
-    [bankDetails, watchSelectedBank],
+      bankDetails ? bankDetails.map(({ id, name }) => ({ value: id, display: name })).sort((a, b) => (a.display > b.display ? 1 : -1)) : [],
+    [bankDetails],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -60,9 +52,9 @@ export const AddNewProviderModal: React.FC = () => {
 
   const onSubmitAddNewProviderForm = async (data: any) => {
     setIsLoading(true);
-    const { currencyId, accountTypeId } = data as z.infer<typeof addNewProviderFormSchema>;
+    const { name, currencyId, assetProviderId } = data as z.infer<typeof addNewProviderFormSchema>;
     try {
-      const { success } = await createNewAccount({ currencyId, accountTypeId });
+      const { success } = await createNewAccount({ name, currencyId, assetProviderId });
       if (success) {
         setOpen(false);
         const { data } = await getAllAccounts('savings');
@@ -83,25 +75,14 @@ export const AddNewProviderModal: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900">Add New Provider</h3>
         <Select
           label="Bank"
-          formId="bank"
+          formId="assetProviderId"
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
           options={bankOptions}
           placeholder="Select bank..."
-          error={errors.bank && errors.bank.message?.toString()}
+          error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
         />
         {watchSelectedBank && (
-          <Select
-            label="Account Type"
-            formId="accountTypeId"
-            control={control as Control<any, any>}
-            className="mt-4 !max-w-none"
-            options={accountTypeOptions}
-            placeholder="Select account type..."
-            error={errors.accountTypeId && errors.accountTypeId.message?.toString()}
-          />
-        )}
-        {watchSelectedAccountType && (
           <Select
             label="Currency"
             formId="currencyId"
@@ -111,6 +92,9 @@ export const AddNewProviderModal: React.FC = () => {
             placeholder="Select currency..."
             error={errors.currencyId && errors.currencyId.message?.toString()}
           />
+        )}
+        {watchSelectedCurrency && (
+          <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

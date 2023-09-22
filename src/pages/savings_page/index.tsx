@@ -20,15 +20,15 @@ import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
-  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { isLoading, totalBalance, savingProviderTableRows } = useSavingsState();
   const {
     openAddNewAccountModal,
-    openAddNewProviderModal,
     openDeleteAccountModal,
+    openAddNewProviderModal,
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
   } = store();
+  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const { isLoading, totalBalance, savingProviderTableRows } = useSavingsState();
 
   return (
     <Root>
@@ -58,10 +58,10 @@ export const SavingsPage: React.FC = () => {
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
         </StatCard>
-        {savingProviderTableRows.map(({ name, icon, accounts }) => (
+        {savingProviderTableRows.map(({ id, name, icon, accounts }) => (
           <div key={`provider-table-${name.toLowerCase().replaceAll(/\s/g, '-').replaceAll(/\(|\)/g, '')}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
-              <SavingProviderTable name={name} icon={icon} accounts={accounts} />
+              <SavingProviderTable id={id} name={name} icon={icon} accounts={accounts} />
             </div>
           </div>
         ))}

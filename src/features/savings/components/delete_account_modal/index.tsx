@@ -18,17 +18,12 @@ export const DeleteAccountModal: React.FC = () => {
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const accountName = React.useMemo(() => {
+  const accountDisplayName = React.useMemo(() => {
     let foundName: string | undefined;
     if (accountId && bankDetails && bankAccounts) {
-      const { accountTypeId } = bankAccounts.filter((bankAccount) => bankAccount.id === accountId)[0];
-      bankDetails.forEach(({ name: bankName, accountTypes }) => {
-        accountTypes.forEach(({ id, name: accountTypeName }) => {
-          if (id === accountTypeId) {
-            foundName = `${bankName} - ${accountTypeName}`;
-          }
-        });
-      });
+      const { name: accountName, assetProviderId } = bankAccounts.filter(({ id }) => id === accountId)[0];
+      const { name: bankName } = bankDetails.filter(({ id }) => id === assetProviderId)[0];
+      foundName = `${bankName} - ${accountName}`;
     }
     return foundName;
   }, [accountId, bankDetails, bankAccounts]);
@@ -61,7 +56,7 @@ export const DeleteAccountModal: React.FC = () => {
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Delete Account</h3>
         <p className="mt-4">{`Are you sure to delete the account`}</p>
-        <p className="mt-2">{accountName}</p>
+        <p className="mt-2">{accountDisplayName}</p>
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button
@@ -69,7 +64,7 @@ export const DeleteAccountModal: React.FC = () => {
           variant="contained"
           isLoading={isLoading}
           onClick={() => handleOnClickDeleteAccountButton()}
-          className="w-full bg-red-200 text-red-800 hover:bg-red-300 hover:text-red-900 sm:ml-2 sm:w-28"
+          className="w-full !bg-red-200 !text-red-800 hover:!bg-red-300 hover:!text-red-900 sm:ml-2 sm:w-28"
         >
           Delete
         </Button>
