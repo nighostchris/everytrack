@@ -51,7 +51,7 @@ export const useDashboardState = () => {
       instantAccessibleBalance: instantAccessibleBalance.toFormat(2),
       totalBalance: lockedFund.plus(instantAccessibleBalance).toFormat(2),
     };
-  }, [currencyId, bankAccounts, exchangeRates]);
+  }, [stocks, accountStockHoldings, currencyId, bankAccounts, exchangeRates]);
 
   return { lockedFund, totalBalance, instantAccessibleBalance };
 };

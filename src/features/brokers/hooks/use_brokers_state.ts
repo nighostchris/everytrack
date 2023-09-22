@@ -71,12 +71,16 @@ export const useBrokersState = () => {
       const allHoldings = (accountStockHoldings ?? []).reduce<StockHolding[]>((acc, current) => acc.concat(current.holdings), []);
       const distribution = allHoldings.map(({ unit, cost, stockId }) => {
         const { ticker, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
-        const exchangeRate = exchangeRates.filter(
-          ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === stockCurrencyId && targetCurrencyId === currencyId,
-        )[0];
-        return { id: ticker, value: new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate).toFormat(2) };
+        const exchangeRate =
+          stockCurrencyId === currencyId
+            ? { rate: '1' }
+            : exchangeRates.filter(
+                ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === stockCurrencyId && targetCurrencyId === currencyId,
+              )[0];
+        return { id: ticker, value: new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate) };
       });
       const totalValue = distribution.reduce((acc, current) => acc.plus(current.value), new BigNumber(0));
+      console.log({ totalValue, distribution });
       return distribution.map(({ id, value }) => ({ id, value: new BigNumber(value).dividedBy(totalValue).multipliedBy(100).toFormat(2) }));
     }
     return [];

@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import { ResponsivePie } from '@nivo/pie';
-import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
 import { useOutletContext } from 'react-router-dom';
+import { FaSackDollar, FaQuestion } from 'react-icons/fa6';
 import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,11 +23,22 @@ import {
 import { store } from '@features/brokers/zustand';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
+import { calculateInterpolateColor } from '@utils/calculate_interpolate_color';
 
 export const BrokersPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
+
+  const assetDistributionColors = React.useMemo(() => {
+    const colors: string[] = [];
+    assetDistribution.forEach(({ value }) =>
+      colors.push(
+        calculateInterpolateColor('#FFFFFF', '#0F2C4A', Number(new BigNumber(value.replaceAll(',', '')).dividedBy(100).toFixed(2))),
+      ),
+    );
+    return colors;
+  }, [assetDistribution]);
 
   return (
     <Root>
@@ -64,17 +75,20 @@ export const BrokersPage: React.FC = () => {
               <div className="mt-1 flex flex-row items-center">
                 <AiOutlineRise
                   className={clsx('h-6 w-6 font-bold', {
-                    'text-green-600': new BigNumber(winLoseAmount).isPositive(),
-                    'text-red-600': new BigNumber(winLoseAmount).isNegative(),
+                    'text-green-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isPositive(),
+                    'text-red-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isNegative(),
                   })}
                 />
                 <p
                   className={clsx('ml-2 overflow-hidden text-ellipsis whitespace-nowrap text-2xl', {
-                    'text-green-600': new BigNumber(winLoseAmount).isPositive(),
-                    'text-red-600': new BigNumber(winLoseAmount).isNegative(),
+                    'text-green-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isPositive(),
+                    'text-red-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isNegative(),
                   })}
                 >{`${displayCurrency} ${winLoseAmount}`}</p>
               </div>
+            </StatCard>
+            <StatCard title="Other Metrics" icon={FaQuestion}>
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">To Be Constructed Later</p>
             </StatCard>
           </div>
           <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
@@ -83,20 +97,20 @@ export const BrokersPage: React.FC = () => {
               <ResponsivePie
                 // @ts-ignore
                 data={assetDistribution}
-                padAngle={0.7}
                 borderWidth={1}
                 cornerRadius={3}
-                innerRadius={0.5}
+                theme={{ labels: { text: { fontSize: 14 } } }}
                 arcLabelsSkipAngle={10}
+                arcLabelsTextColor="black"
                 arcLinkLabelsThickness={2}
                 activeOuterRadiusOffset={8}
                 arcLinkLabelsSkipAngle={10}
                 arcLinkLabelsTextColor="#333333"
+                colors={assetDistributionColors}
                 arcLabel={(item) => `${item.value}%`}
                 arcLinkLabelsColor={{ from: 'color' }}
                 margin={{ top: 30, right: 20, bottom: 30, left: 20 }}
                 borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-                arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
               />
             </div>
           </div>
