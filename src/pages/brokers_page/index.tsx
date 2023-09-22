@@ -37,7 +37,7 @@ export const BrokersPage: React.FC = () => {
       <DeleteStockHoldingModal />
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />
-      <div className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8')}>
+      <div className={clsx('relative h-full overflow-y-auto px-8 py-6')}>
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-xl font-semibold text-gray-900">Broker Assets</h1>
@@ -128,6 +128,15 @@ export const BrokersPage: React.FC = () => {
                 </TabsContent>
               ))}
             </Tabs>
+          )}
+          {brokerAccountTableRows.length === 0 && (
+            <div className="flex w-full flex-col items-center py-6">
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Oops! 😢</h1>
+              <p className="mt-6 text-lg leading-7 text-gray-600">You don't seems to own any stocks 💸💸💸</p>
+              <p className="mt-2 text-base leading-7 text-gray-600">
+                Just click the button in top right corner to add your stock accounts!
+              </p>
+            </div>
           )}
         </div>
       </div>

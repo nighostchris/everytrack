@@ -33,8 +33,8 @@ export interface BrokerAccountTableRow {
 }
 
 export const useBrokersState = () => {
-  const { brokerDetails, brokerAccounts, updateBrokerAccounts, updateBrokerDetails } = store();
-  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings } = globalStore();
+  const { brokerDetails, updateBrokerDetails } = store();
+  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings, brokerAccounts, updateBrokerAccounts } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 

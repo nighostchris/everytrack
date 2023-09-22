@@ -6,9 +6,11 @@ import { GiReceiveMoney, GiLockedChest, GiPayMoney } from 'react-icons/gi';
 
 import Root from '@layouts/root';
 import { StatCard } from '@components';
+import { store as globalStore } from '@lib/zustand';
 import useDashboardState from '@features/dashboard/hooks/use_dashboard_state';
 
 export const DashboardPage: React.FC = () => {
+  const { username } = globalStore();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { lockedFund, totalBalance, instantAccessibleBalance } = useDashboardState();
 
@@ -18,7 +20,7 @@ export const DashboardPage: React.FC = () => {
         <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
         <div className="mt-4 grid grid-rows-1 gap-x-6 lg:h-full xl:grid-cols-3">
           <div className="flex h-full flex-col py-6">
-            <h2 className="text-4xl font-medium">Hello Username</h2>
+            <h2 className="text-4xl font-medium">{`Hello ${username}`}</h2>
             <h3 className="mt-2 text-xl">Let's have a look at your balance</h3>
             <StatCard title="Total Balance" icon={FaSackDollar} className="mt-8">
               <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>

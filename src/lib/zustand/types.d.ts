@@ -8,6 +8,7 @@ export type GlobalStateSlice = {
   countries?: Country[];
   currencies?: Currency[];
   bankAccounts?: Account[];
+  brokerAccounts?: Account[];
   exchangeRates?: ExchangeRate[];
   accountStockHoldings?: AccountStockHolding[];
   updateStocks: (newStocks: Stock[]) => void;
@@ -17,6 +18,7 @@ export type GlobalStateSlice = {
   updateCurrencies: (newCurrencies: Currency[]) => void;
   updateClientSettings: (params: ClientSettings) => void;
   updateBankAccounts: (newBankAccounts: Account[]) => void;
+  updateBrokerAccounts: (newBrokerAccounts: Account[]) => void;
   updateExchangeRates: (newExchangeRates: ExchangeRate[]) => void;
   updateAccountStockHoldings: (newAccountStockHoldings: AccountStockHolding[]) => void;
 };

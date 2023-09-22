@@ -17,14 +17,8 @@ const addNewAccountFormSchema = z.object({
 });
 
 export const AddNewAccountModal: React.FC = () => {
-  const { currencies } = globalStore();
-  const {
-    brokerDetails,
-    assetProviderId,
-    updateBrokerAccounts,
-    openAddNewAccountModal: open,
-    updateOpenAddNewAccountModal: setOpen,
-  } = store();
+  const { currencies, updateBrokerAccounts } = globalStore();
+  const { brokerDetails, assetProviderId, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

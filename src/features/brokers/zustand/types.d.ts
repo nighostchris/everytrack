@@ -2,10 +2,8 @@
 import { Account, AccountStockHolding, Provider, Stock } from '@api/everytrack_backend';
 
 export type BrokersPageStateSlice = {
-  brokerAccounts?: Account[];
   brokerDetails?: Provider[];
   updateBrokerDetails: (newBrokerDetails: Provider[]) => void;
-  updateBrokerAccounts: (newBrokerAccounts: Account[]) => void;
 };
 
 export type ModalStateSlice = {

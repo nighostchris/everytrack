@@ -26,6 +26,7 @@ export const PrivateRouteGuardian: React.FC = () => {
     updateCurrencies,
     updateBankAccounts,
     updateExchangeRates,
+    updateBrokerAccounts,
     updateAccountStockHoldings,
   } = store();
 
@@ -47,6 +48,17 @@ export const PrivateRouteGuardian: React.FC = () => {
       const { success, data } = await getAllAccounts('savings');
       if (success) {
         updateBankAccounts(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
+
+  const initBrokerAccounts = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllAccounts('broker');
+      if (success) {
+        updateBrokerAccounts(data);
       }
     } catch (error: any) {
       console.error(error);
@@ -136,8 +148,18 @@ export const PrivateRouteGuardian: React.FC = () => {
     initBankAccounts();
     initExchangeRates();
     initClientSettings();
+    initBrokerAccounts();
     initAccountStockHoldings();
-  }, [initStocks, initCountries, initBankAccounts, initCurrencies, initClientSettings, initExchangeRates, initAccountStockHoldings]);
+  }, [
+    initStocks,
+    initCountries,
+    initCurrencies,
+    initBankAccounts,
+    initExchangeRates,
+    initBrokerAccounts,
+    initClientSettings,
+    initAccountStockHoldings,
+  ]);
 
   return isLoading ? (
     <div className="flex h-full w-full items-center justify-center">

@@ -18,14 +18,8 @@ const addNewBrokerFormSchema = z.object({
 });
 
 export const AddNewBrokerModal: React.FC = () => {
-  const {
-    brokerDetails,
-    brokerAccounts,
-    updateBrokerAccounts,
-    openAddNewBrokerModal: open,
-    updateOpenAddNewBrokerModal: setOpen,
-  } = store();
-  const { countries, currencies } = globalStore();
+  const { countries, currencies, brokerAccounts, updateBrokerAccounts } = globalStore();
+  const { brokerDetails, openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

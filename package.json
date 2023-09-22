@@ -1,6 +1,6 @@
 {
   "name": "everytrack",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Track everything",
   "author": "Chris Liu <chrisliupascal@gmail.com>",

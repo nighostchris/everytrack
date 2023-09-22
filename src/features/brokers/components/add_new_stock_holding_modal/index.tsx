@@ -20,12 +20,11 @@ const addNewStockHoldingFormSchema = z.object({
 export const AddNewStockHoldingModal: React.FC = () => {
   const {
     accountId,
-    brokerAccounts,
     resetAddNewStockHoldingModalState,
     openAddNewStockHoldingModal: open,
     updateOpenAddNewStockHoldingModal: setOpen,
   } = store();
-  const { stocks, accountStockHoldings, updateAccountStockHoldings } = globalStore();
+  const { stocks, brokerAccounts, accountStockHoldings, updateAccountStockHoldings } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

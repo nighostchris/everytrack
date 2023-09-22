@@ -15,36 +15,16 @@ export const createGlobalStateSlice: StateCreator<
   currencies: undefined,
   bankAccounts: undefined,
   exchangeRates: undefined,
+  brokerAccounts: undefined,
   accountStockHoldings: undefined,
-  updateStocks: (newStocks) =>
-    set((state) => {
-      state.stocks = newStocks;
-    }),
-  updateUsername: (newUsername) =>
-    set((state) => {
-      state.username = newUsername;
-    }),
-  updateCurrencyId: (newCurrencyId) =>
-    set((state) => {
-      state.currencyId = newCurrencyId;
-    }),
-  updateBankAccounts: (newBankAccounts) =>
-    set((state) => {
-      state.bankAccounts = newBankAccounts;
-    }),
-  updateExchangeRates: (newExchangeRates) =>
-    set((state) => {
-      state.exchangeRates = newExchangeRates;
-    }),
-  updateClientSettings: ({ username, currencyId }) =>
-    set((state) => {
-      state.username = username;
-      state.currencyId = currencyId;
-    }),
-  updateAccountStockHoldings: (newAccountStockHoldings) =>
-    set((state) => {
-      state.accountStockHoldings = newAccountStockHoldings;
-    }),
+  updateStocks: (newStocks) => set((state) => ({ ...state, stocks: newStocks })),
+  updateUsername: (newUsername) => set((state) => ({ ...state, username: newUsername })),
   updateCountries: (newCountries) => set((state) => ({ ...state, countries: newCountries })),
   updateCurrencies: (newCurrencies) => set((state) => ({ ...state, currencies: newCurrencies })),
+  updateCurrencyId: (newCurrencyId) => set((state) => ({ ...state, currencyId: newCurrencyId })),
+  updateBankAccounts: (newBankAccounts) => set((state) => ({ ...state, bankAccounts: newBankAccounts })),
+  updateClientSettings: ({ username, currencyId }) => set((state) => ({ ...state, username, currencyId })),
+  updateExchangeRates: (newExchangeRates) => set((state) => ({ ...state, exchangeRates: newExchangeRates })),
+  updateBrokerAccounts: (newBrokerAccounts) => set((state) => ({ ...state, brokerAccounts: newBrokerAccounts })),
+  updateAccountStockHoldings: (newAccountStockHoldings) => set((state) => ({ ...state, accountStockHoldings: newAccountStockHoldings })),
 });

@@ -9,13 +9,8 @@ export const createBrokersPageStateSlice: StateCreator<
   BrokersPageStateSlice
 > = (set) => ({
   brokerDetails: undefined,
-  brokerAccounts: undefined,
   updateBrokerDetails: (newBrokerDetails) =>
     set((state) => {
       state.brokerDetails = newBrokerDetails;
-    }),
-  updateBrokerAccounts: (newBrokerAccounts) =>
-    set((state) => {
-      state.brokerAccounts = newBrokerAccounts;
     }),
 });
