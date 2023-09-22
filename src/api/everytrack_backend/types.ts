@@ -48,6 +48,14 @@ export interface LoginResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/countries endpoints
+// ============================================================
+// GET /v1/countries
+export interface GetAllCountriesResponse extends BaseResponse {
+  data: Country[];
+}
+
+// ============================================================
 // /v1/currencies endpoints
 // ============================================================
 // GET /v1/currencies
@@ -135,6 +143,12 @@ export interface StockHolding {
   unit: string;
   cost: string;
   stockId: string;
+}
+
+export interface Country {
+  id: string;
+  name: string;
+  code: string;
 }
 
 export interface Currency {

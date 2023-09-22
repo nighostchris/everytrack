@@ -5,4 +5,5 @@ export * from './stocks';
 export * from './accounts';
 export * from './settings';
 export * from './providers';
+export * from './countries';
 export * from './currencies';

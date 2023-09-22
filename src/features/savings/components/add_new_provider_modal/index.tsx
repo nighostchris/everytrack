@@ -12,12 +12,13 @@ import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewProviderFormSchema = z.object({
   name: z.string(),
+  countryId: z.string(),
   currencyId: z.string(),
   assetProviderId: z.string(),
 });
 
 export const AddNewProviderModal: React.FC = () => {
-  const { currencies, bankAccounts, updateBankAccounts } = globalStore();
+  const { countries, currencies, bankAccounts, updateBankAccounts } = globalStore();
   const { bankDetails, openAddNewProviderModal: open, updateOpenAddNewProviderModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -32,27 +33,34 @@ export const AddNewProviderModal: React.FC = () => {
   } = useForm<z.infer<typeof addNewProviderFormSchema>>({
     defaultValues: {
       name: undefined,
+      countryId: undefined,
       currencyId: undefined,
       assetProviderId: undefined,
     },
     resolver: zodResolver(addNewProviderFormSchema),
   });
+  const watchSelectedCountry = watch('countryId');
   const watchSelectedCurrency = watch('currencyId');
   const watchSelectedBank = watch('assetProviderId');
 
+  const countryOptions: SelectOption[] = React.useMemo(
+    () => (countries ? countries.map(({ id, name }) => ({ value: id, display: name })) : []),
+    [countries],
+  );
+  const currencyOptions: SelectOption[] = React.useMemo(
+    () => (currencies ? currencies.map(({ id, ticker }) => ({ value: id, display: ticker })) : []),
+    [currencies],
+  );
   const bankOptions: SelectOption[] = React.useMemo(
     () =>
-      bankDetails && bankAccounts
+      bankDetails && bankAccounts && watchSelectedCountry
         ? bankDetails
+            .filter(({ countryId }) => countryId === watchSelectedCountry)
             .map(({ id, name }) => ({ value: id, display: name }))
             .filter(({ value }) => !bankAccounts.some(({ assetProviderId }) => value === assetProviderId))
             .sort((a, b) => (a.display > b.display ? 1 : -1))
         : [],
-    [bankDetails, bankAccounts],
-  );
-  const currencyOptions: SelectOption[] = React.useMemo(
-    () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
-    [currencies],
+    [bankDetails, bankAccounts, watchSelectedCountry],
   );
 
   const onSubmitAddNewProviderForm = async (data: any) => {
@@ -79,14 +87,25 @@ export const AddNewProviderModal: React.FC = () => {
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Provider</h3>
         <Select
-          label="Bank"
-          formId="assetProviderId"
+          label="Country"
+          formId="countryId"
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
-          options={bankOptions}
-          placeholder="Select bank..."
-          error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
+          options={countryOptions}
+          placeholder="Select country of bank..."
+          error={errors.countryId && errors.countryId.message?.toString()}
         />
+        {watchSelectedCountry && (
+          <Select
+            label="Bank"
+            formId="assetProviderId"
+            control={control as Control<any, any>}
+            className="mt-4 !max-w-none"
+            options={bankOptions}
+            placeholder="Select bank..."
+            error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
+          />
+        )}
         {watchSelectedBank && (
           <Select
             label="Currency"
