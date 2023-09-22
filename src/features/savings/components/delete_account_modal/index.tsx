@@ -55,8 +55,9 @@ export const DeleteAccountModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Delete Account</h3>
-        <p className="mt-4">{`Are you sure to delete the account`}</p>
-        <p className="mt-2">{accountDisplayName}</p>
+        <p className="mt-4">{`You are going to delete the account`}</p>
+        <p className="mt-2 font-bold">{accountDisplayName}</p>
+        <p className="mt-2">{`Are you sure about that? 😢`}</p>
       </div>
       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button
@@ -64,7 +65,7 @@ export const DeleteAccountModal: React.FC = () => {
           variant="contained"
           isLoading={isLoading}
           onClick={() => handleOnClickDeleteAccountButton()}
-          className="w-full !bg-red-200 !text-red-800 hover:!bg-red-300 hover:!text-red-900 sm:ml-2 sm:w-28"
+          className="w-full !bg-red-600 !text-white hover:!bg-red-700 sm:ml-2 sm:w-28"
         >
           Delete
         </Button>

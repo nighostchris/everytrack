@@ -25,7 +25,7 @@ export const EditAccountBalanceModal: React.FC = () => {
     openEditAccountBalanceModal: open,
     updateOpenEditAccountBalanceModal: setOpen,
   } = store();
-  const { currencies, updateBankAccounts } = globalStore();
+  const { currencies, bankAccounts, updateBankAccounts } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -44,6 +44,10 @@ export const EditAccountBalanceModal: React.FC = () => {
     resolver: zodResolver(editAccountBalanceFormSchema),
   });
 
+  const bankAccountName = React.useMemo(
+    () => (bankAccounts && accountTypeId ? bankAccounts.filter(({ accountTypeId }) => accountTypeId === accountTypeId)[0].name : ''),
+    [accountTypeId, bankAccounts],
+  );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map(({ id, ticker }) => ({ value: id, display: ticker })) : []),
     [currencies],
@@ -79,6 +83,7 @@ export const EditAccountBalanceModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Edit Account Balance</h3>
+        <p className="mt-1 text-sm">{`You are editing balance for ${bankAccountName}`}</p>
         <Input label="Balance" formId="balance" register={register} error={errors['balance']?.message} className="mt-4 !max-w-none" />
         <Select
           label="Currency"

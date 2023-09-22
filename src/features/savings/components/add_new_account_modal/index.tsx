@@ -18,7 +18,13 @@ const addNewAccountFormSchema = z.object({
 
 export const AddNewAccountModal: React.FC = () => {
   const { currencies, updateBankAccounts } = globalStore();
-  const { assetProviderId, resetAddNewAccountModalState, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
+  const {
+    assetProviderId,
+    bankDetails,
+    resetAddNewAccountModalState,
+    openAddNewAccountModal: open,
+    updateOpenAddNewAccountModal: setOpen,
+  } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -39,6 +45,10 @@ export const AddNewAccountModal: React.FC = () => {
   });
   const watchSelectedCurrency = watch('currencyId');
 
+  const bankName = React.useMemo(
+    () => (bankDetails && assetProviderId ? bankDetails.filter(({ id }) => id === assetProviderId)[0].name : ''),
+    [assetProviderId, bankDetails],
+  );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
     [currencies],
@@ -72,6 +82,7 @@ export const AddNewAccountModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
+        <p className="mt-1 text-sm">{`You are adding account for ${bankName}`}</p>
         <Select
           label="Currency"
           formId="currencyId"

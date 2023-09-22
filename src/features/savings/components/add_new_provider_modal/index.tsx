@@ -17,7 +17,7 @@ const addNewProviderFormSchema = z.object({
 });
 
 export const AddNewProviderModal: React.FC = () => {
-  const { currencies, updateBankAccounts } = globalStore();
+  const { currencies, bankAccounts, updateBankAccounts } = globalStore();
   const { bankDetails, openAddNewProviderModal: open, updateOpenAddNewProviderModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -42,8 +42,13 @@ export const AddNewProviderModal: React.FC = () => {
 
   const bankOptions: SelectOption[] = React.useMemo(
     () =>
-      bankDetails ? bankDetails.map(({ id, name }) => ({ value: id, display: name })).sort((a, b) => (a.display > b.display ? 1 : -1)) : [],
-    [bankDetails],
+      bankDetails && bankAccounts
+        ? bankDetails
+            .map(({ id, name }) => ({ value: id, display: name }))
+            .filter(({ value }) => !bankAccounts.some(({ assetProviderId }) => value === assetProviderId))
+            .sort((a, b) => (a.display > b.display ? 1 : -1))
+        : [],
+    [bankDetails, bankAccounts],
   );
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -105,7 +110,7 @@ export const AddNewProviderModal: React.FC = () => {
           onClick={handleSubmit(onSubmitAddNewProviderForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
-          Submit
+          Add
         </Button>
         <Button
           type="button"

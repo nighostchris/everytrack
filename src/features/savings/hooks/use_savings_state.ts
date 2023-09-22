@@ -87,13 +87,22 @@ export const useSavingsState = () => {
     return result.sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [bankDetails, bankAccounts, currencies]);
 
+  const canAddNewProvider = React.useMemo(() => {
+    if (!bankDetails || !bankAccounts) {
+      return false;
+    }
+    const existingProviderMap = new Map<string, boolean>();
+    bankAccounts.forEach(({ assetProviderId }) => existingProviderMap.set(assetProviderId, true));
+    return Array.from(existingProviderMap.keys()).length < bankDetails.length;
+  }, [bankDetails, bankAccounts]);
+
   React.useEffect(() => {
     setIsLoading(true);
     initBankDetails();
     setIsLoading(false);
   }, [initBankDetails]);
 
-  return { isLoading, totalBalance, savingProviderTableRows };
+  return { isLoading, totalBalance, canAddNewProvider, savingProviderTableRows };
 };
 
 export default useSavingsState;

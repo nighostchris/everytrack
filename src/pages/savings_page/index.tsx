@@ -28,7 +28,7 @@ export const SavingsPage: React.FC = () => {
     updateOpenAddNewProviderModal,
   } = store();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { isLoading, totalBalance, savingProviderTableRows } = useSavingsState();
+  const { isLoading, totalBalance, canAddNewProvider, savingProviderTableRows } = useSavingsState();
 
   return (
     <Root>
@@ -37,7 +37,7 @@ export const SavingsPage: React.FC = () => {
       <AddNewProviderModal />
       <EditAccountBalanceModal />
       <div
-        className={clsx('relative h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8', {
+        className={clsx('relative h-full overflow-y-auto px-8 py-6', {
           'z-0': openAddNewProviderModal || openDeleteAccountModal || openEditAccountBalanceModal || openAddNewAccountModal,
           'z-10': !openAddNewProviderModal && !openDeleteAccountModal && !openEditAccountBalanceModal && !openAddNewAccountModal,
         })}
@@ -47,13 +47,15 @@ export const SavingsPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Savings</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your bank accounts</p>
           </div>
-          <button
-            type="button"
-            onClick={() => updateOpenAddNewProviderModal(true)}
-            className="mt-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto"
-          >
-            Add New Provider
-          </button>
+          {canAddNewProvider && (
+            <button
+              type="button"
+              onClick={() => updateOpenAddNewProviderModal(true)}
+              className="mt-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto"
+            >
+              Add New Provider
+            </button>
+          )}
         </div>
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
@@ -65,6 +67,13 @@ export const SavingsPage: React.FC = () => {
             </div>
           </div>
         ))}
+        {savingProviderTableRows.length === 0 && (
+          <div className="flex w-full flex-col items-center py-6">
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Oops! 😢</h1>
+            <p className="mt-6 text-lg leading-7 text-gray-600">Your pocket seems to be empty 💸💸💸</p>
+            <p className="mt-2 text-base leading-7 text-gray-600">Just click the button in top right corner to add your bank accounts!</p>
+          </div>
+        )}
       </div>
       <ToastContainer />
     </Root>
