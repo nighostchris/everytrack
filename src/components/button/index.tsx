@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import React from 'react';
 import { LuLoader2 } from 'react-icons/lu';
 
+import { IconButton } from './IconButton';
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant: 'contained' | 'outlined';
   isLoading?: boolean;
@@ -32,5 +34,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
+
+export { IconButton };
 
 export default Button;

@@ -20,6 +20,7 @@ import { TableCell } from './TableCell';
 import { TableHead } from './TableHead';
 import { BaseTable } from './BaseTable';
 import { TableHeader } from './TableHeader';
+import { TablePagination } from './TablePagination';
 import { TableRowActions } from './TableRowActions';
 import { TableColumnHeader } from './TableColumnHeader';
 
@@ -93,7 +94,7 @@ export function Table<Data, Value>({ columns, data }: TableProps<Data, Value>) {
           </TableBody>
         </BaseTable>
       </div>
-      {/* <DataTablePagination table={table} /> */}
+      <TablePagination table={table} />
     </div>
   );
 }
