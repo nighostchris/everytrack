@@ -2,13 +2,13 @@ import { AxiosError } from 'axios';
 
 import {
   GetAllStocksResponse,
+  DeleteStockHoldingRequest,
   UpdateStockHoldingRequest,
+  DeleteStockHoldingResponse,
   UpdateStockHoldingResponse,
   GetAllStockHoldingsResponse,
   CreateNewStockHoldingRequest,
   CreateNewStockHoldingResponse,
-  DeleteStockHoldingRequest,
-  DeleteStockHoldingResponse,
 } from '../types';
 import { client } from '../client';
 

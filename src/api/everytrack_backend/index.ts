@@ -4,6 +4,7 @@ export * from './exrate';
 export * from './stocks';
 export * from './accounts';
 export * from './settings';
+export * from './expenses';
 export * from './providers';
 export * from './countries';
 export * from './currencies';

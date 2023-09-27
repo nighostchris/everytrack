@@ -64,6 +64,24 @@ export interface GetAllCurrenciesResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/expenses endpoints
+// ============================================================
+// GET /v1/expenses
+export interface GetAllExpensesResponse extends BaseResponse {
+  data: Expense[];
+}
+// POST /v1/expenses
+export interface CreateNewExpenseRequest {
+  amount: string;
+  category: string;
+  executedAt: number;
+  currencyId: string;
+  remarks?: string;
+  accountId?: string;
+}
+export interface CreateNewExpenseResponse extends BaseResponse {}
+
+// ============================================================
 // /v1/settings endpoints
 // ============================================================
 // GET /v1/settings
@@ -166,6 +184,15 @@ export interface ExchangeRate {
   rate: string;
   baseCurrencyId: string;
   targetCurrencyId: string;
+}
+
+export interface Expense {
+  amount: string;
+  remarks: string;
+  category: string;
+  executedAt: number;
+  currencyId: string;
+  accountId: string | null;
 }
 
 export interface Provider {

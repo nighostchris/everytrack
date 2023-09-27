@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { Account, AccountStockHolding, Country, Currency, ClientSettings, ExchangeRate, Stock } from '@api/everytrack_backend';
+import { Account, AccountStockHolding, Country, Currency, ClientSettings, ExchangeRate, Expense, Stock } from '@api/everytrack_backend';
 
 export type GlobalStateSlice = {
   stocks?: Stock[];
   username?: string;
   currencyId?: string;
+  expenses?: Expense[];
   countries?: Country[];
   currencies?: Currency[];
   bankAccounts?: Account[];
@@ -13,6 +14,7 @@ export type GlobalStateSlice = {
   accountStockHoldings?: AccountStockHolding[];
   updateStocks: (newStocks: Stock[]) => void;
   updateUsername: (newUsername: string) => void;
+  updateExpenses: (newExpenses: Expense[]) => void;
   updateCurrencyId: (newCurrencyId: string) => void;
   updateCountries: (newCountries: Country[]) => void;
   updateCurrencies: (newCurrencies: Currency[]) => void;
