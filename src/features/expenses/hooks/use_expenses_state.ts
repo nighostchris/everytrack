@@ -3,14 +3,14 @@ import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 
 import { store as globalStore } from '@lib/zustand';
-import { Currency, getAllExpenses } from '@api/everytrack_backend';
+import { Currency, ExpenseCategory, getAllExpenses } from '@api/everytrack_backend';
 
 export interface ExpensesTableRow {
+  name: string;
   amount: string;
   remarks: string;
-  // TODO: tighten category type later
-  category: string;
   spentDate: string;
+  category: ExpenseCategory;
 }
 
 export const useExpensesState = () => {
@@ -36,9 +36,10 @@ export const useExpensesState = () => {
       // Generate a currency map
       currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
       // Populate result
-      expenses.forEach(({ amount, accountId, currencyId, executedAt, remarks, category }) => {
+      expenses.forEach(({ name, amount, accountId, currencyId, executedAt, remarks, category }) => {
         const currency = (currenciesMap.get(currencyId) as Currency).symbol;
         result.push({
+          name,
           remarks,
           category,
           spentDate: dayjs.unix(executedAt).format('MMM DD'),

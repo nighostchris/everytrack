@@ -17,9 +17,9 @@ export async function getAllExpenses() {
 }
 
 export async function createNewExpense(params: CreateNewExpenseRequest) {
-  const { amount, category, executedAt, currencyId, remarks, accountId } = params;
+  const { name, amount, category, executedAt, currencyId, remarks, accountId } = params;
   try {
-    const { data } = await client.post('/v1/expenses', { amount, category, executedAt, currencyId, remarks, accountId });
+    const { data } = await client.post('/v1/expenses', { name, amount, category, executedAt, currencyId, remarks, accountId });
     return data as CreateNewExpenseResponse;
   } catch (error) {
     const { response } = error as AxiosError;

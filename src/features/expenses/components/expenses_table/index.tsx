@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import dayjs from 'dayjs';
 
+import { store } from '../../zustand';
 import ExpenseCategoryBadge from '../expense_category_badge';
 import { ExpensesTableRow } from '@features/expenses/hooks/use_expenses_state';
 import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
@@ -12,6 +13,8 @@ interface ExpensesTableProps {
 }
 
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className }) => {
+  const { updateOpenAddNewExpenseModal } = store();
+
   return (
     <>
       <div className={clsx('mb-4 mt-2 flex flex-col items-start sm:flex-row sm:items-center sm:justify-between', className)}>
@@ -20,8 +23,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
           variant="contained"
           className="h-8 text-xs"
           onClick={() => {
-            // updateOpenAddNewStockHoldingModal(true);
-            // populateAddNewStockHoldingModalState(id);
+            updateOpenAddNewExpenseModal(true);
           }}
         >
           Add New Expense

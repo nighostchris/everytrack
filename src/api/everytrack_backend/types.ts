@@ -72,6 +72,7 @@ export interface GetAllExpensesResponse extends BaseResponse {
 }
 // POST /v1/expenses
 export interface CreateNewExpenseRequest {
+  name: string;
   amount: string;
   category: string;
   executedAt: number;
@@ -187,6 +188,7 @@ export interface ExchangeRate {
 }
 
 export interface Expense {
+  name: string;
   amount: string;
   remarks: string;
   executedAt: number;
