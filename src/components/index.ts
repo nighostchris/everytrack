@@ -1,5 +1,6 @@
 export * from './tabs';
 export * from './card';
+export * from './badge';
 export * from './input';
 export * from './table';
 export * from './dialog';

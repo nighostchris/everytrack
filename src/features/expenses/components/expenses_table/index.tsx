@@ -1,8 +1,10 @@
 import clsx from 'clsx';
 import React from 'react';
+import dayjs from 'dayjs';
 
-import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
+import ExpenseCategoryBadge from '../expense_category_badge';
 import { ExpensesTableRow } from '@features/expenses/hooks/use_expenses_state';
+import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
 
 interface ExpensesTableProps {
   data: ExpensesTableRow[];
@@ -46,7 +48,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
             accessorKey: 'category',
             header: ({ column }) => <TableColumnHeader column={column} title="Category" />,
             cell: ({ row }) => {
-              return <div className="w-[80px]">{row.getValue('category')}</div>;
+              return <ExpenseCategoryBadge category={row.getValue('category')} />;
             },
             enableSorting: false,
           },
@@ -55,6 +57,11 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
             header: ({ column }) => <TableColumnHeader column={column} title="Spent Date" />,
             cell: ({ row }) => {
               return <div className="w-[80px]">{row.getValue('spentDate')}</div>;
+            },
+            sortingFn: (rowA, rowB) => {
+              const rowADate = dayjs(rowA.getValue('spentDate'));
+              const rowBDate = dayjs(rowB.getValue('spentDate'));
+              return rowADate.isAfter(rowBDate) ? 1 : rowADate.isSame(rowBDate) ? 0 : -1;
             },
           },
           {

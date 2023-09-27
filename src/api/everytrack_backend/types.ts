@@ -189,11 +189,27 @@ export interface ExchangeRate {
 export interface Expense {
   amount: string;
   remarks: string;
-  category: string;
   executedAt: number;
   currencyId: string;
   accountId: string | null;
+  category: ExpenseCategory;
 }
+
+export type ExpenseCategory =
+  | 'entertainment'
+  | 'education'
+  | 'shopping'
+  | 'health'
+  | 'dining'
+  | 'travel'
+  | 'accomodation'
+  | 'transportation'
+  | 'gift'
+  | 'kids'
+  | 'groceries'
+  | 'bills'
+  | 'tax'
+  | 'others';
 
 export interface Provider {
   id: string;
