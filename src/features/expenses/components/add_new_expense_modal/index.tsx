@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import React from 'react';
 import dayjs from 'dayjs';
+import BigNumber from 'bignumber.js';
 import { toast } from 'react-toastify';
 import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,29 +10,54 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '../../zustand';
 import { EXPENSE_CATEGORIES } from '@consts';
 import { store as globalStore } from '@lib/zustand';
-import { Button, DatePicker, Dialog, Input, Select, SelectOption } from '@components';
-import { ExpenseCategory, createNewExpense, getAllExpenses } from '@api/everytrack_backend';
-
-const addNewExpenseFormSchema = z.object({
-  name: z.string().min(1),
-  executedAt: z.number(),
-  currencyId: z.string().min(1),
-  remarks: z.string().optional(),
-  accountId: z.string().optional(),
-  amount: z.coerce
-    .number()
-    .positive()
-    .transform((input) => String(input)),
-  category: z.custom<ExpenseCategory>((input: unknown) => {
-    return typeof input === 'string' && (EXPENSE_CATEGORIES as unknown as string[]).includes(input);
-  }, 'Invalid category'),
-});
+import { Button, DatePicker, Dialog, Input, Select, SelectOption, Switch } from '@components';
+import { Currency, ExpenseCategory, createNewExpense, getAllExpenses } from '@api/everytrack_backend';
 
 export const AddNewExpenseModal: React.FC = () => {
-  const { currencies, updateExpenses } = globalStore();
+  const { currencies, bankAccounts, updateExpenses } = globalStore();
   const { openAddNewExpenseModal: open, updateOpenAddNewExpenseModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [useAccount, setUseAccount] = React.useState<boolean>(false);
+
+  const addNewExpenseFormSchema = React.useMemo(
+    () =>
+      z
+        .object({
+          executedAt: z.number(),
+          remarks: z.string().optional(),
+          accountId: z.string().optional(),
+          name: z.string().min(1, 'Name cannot be empty'),
+          currencyId: z.string({ required_error: 'Invalid currency' }),
+          amount: z.coerce
+            .number()
+            .positive('Amount must be greater than 0')
+            .transform((input) => String(input)),
+          category: z.custom<ExpenseCategory>((input: unknown) => {
+            return typeof input === 'string' && (EXPENSE_CATEGORIES as unknown as string[]).includes(input);
+          }, 'Invalid category'),
+        })
+        .superRefine((data, ctx) => {
+          const { accountId, currencyId } = data;
+          if (bankAccounts && accountId && currencyId) {
+            const account = bankAccounts.filter(({ id }) => id === accountId)[0];
+            console.log({ account, currencyId });
+            if (account.currencyId !== currencyId) {
+              ctx.addIssue({
+                code: 'custom',
+                path: ['currencyId'],
+                message: 'Expense currency have to match with bank account currency',
+              });
+              ctx.addIssue({
+                code: 'custom',
+                path: ['accountId'],
+                message: 'Consider using another account with same currency as this expense record',
+              });
+            }
+          }
+        }),
+    [bankAccounts],
+  );
 
   const {
     reset,
@@ -63,6 +89,17 @@ export const AddNewExpenseModal: React.FC = () => {
     value: category,
     display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
   })).sort((a, b) => (a.value > b.value ? 1 : -1));
+  const bankOptions: SelectOption[] = React.useMemo(() => {
+    if (bankAccounts && currencies) {
+      const currenciesMap = new Map<string, Currency>();
+      currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
+      return bankAccounts.map(({ id, name, balance, currencyId }) => {
+        const currency = (currenciesMap.get(currencyId) as Currency).symbol;
+        return { value: id, display: `${name} - ${currency} ${new BigNumber(balance).toFormat(2)}` };
+      });
+    }
+    return [];
+  }, [bankAccounts]);
 
   const spentDate = React.useMemo(() => dayjs.unix(watchSelectedExecutedAt).toDate(), [watchSelectedExecutedAt]);
 
@@ -86,11 +123,11 @@ export const AddNewExpenseModal: React.FC = () => {
   };
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl">
       <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Expense</h3>
         <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-        <div className="grid grid-cols-2 gap-x-6">
+        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
           <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
           <Select
             label="Category"
@@ -102,7 +139,7 @@ export const AddNewExpenseModal: React.FC = () => {
             error={errors.category && errors.category.message?.toString()}
           />
         </div>
-        <div className="grid grid-cols-2 gap-x-6">
+        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
           <Select
             label="Currency"
             formId="currencyId"
@@ -122,6 +159,20 @@ export const AddNewExpenseModal: React.FC = () => {
             }}
             className="[&>button]:w-full"
           />
+        </div>
+        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+          <Switch label="Use Account" checked={useAccount} onCheckedChange={setUseAccount} />
+          {useAccount && (
+            <Select
+              label="Spent From"
+              formId="accountId"
+              control={control as Control<any, any>}
+              className="!max-w-none"
+              options={bankOptions}
+              placeholder="Select account..."
+              error={errors.accountId && errors.accountId.message?.toString()}
+            />
+          )}
         </div>
         <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
       </div>

@@ -6,6 +6,7 @@ export * from './table';
 export * from './dialog';
 export * from './select';
 export * from './button';
+export * from './switch';
 export * from './popover';
 export * from './spinner';
 export * from './calendar';
