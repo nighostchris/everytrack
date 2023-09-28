@@ -38,10 +38,9 @@ export const AddNewExpenseModal: React.FC = () => {
           }, 'Invalid category'),
         })
         .superRefine((data, ctx) => {
-          const { accountId, currencyId } = data;
+          const { amount, accountId, currencyId } = data;
           if (bankAccounts && accountId && currencyId) {
             const account = bankAccounts.filter(({ id }) => id === accountId)[0];
-            console.log({ account, currencyId });
             if (account.currencyId !== currencyId) {
               ctx.addIssue({
                 code: 'custom',
@@ -52,6 +51,13 @@ export const AddNewExpenseModal: React.FC = () => {
                 code: 'custom',
                 path: ['accountId'],
                 message: 'Consider using another account with same currency as this expense record',
+              });
+            }
+            if (new BigNumber(account.balance).isLessThan(amount)) {
+              ctx.addIssue({
+                code: 'custom',
+                path: ['amount'],
+                message: 'You are spending more than your bank account balance! 💸💸💸',
               });
             }
           }
