@@ -51,12 +51,12 @@ export const DeleteStockHoldingModal: React.FC = () => {
 
   return (
     <Dialog open={open}>
-      <div className=" bg-white p-6 sm:p-6">
+      <div className="rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Delete Stock Holding</h3>
         <p className="mt-4">{`Are you sure to delete the stock holding`}</p>
         <p className="mt-2">{stockName}</p>
       </div>
-      <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button
           type="button"
           variant="contained"

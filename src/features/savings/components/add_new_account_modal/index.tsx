@@ -80,7 +80,7 @@ export const AddNewAccountModal: React.FC = () => {
 
   return (
     <Dialog open={open}>
-      <div className=" bg-white p-6 sm:p-6">
+      <div className="rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
         <p className="mt-1 text-sm">{`You are adding account for ${bankName}`}</p>
         <Select
@@ -96,7 +96,7 @@ export const AddNewAccountModal: React.FC = () => {
           <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
-      <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button
           type="button"
           variant="contained"

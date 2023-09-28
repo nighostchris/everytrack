@@ -16,6 +16,7 @@
           ["@hooks", "./src/hooks"],
           ["@utils", "./src/utils"],
           ["@pages", "./src/pages"],
+          ["@consts", "./src/consts"],
           ["@config", "./src/config"],
           ["@assets", "./src/assets"],
           ["@ettypes", "./src/types"],

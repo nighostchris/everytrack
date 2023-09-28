@@ -17,7 +17,7 @@ export const Dialog: React.FC<DialogProps> = ({ open, className, children }) => 
         <RadixDialog.Content
           className={clsx(
             className,
-            'fixed left-2/4 top-2/4 w-full max-w-xs -translate-x-2/4 -translate-y-2/4 animate-dialog-content overflow-hidden rounded-md bg-white focus:outline-none sm:max-w-md',
+            'fixed left-2/4 top-2/4 w-full max-w-xs -translate-x-2/4 -translate-y-2/4 animate-dialog-content rounded-md bg-white focus:outline-none sm:max-w-md',
           )}
         >
           {children}

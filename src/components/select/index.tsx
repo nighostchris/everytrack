@@ -28,7 +28,7 @@ export const Select = React.forwardRef<React.ElementRef<typeof Root>, SelectProp
     return (
       <div className={clsx(className, 'flex w-full max-w-sm flex-col')}>
         {/* dark:text-gray-200 */}
-        {label && <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>}
+        {label && <label className="mb-2 block text-sm font-medium leading-none text-gray-700">{label}</label>}
         <Controller
           name={formId}
           control={control}

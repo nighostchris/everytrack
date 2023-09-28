@@ -18,6 +18,9 @@ module.exports = {
           to: { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
         },
       },
+      zIndex: {
+        60: '60',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms')],

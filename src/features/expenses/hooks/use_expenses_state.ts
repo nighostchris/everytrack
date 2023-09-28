@@ -47,7 +47,7 @@ export const useExpensesState = () => {
         });
       });
     }
-    return result.sort((a, b) => (dayjs(a.spentDate).isAfter(dayjs(b.spentDate)) ? 1 : -1));
+    return result.sort((a, b) => (dayjs(a.spentDate).isBefore(dayjs(b.spentDate)) ? 1 : -1));
   }, [expenses, currencies]);
 
   React.useEffect(() => {

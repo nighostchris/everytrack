@@ -1,3 +1,5 @@
+import { EXPENSE_CATEGORIES } from '@consts';
+
 interface BaseResponse {
   success: boolean;
   error?: string;
@@ -197,21 +199,7 @@ export interface Expense {
   category: ExpenseCategory;
 }
 
-export type ExpenseCategory =
-  | 'entertainment'
-  | 'education'
-  | 'shopping'
-  | 'health'
-  | 'dining'
-  | 'travel'
-  | 'accomodation'
-  | 'transportation'
-  | 'gift'
-  | 'kids'
-  | 'groceries'
-  | 'bills'
-  | 'tax'
-  | 'others';
+export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
 
 export interface Provider {
   id: string;

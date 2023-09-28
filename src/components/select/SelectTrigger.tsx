@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
-import { FaChevronDown } from 'react-icons/fa6';
+import { RxCaretSort } from 'react-icons/rx';
 import { Trigger } from '@radix-ui/react-select';
 
 interface SelectTriggerProps {
@@ -20,11 +20,11 @@ export const SelectTrigger = React.forwardRef<
         className,
         { 'border-red-300': error },
         // dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900
-        'flex min-h-[40px] w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-gray-400',
       )}
     >
       {children}
-      <FaChevronDown className="h-4 w-4 opacity-50" />
+      <RxCaretSort className="h-5 w-5 text-black opacity-50" />
     </Trigger>
   );
 });

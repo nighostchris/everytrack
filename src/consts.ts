@@ -1,0 +1,16 @@
+export const EXPENSE_CATEGORIES = [
+  'tax',
+  'gift',
+  'kids',
+  'bills',
+  'others',
+  'health',
+  'travel',
+  'dining',
+  'shopping',
+  'education',
+  'groceries',
+  'accomodation',
+  'entertainment',
+  'transportation',
+] as const;

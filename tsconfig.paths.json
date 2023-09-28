@@ -7,6 +7,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@utils/*": ["src/utils/*"],
       "@pages/*": ["src/pages/*"],
+      "@consts": ["src/consts.ts"],
       "@config": ["src/config.ts"],
       "@assets/*": ["src/assets/*"],
       "@tftypes/*": ["src/types/*"],

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import clsx from 'clsx';
 import React from 'react';
 import { camelCase } from 'lodash';
@@ -21,7 +22,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, register, formId = camelCase(label), error, className, icon, type = 'text', ...props }, ref) => {
     return (
       <div className={clsx(className, 'flex w-full max-w-sm flex-col')}>
-        {label && <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>}
+        {label && <label className="mb-2 block text-sm font-medium leading-none text-gray-700">{label}</label>}
         <div className="relative rounded-md shadow-sm">
           {icon && icon.orientation === 'leading' && (
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -35,13 +36,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...register(formId, { required: props.required })}
             className={clsx(
               {
-                'border-gray-200': !error,
+                'border-gray-300': !error,
                 '!cursor-not-allowed': props.disabled,
                 'border-red-300 !pr-10 text-red-900': error,
                 '!pl-10': icon && icon.orientation === 'leading',
                 '!pr-10': icon && icon.orientation === 'trailing',
               },
-              'w-full rounded-md shadow-sm sm:text-sm',
+              'h-9 w-full rounded-md px-3 py-1 shadow-sm focus:border-none focus:outline-none focus:ring-1 focus:ring-gray-500 sm:text-sm',
             )}
           />
           {!error && icon && icon.orientation === 'trailing' && (

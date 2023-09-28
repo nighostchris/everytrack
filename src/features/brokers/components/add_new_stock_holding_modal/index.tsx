@@ -92,7 +92,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
 
   return (
     <Dialog open={open}>
-      <div className=" bg-white p-6 sm:p-6">
+      <div className=" rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Stock Holding</h3>
         <p className="mt-1 text-sm">{`You are adding stock holding for ${accountName}`}</p>
         <Select
@@ -111,7 +111,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
           </>
         )}
       </div>
-      <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button
           type="button"
           variant="contained"
