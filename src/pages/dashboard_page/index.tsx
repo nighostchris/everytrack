@@ -12,7 +12,7 @@ import useDashboardState from '@features/dashboard/hooks/use_dashboard_state';
 export const DashboardPage: React.FC = () => {
   const { username } = globalStore();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { lockedFund, totalBalance, instantAccessibleBalance } = useDashboardState();
+  const { lockedFund, totalBalance, spentThisMonth, instantAccessibleBalance } = useDashboardState();
 
   return (
     <Root>
@@ -39,7 +39,7 @@ export const DashboardPage: React.FC = () => {
                 <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${lockedFund}`}</p>
               </StatCard>
               <StatCard title="Spent this month" icon={GiPayMoney}>
-                <p className="text-sm">To be supported in future</p>
+                <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${spentThisMonth}`}</p>
               </StatCard>
             </div>
             <div className="mt-6 h-full w-full rounded-lg border border-gray-300 p-6">Transaction history to be supported in future</div>

@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
 import { store as globalStore } from '@lib/zustand';
-import { getAllAccounts, getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
+import { getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
 export interface BrokerAccountTableHolding {
   id: string;
@@ -34,20 +34,9 @@ export interface BrokerAccountTableRow {
 
 export const useBrokersState = () => {
   const { brokerDetails, updateBrokerDetails } = store();
-  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings, brokerAccounts, updateBrokerAccounts } = globalStore();
+  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings, brokerAccounts } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-
-  const initBrokerAccounts = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllAccounts('broker');
-      if (success) {
-        updateBrokerAccounts(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
 
   const initBrokerDetails = React.useCallback(async () => {
     try {
@@ -164,10 +153,9 @@ export const useBrokersState = () => {
 
   React.useEffect(() => {
     setIsLoading(true);
-    initBrokerAccounts();
     initBrokerDetails();
     setIsLoading(false);
-  }, [initBrokerAccounts, initBrokerDetails]);
+  }, [initBrokerDetails]);
 
   return { isLoading, canAddNewBroker, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
 };

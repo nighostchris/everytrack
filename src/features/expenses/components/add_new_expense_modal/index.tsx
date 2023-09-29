@@ -11,10 +11,10 @@ import { store } from '../../zustand';
 import { EXPENSE_CATEGORIES } from '@consts';
 import { store as globalStore } from '@lib/zustand';
 import { Button, DatePicker, Dialog, Input, Select, SelectOption, Switch } from '@components';
-import { Currency, ExpenseCategory, createNewExpense, getAllExpenses } from '@api/everytrack_backend';
+import { Currency, ExpenseCategory, createNewExpense, getAllAccounts, getAllExpenses } from '@api/everytrack_backend';
 
 export const AddNewExpenseModal: React.FC = () => {
-  const { currencies, bankAccounts, updateExpenses } = globalStore();
+  const { currencies, bankAccounts, updateExpenses, updateBankAccounts } = globalStore();
   const { openAddNewExpenseModal: open, updateOpenAddNewExpenseModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -118,6 +118,8 @@ export const AddNewExpenseModal: React.FC = () => {
         setOpen(false);
         const { data } = await getAllExpenses();
         updateExpenses(data);
+        const { data: newBankAccounts } = await getAllAccounts('savings');
+        updateBankAccounts(newBankAccounts);
         reset();
       }
       setIsLoading(false);
@@ -129,7 +131,7 @@ export const AddNewExpenseModal: React.FC = () => {
   };
 
   return (
-    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl">
+    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl lg:overflow-visible">
       <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Expense</h3>
         <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />

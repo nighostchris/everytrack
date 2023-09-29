@@ -1,11 +1,12 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 
 import { Stock } from '@api/everytrack_backend';
 import { store as globalStore } from '@lib/zustand';
 
 export const useDashboardState = () => {
-  const { bankAccounts, accountStockHoldings, stocks, currencyId, exchangeRates } = globalStore();
+  const { bankAccounts, accountStockHoldings, expenses, stocks, currencyId, exchangeRates } = globalStore();
 
   const stocksMap = React.useMemo(() => {
     const map: Map<string, Stock> = new Map();
@@ -53,7 +54,26 @@ export const useDashboardState = () => {
     };
   }, [stocks, accountStockHoldings, currencyId, bankAccounts, exchangeRates]);
 
-  return { lockedFund, totalBalance, instantAccessibleBalance };
+  const { spentThisMonth } = React.useMemo(() => {
+    let spentThisMonth = new BigNumber(0);
+    if (currencyId && expenses && exchangeRates) {
+      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isBefore(dayjs().endOf('month')));
+      expensesInThisMonth.forEach(({ amount, currencyId: expenseCurrencyId }) => {
+        if (expenseCurrencyId === currencyId) {
+          spentThisMonth = spentThisMonth.plus(amount);
+        } else {
+          const exchangeRate = exchangeRates.filter(
+            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === expenseCurrencyId && targetCurrencyId === currencyId,
+          )[0];
+          const convertedBalance = new BigNumber(amount).multipliedBy(exchangeRate.rate);
+          spentThisMonth = spentThisMonth.plus(convertedBalance);
+        }
+      });
+    }
+    return { spentThisMonth: spentThisMonth.toFormat(2) };
+  }, [currencyId, expenses, exchangeRates]);
+
+  return { lockedFund, totalBalance, spentThisMonth, instantAccessibleBalance };
 };
 
 export default useDashboardState;

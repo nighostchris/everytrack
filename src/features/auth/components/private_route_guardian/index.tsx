@@ -4,6 +4,7 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import {
   verify,
   getAllStocks,
+  getAllExpenses,
   getAllAccounts,
   getAllCountries,
   getAllCurrencies,
@@ -20,6 +21,7 @@ export const PrivateRouteGuardian: React.FC = () => {
     currencies,
     currencyId,
     updateStocks,
+    updateExpenses,
     updateUsername,
     updateCountries,
     updateCurrencyId,
@@ -110,6 +112,17 @@ export const PrivateRouteGuardian: React.FC = () => {
     }
   }, []);
 
+  const initExpenses = React.useCallback(async () => {
+    try {
+      const { success, data } = await getAllExpenses();
+      if (success) {
+        updateExpenses(data);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
+  }, []);
+
   const initStocks = React.useCallback(async () => {
     try {
       const { success, data } = await getAllStocks();
@@ -143,6 +156,7 @@ export const PrivateRouteGuardian: React.FC = () => {
 
     verifyAccessToken();
     initStocks();
+    initExpenses();
     initCountries();
     initCurrencies();
     initBankAccounts();
@@ -152,6 +166,7 @@ export const PrivateRouteGuardian: React.FC = () => {
     initAccountStockHoldings();
   }, [
     initStocks,
+    initExpenses,
     initCountries,
     initCurrencies,
     initBankAccounts,

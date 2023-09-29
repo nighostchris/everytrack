@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 
 import { store as globalStore } from '@lib/zustand';
-import { Currency, ExpenseCategory, getAllExpenses } from '@api/everytrack_backend';
+import { Currency, ExpenseCategory } from '@api/everytrack_backend';
 
 export interface ExpensesTableRow {
   name: string;
@@ -14,20 +14,9 @@ export interface ExpensesTableRow {
 }
 
 export const useExpensesState = () => {
-  const { expenses, currencies, updateExpenses } = globalStore();
+  const { expenses, currencies } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-
-  const initExpenses = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllExpenses();
-      if (success) {
-        updateExpenses(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
 
   const expensesTableRows = React.useMemo(() => {
     const result: ExpensesTableRow[] = [];
@@ -52,9 +41,8 @@ export const useExpensesState = () => {
 
   React.useEffect(() => {
     setIsLoading(true);
-    initExpenses();
     setIsLoading(false);
-  }, [initExpenses]);
+  }, []);
 
   return { isLoading, expensesTableRows };
 };

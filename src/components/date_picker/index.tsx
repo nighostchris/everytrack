@@ -24,7 +24,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ date, setDate, label, cl
           <PopoverTrigger asChild>
             <button
               className={clsx(
-                'inline-flex h-9 w-[240px] items-center justify-start rounded-md border border-gray-300 bg-transparent px-4 py-2 text-left text-sm font-normal shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-500 disabled:pointer-events-none disabled:opacity-50',
+                'inline-flex h-9 w-[240px] items-center justify-start rounded-md border border-gray-300 bg-transparent px-4 py-2 text-left text-sm font-normal shadow-sm disabled:pointer-events-none disabled:opacity-50',
                 !date && 'text-gray-400',
               )}
             >
