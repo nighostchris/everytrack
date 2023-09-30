@@ -8,6 +8,11 @@ export const createModalStateSlice: StateCreator<
   [],
   ModalStateSlice
 > = (set) => ({
+  expenseId: undefined,
   openAddNewExpenseModal: false,
+  openDeleteExpenseModal: false,
+  resetDeleteExpenseModalState: () => set((state) => ({ ...state, expenseId: undefined })),
+  populateDeleteExpenseModalState: (expenseId) => set((state) => ({ ...state, expenseId })),
   updateOpenAddNewExpenseModal: (newModalState) => set((state) => ({ ...state, openAddNewExpenseModal: newModalState })),
+  updateOpenDeleteExpenseModal: (newModalState) => set((state) => ({ ...state, openDeleteExpenseModal: newModalState })),
 });

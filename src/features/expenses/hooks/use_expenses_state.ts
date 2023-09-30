@@ -6,6 +6,7 @@ import { store as globalStore } from '@lib/zustand';
 import { Currency, ExpenseCategory } from '@api/everytrack_backend';
 
 export interface ExpensesTableRow {
+  id: string;
   name: string;
   amount: string;
   remarks: string;
@@ -25,9 +26,10 @@ export const useExpensesState = () => {
       // Generate a currency map
       currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
       // Populate result
-      expenses.forEach(({ name, amount, accountId, currencyId, executedAt, remarks, category }) => {
+      expenses.forEach(({ id, name, amount, accountId, currencyId, executedAt, remarks, category }) => {
         const currency = (currenciesMap.get(currencyId) as Currency).symbol;
         result.push({
+          id,
           name,
           remarks,
           category,

@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Root } from '@layouts/root';
 // import { store as globalStore } from '@lib/zustand';
 import { useExpensesState } from '@features/expenses/hooks/use_expenses_state';
-import { AddNewExpenseModal, ExpensesTable } from '@features/expenses/components';
+import { AddNewExpenseModal, DeleteExpenseModal, ExpensesTable } from '@features/expenses/components';
 
 export const ExpensesPage: React.FC = () => {
   const { isLoading, expensesTableRows } = useExpensesState();
@@ -15,6 +15,7 @@ export const ExpensesPage: React.FC = () => {
   return (
     <Root>
       <AddNewExpenseModal />
+      <DeleteExpenseModal />
       <div className={clsx('relative flex h-full flex-col overflow-y-auto px-8 py-6')}>
         <h1 className="text-xl font-semibold text-gray-900">Expenses</h1>
         <p className="mt-2 text-sm text-gray-700">Stay alert of where you spent your money</p>

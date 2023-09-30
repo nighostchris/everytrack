@@ -116,6 +116,7 @@ export const AddNewExpenseModal: React.FC = () => {
       const { success } = await createNewExpense({ name, amount, remarks, category, accountId, currencyId, executedAt });
       if (success) {
         setOpen(false);
+        setUseAccount(false);
         const { data } = await getAllExpenses();
         updateExpenses(data);
         const { data: newBankAccounts } = await getAllAccounts('savings');

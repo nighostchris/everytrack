@@ -13,7 +13,7 @@ interface ExpensesTableProps {
 }
 
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className }) => {
-  const { updateOpenAddNewExpenseModal } = store();
+  const { populateDeleteExpenseModalState, updateOpenAddNewExpenseModal, updateOpenDeleteExpenseModal } = store();
 
   return (
     <>
@@ -79,8 +79,15 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
               <TableRowActions
                 row={row}
                 actions={[
-                  <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
-                  <DropdownMenuItem onClick={() => {}}>Delete</DropdownMenuItem>,
+                  // <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
+                  <DropdownMenuItem
+                    onClick={() => {
+                      populateDeleteExpenseModalState(row.original.id);
+                      updateOpenDeleteExpenseModal(true);
+                    }}
+                  >
+                    Delete
+                  </DropdownMenuItem>,
                 ]}
               />
             ),

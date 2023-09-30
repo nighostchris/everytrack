@@ -83,6 +83,12 @@ export interface CreateNewExpenseRequest {
   accountId?: string;
 }
 export interface CreateNewExpenseResponse extends BaseResponse {}
+// DELETE /v1/expenses
+export interface DeleteExpenseRequest {
+  expenseId: string;
+  revertBalance: boolean;
+}
+export interface DeleteExpenseResponse extends BaseResponse {}
 
 // ============================================================
 // /v1/settings endpoints
@@ -190,6 +196,7 @@ export interface ExchangeRate {
 }
 
 export interface Expense {
+  id: string;
   name: string;
   amount: string;
   remarks: string;
