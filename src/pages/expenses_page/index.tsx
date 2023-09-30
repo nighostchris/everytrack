@@ -23,7 +23,7 @@ const extractExistingCategories = (chartData: ExpenseBarChartData[]) => {
 
 export const ExpensesPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { isLoading, expensesTableRows, spentThisMonth, monthlyExpenseChartData } = useExpensesState();
+  const { isLoading, expensesTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData } = useExpensesState();
 
   return (
     <Root>
@@ -34,11 +34,11 @@ export const ExpensesPage: React.FC = () => {
         <p className="mt-2 text-sm text-gray-700">Stay alert of where you spent your money</p>
         <div className="mt-8 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
-            <StatCard title="Spent Last Month" icon={GiPayMoney}>
+            <StatCard title="Spent This Month" icon={GiPayMoney}>
               <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${spentThisMonth}`}</p>
             </StatCard>
-            <StatCard title="Other Metrics" icon={FaQuestion}>
-              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">To Be Constructed Later</p>
+            <StatCard title="Spent This Year" icon={GiPayMoney}>
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${spentThisYear}`}</p>
             </StatCard>
             <StatCard title="Other Metrics" icon={FaQuestion}>
               <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">To Be Constructed Later</p>

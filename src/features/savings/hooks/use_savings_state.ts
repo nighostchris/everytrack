@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import { store } from '../zustand';
 import { store as globalStore } from '@lib/zustand';
 import { getAllProviders } from '@api/everytrack_backend';
+import { calculateDisplayAmount } from '@utils';
 
 export interface SavingProviderTableAccount {
   id: string;
@@ -44,15 +45,7 @@ export const useSavingsState = () => {
     let totalBalance = new BigNumber(0);
     if (bankAccounts && exchangeRates && currencyId) {
       bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
-        if (accountCurrencyId === currencyId) {
-          totalBalance = totalBalance.plus(balance);
-        } else {
-          const exchangeRate = exchangeRates.filter(
-            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === accountCurrencyId && targetCurrencyId === currencyId,
-          )[0];
-          const convertedBalance = new BigNumber(balance).multipliedBy(exchangeRate.rate);
-          totalBalance = totalBalance.plus(convertedBalance);
-        }
+        totalBalance = totalBalance.plus(calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates));
       });
     }
     return totalBalance.toFormat(2);

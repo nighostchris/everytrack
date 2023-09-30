@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
+import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
 import { getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
@@ -81,20 +82,17 @@ export const useBrokersState = () => {
       accountStockHoldings.forEach(({ holdings }) => {
         holdings.forEach(({ unit, cost, stockId }) => {
           const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
-          if (stockCurrencyId === currencyId) {
-            totalBalance = totalBalance.plus(new BigNumber(unit).multipliedBy(currentPrice));
-            winLoseAmount = winLoseAmount.plus(new BigNumber(unit).multipliedBy(new BigNumber(currentPrice).minus(cost)));
-          } else {
-            const exchangeRate = exchangeRates.filter(
-              ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === stockCurrencyId && targetCurrencyId === currencyId,
-            )[0];
-            const convertedWinLoseAmount = new BigNumber(unit)
-              .multipliedBy(new BigNumber(currentPrice).minus(cost))
-              .multipliedBy(exchangeRate.rate);
-            const convertedBalance = new BigNumber(unit).multipliedBy(currentPrice).multipliedBy(exchangeRate.rate);
-            totalBalance = totalBalance.plus(convertedBalance);
-            winLoseAmount = winLoseAmount.plus(convertedWinLoseAmount);
-          }
+          totalBalance = totalBalance.plus(
+            calculateDisplayAmount(currentPrice, currencyId, stockCurrencyId, exchangeRates).multipliedBy(unit),
+          );
+          winLoseAmount = winLoseAmount.plus(
+            calculateDisplayAmount(
+              new BigNumber(currentPrice).minus(cost).toString(),
+              currencyId,
+              stockCurrencyId,
+              exchangeRates,
+            ).multipliedBy(unit),
+          );
         });
       });
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 
+import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
 import { Currency, ExpenseCategory } from '@api/everytrack_backend';
 
@@ -46,23 +47,20 @@ export const useExpensesState = () => {
     return result.sort((a, b) => (dayjs(a.spentDate).isBefore(dayjs(b.spentDate)) ? 1 : -1));
   }, [expenses, currencies]);
 
-  const { spentThisMonth } = React.useMemo(() => {
+  const { spentThisMonth, spentThisYear } = React.useMemo(() => {
+    let spentThisYear = new BigNumber(0);
     let spentThisMonth = new BigNumber(0);
     if (currencyId && expenses && exchangeRates) {
-      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isBefore(dayjs().endOf('month')));
+      const expensesInThisYear = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isAfter(dayjs().startOf('year')));
+      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isAfter(dayjs().startOf('month')));
       expensesInThisMonth.forEach(({ amount, currencyId: expenseCurrencyId }) => {
-        if (expenseCurrencyId === currencyId) {
-          spentThisMonth = spentThisMonth.plus(amount);
-        } else {
-          const exchangeRate = exchangeRates.filter(
-            ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === expenseCurrencyId && targetCurrencyId === currencyId,
-          )[0];
-          const convertedBalance = new BigNumber(amount).multipliedBy(exchangeRate.rate);
-          spentThisMonth = spentThisMonth.plus(convertedBalance);
-        }
+        spentThisMonth = spentThisMonth.plus(calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates));
+      });
+      expensesInThisYear.forEach(({ amount, currencyId: expenseCurrencyId }) => {
+        spentThisYear = spentThisYear.plus(calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates));
       });
     }
-    return { spentThisMonth: spentThisMonth.toFormat(2) };
+    return { spentThisMonth: spentThisMonth.toFormat(2), spentThisYear: spentThisYear.toFormat(2) };
   }, [currencyId, expenses, exchangeRates]);
 
   const { monthlyExpenseChartData } = React.useMemo(() => {
@@ -93,17 +91,9 @@ export const useExpensesState = () => {
         const monthExpenseRecords = lastSixMonthMap.get(spentDateInMonth);
         const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
         if (monthExpenseRecords) {
-          let accumulatedExpense: BigNumber;
           const originalExpense = monthExpenseRecords[capitalizedCategory];
-          if (expenseCurrencyId === currencyId) {
-            accumulatedExpense = originalExpense ? new BigNumber(amount).plus(originalExpense) : new BigNumber(amount);
-          } else {
-            const exchangeRate = exchangeRates.filter(
-              ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === expenseCurrencyId && targetCurrencyId === currencyId,
-            )[0];
-            const convertedBalance = new BigNumber(amount).multipliedBy(exchangeRate.rate);
-            accumulatedExpense = originalExpense ? new BigNumber(convertedBalance).plus(originalExpense) : new BigNumber(convertedBalance);
-          }
+          const expense = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
+          const accumulatedExpense = originalExpense ? expense.plus(originalExpense) : expense;
           lastSixMonthMap.set(spentDateInMonth, {
             ...monthExpenseRecords,
             [capitalizedCategory]: accumulatedExpense.decimalPlaces(2).toNumber(),
@@ -120,7 +110,7 @@ export const useExpensesState = () => {
     setIsLoading(false);
   }, []);
 
-  return { isLoading, expensesTableRows, spentThisMonth, monthlyExpenseChartData };
+  return { isLoading, expensesTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData };
 };
 
 export default useExpensesState;

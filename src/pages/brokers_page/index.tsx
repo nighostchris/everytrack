@@ -21,9 +21,9 @@ import {
   EditStockHoldingCostModal,
 } from '@features/brokers/components';
 import { store } from '@features/brokers/zustand';
+import { calculateInterpolateColor } from '@utils';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
-import { calculateInterpolateColor } from '@utils/calculate_interpolate_color';
 
 export const BrokersPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
