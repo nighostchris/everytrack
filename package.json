@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
+    "@nivo/bar": "^0.83.0",
     "@nivo/core": "^0.83.0",
     "@nivo/pie": "^0.83.0",
     "@radix-ui/react-dialog": "^1.0.4",

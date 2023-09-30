@@ -69,7 +69,6 @@ export const useBrokersState = () => {
         return { id: ticker, value: new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate) };
       });
       const totalValue = distribution.reduce((acc, current) => acc.plus(current.value), new BigNumber(0));
-      console.log({ totalValue, distribution });
       return distribution.map(({ id, value }) => ({ id, value: new BigNumber(value).dividedBy(totalValue).multipliedBy(100).toFormat(2) }));
     }
     return [];
