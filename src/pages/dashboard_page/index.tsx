@@ -5,20 +5,20 @@ import { useOutletContext } from 'react-router-dom';
 import { GiReceiveMoney, GiLockedChest, GiPayMoney } from 'react-icons/gi';
 
 import Root from '@layouts/root';
-import { StatCard } from '@components';
+import { StatCard, Timeline } from '@components';
 import { store as globalStore } from '@lib/zustand';
-import useDashboardState from '@features/dashboard/hooks/use_dashboard_state';
+import { useDashboardState } from '@features/dashboard/hooks/use_dashboard_state';
 
 export const DashboardPage: React.FC = () => {
   const { username } = globalStore();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { lockedFund, totalBalance, spentThisMonth, instantAccessibleBalance } = useDashboardState();
+  const { lockedFund, totalBalance, recentExpenses, spentThisMonth, instantAccessibleBalance } = useDashboardState();
 
   return (
     <Root>
       <div className="flex h-full flex-col px-8 py-6">
         <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <div className="mt-4 grid grid-rows-1 gap-x-6 lg:h-full xl:grid-cols-3">
+        <div className="mt-4 grid grid-rows-1 gap-x-6 overflow-y-hidden lg:h-full xl:grid-cols-3">
           <div className="flex h-full flex-col py-6">
             <h2 className="text-4xl font-medium">{`Hello ${username}`}</h2>
             <h3 className="mt-2 text-xl">Let's have a look at your balance</h3>
@@ -42,7 +42,10 @@ export const DashboardPage: React.FC = () => {
                 <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${spentThisMonth}`}</p>
               </StatCard>
             </div>
-            <div className="mt-6 h-full w-full rounded-lg border border-gray-300 p-6">Transaction history to be supported in future</div>
+            <div className="mt-6 flex h-full w-full flex-col space-y-4 overflow-y-hidden pt-4">
+              <h3 className="text-xl font-semibold text-gray-900">Recent Expenses</h3>
+              <Timeline feeds={recentExpenses} className="h-full overflow-y-auto" />
+            </div>
           </div>
         </div>
       </div>
