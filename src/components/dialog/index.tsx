@@ -15,6 +15,7 @@ export const Dialog: React.FC<DialogProps> = ({ open, className, children }) => 
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 animate-dialog-overlay bg-gray-700/[.7]" />
         <RadixDialog.Content
+          onOpenAutoFocus={(e) => e.preventDefault()}
           className={clsx(
             className,
             'fixed left-2/4 top-2/4 w-full max-w-xs -translate-x-2/4 -translate-y-2/4 animate-dialog-content rounded-md bg-white focus:outline-none sm:max-w-md',

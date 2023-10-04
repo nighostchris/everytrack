@@ -127,7 +127,7 @@ export const AddNewProviderModal: React.FC = () => {
           variant="contained"
           isLoading={isLoading}
           onClick={handleSubmit(onSubmitAddNewProviderForm)}
-          className="w-full sm:ml-2 sm:w-fit"
+          className="w-full sm:ml-2 sm:w-28"
         >
           Add
         </Button>
@@ -135,7 +135,7 @@ export const AddNewProviderModal: React.FC = () => {
           type="button"
           variant="outlined"
           onClick={() => setOpen(false)}
-          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 sm:w-fit"
+          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 hover:!text-gray-800 sm:mt-0 sm:w-28"
         >
           Cancel
         </Button>

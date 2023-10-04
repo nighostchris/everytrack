@@ -32,11 +32,11 @@ export const EXPENSE_CATEGORIES = [
 
 export const EXPENSE_CATEGORY_ICON_COLORS = {
   tax: 'text-orange-700',
-  gift: 'text-neutral-700',
-  kids: 'text-neutral-700',
+  gift: 'text-finlandia-700',
+  kids: 'text-crail-700',
   bills: 'text-cyan-700',
   others: 'text-slate-700',
-  health: 'text-neutral-700',
+  health: 'text-monarch-700',
   travel: 'text-sky-700',
   dining: 'text-fuchsia-700',
   shopping: 'text-purple-700',
@@ -49,11 +49,11 @@ export const EXPENSE_CATEGORY_ICON_COLORS = {
 
 export const EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS = {
   tax: 'bg-orange-100',
-  gift: 'bg-neutral-100',
-  kids: 'bg-neutral-100',
+  gift: 'bg-finlandia-100',
+  kids: 'bg-crail-100',
   bills: 'bg-cyan-100',
   others: 'bg-slate-100',
-  health: 'bg-neutral-100',
+  health: 'bg-monarch-100',
   travel: 'bg-sky-100',
   dining: 'bg-fuchsia-100',
   shopping: 'bg-purple-100',
