@@ -23,6 +23,12 @@ export interface BrokerAccountTableHolding {
 export interface BrokerAccountDetails {
   id: string;
   name: string;
+  balance: string;
+  currency: {
+    id: string;
+    symbol: string;
+  };
+  accountTypeId: string;
   holdings: BrokerAccountTableHolding[];
 }
 
@@ -63,8 +69,14 @@ export const useBrokersState = () => {
     return map;
   }, [stocks]);
 
+  const currenciesMap = React.useMemo(() => {
+    const map: Map<string, Currency> = new Map();
+    (currencies ?? []).forEach((currency) => map.set(currency.id, currency));
+    return map;
+  }, [currencies]);
+
   const assetDistribution: StockHoldingDistributionData[] = React.useMemo(() => {
-    if (stocks && currencyId && exchangeRates && accountStockHoldings) {
+    if (stocks && currencyId && exchangeRates && brokerAccounts && accountStockHoldings) {
       const allHoldings = (accountStockHoldings ?? []).reduce<StockHolding[]>((acc, current) => acc.concat(current.holdings), []);
       const distribution = allHoldings.map(({ unit, cost, stockId }) => {
         const { ticker, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
@@ -76,21 +88,43 @@ export const useBrokersState = () => {
               )[0];
         return { id: ticker, value: new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate) };
       });
-      const totalValue = distribution.reduce((acc, current) => acc.plus(current.value), new BigNumber(0));
-      return distribution.map(({ id: name, value }) => ({
-        name,
-        balance: value.toFormat(2),
-        percentage: Number(value.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
-        color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', value.dividedBy(totalValue).toNumber()),
-      }));
+      const cashHoldings = brokerAccounts.reduce((acc, { balance, currencyId: accountCurrencyId }) => {
+        const exchangeRate =
+          accountCurrencyId === currencyId
+            ? { rate: '1' }
+            : exchangeRates.filter(
+                ({ baseCurrencyId, targetCurrencyId }) => baseCurrencyId === accountCurrencyId && targetCurrencyId === currencyId,
+              )[0];
+        return acc.plus(new BigNumber(balance).multipliedBy(exchangeRate.rate));
+      }, new BigNumber(0));
+      const totalValue = distribution.reduce((acc, current) => acc.plus(current.value), new BigNumber(0)).plus(cashHoldings);
+      return [
+        {
+          name: 'Cash',
+          balance: cashHoldings.toFormat(2),
+          percentage: Number(cashHoldings.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
+          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', cashHoldings.dividedBy(totalValue).toNumber()),
+        },
+        ...distribution.map(({ id: name, value }) => ({
+          name,
+          balance: value.toFormat(2),
+          percentage: Number(value.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
+          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', value.dividedBy(totalValue).toNumber()),
+        })),
+      ].sort((a, b) => (new BigNumber(a.balance).isGreaterThan(b.balance) ? -1 : 1));
     }
     return [];
-  }, [stocks, currencyId, exchangeRates, accountStockHoldings]);
+  }, [stocks, currencyId, exchangeRates, brokerAccounts, accountStockHoldings]);
 
   const { totalBalance, winLoseAmount } = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
     let winLoseAmount = new BigNumber(0);
-    if (accountStockHoldings && exchangeRates && currencyId && stocks) {
+    if (accountStockHoldings && brokerAccounts && exchangeRates && currencyId && stocks) {
+      // Calculate broker account balance
+      brokerAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
+        totalBalance = totalBalance.plus(calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates));
+      });
+      // Calculate stock holdings balance
       accountStockHoldings.forEach(({ holdings }) => {
         holdings.forEach(({ unit, cost, stockId }) => {
           const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
@@ -109,25 +143,29 @@ export const useBrokersState = () => {
       });
     }
     return { totalBalance: totalBalance.toFormat(2), winLoseAmount: winLoseAmount.toFormat(2) };
-  }, [stocks, currencyId, exchangeRates, accountStockHoldings]);
+  }, [stocks, currencyId, exchangeRates, brokerAccounts, accountStockHoldings]);
 
   const brokerAccountTableRows = React.useMemo(() => {
-    const currenciesMap = new Map<string, Currency>();
     const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
     const accountStockHoldingsMap = new Map<string, StockHolding[]>();
     const result: BrokerAccountTableRow[] = [];
     if (brokerDetails && brokerAccounts && currencies && stocks && accountStockHoldings) {
-      // Generate a currency map
-      currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
       // Generate a account stock holding map
       accountStockHoldings.forEach(({ accountId, holdings }) => {
         accountStockHoldingsMap.set(accountId, holdings);
       });
       // Generate a broker detail map
       brokerDetails.forEach(({ id, name, icon }) => brokerDetailsMap.set(id, { id, name, icon, accounts: [] }));
-      brokerAccounts.forEach(({ id: accountId, name, assetProviderId }) => {
+      brokerAccounts.forEach(({ id: accountId, name, balance, currencyId: accountCurrencyId, assetProviderId, accountTypeId }) => {
         const brokerAccountTableRow = brokerDetailsMap.get(assetProviderId) as BrokerAccountTableRow;
-        const account: BrokerAccountDetails = { id: accountId, name, holdings: [] };
+        const account: BrokerAccountDetails = {
+          name,
+          balance,
+          holdings: [],
+          accountTypeId,
+          id: accountId,
+          currency: { id: accountCurrencyId, symbol: String(currenciesMap.get(accountCurrencyId)?.symbol) },
+        };
         const holdings = accountStockHoldingsMap.get(accountId) ?? [];
         holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
           const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;

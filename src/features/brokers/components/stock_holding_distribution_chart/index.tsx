@@ -28,7 +28,7 @@ export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionCha
             onMouseEnter={(_, index) => setDistributionChartIndex(index)}
             activeShape={(props) => {
               const RADIAN = Math.PI / 180;
-              const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, name, balance, percentage } = props;
+              const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, name, balance, percentage } = props;
               const sin = Math.sin(-RADIAN * midAngle);
               const cos = Math.cos(-RADIAN * midAngle);
               const sx = cx + (outerRadius + 10) * cos;
@@ -41,9 +41,8 @@ export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionCha
 
               return (
                 <g>
-                  <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#000000">
-                    {payload.name}
-                  </text>
+                  {/* <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#000000">
+                  </text> */}
                   <Sector
                     cx={cx}
                     cy={cy}

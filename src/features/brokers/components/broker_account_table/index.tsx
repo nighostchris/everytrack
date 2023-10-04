@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
+import BigNumber from 'bignumber.js';
 
 import { store } from '../../zustand';
 import { store as globalStore } from '@lib/zustand';
@@ -11,7 +12,17 @@ interface BrokerAccountTableProps {
   className?: string;
 }
 
-export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { id, name, holdings }, className }) => {
+export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({
+  data: {
+    id,
+    name,
+    balance,
+    holdings,
+    accountTypeId,
+    currency: { id: currencyId, symbol },
+  },
+  className,
+}) => {
   const { stocks } = globalStore();
   const {
     updateOpenDeleteAccountModal,
@@ -19,7 +30,9 @@ export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { 
     populateDeleteAccountModalState,
     updateOpenAddNewStockHoldingModal,
     updateOpenDeleteStockHoldingModal,
+    populateEditCashHoldingModalState,
     populateEditStockHoldingModalState,
+    updateOpenEditCashHoldingModalState,
     populateAddNewStockHoldingModalState,
     populateDeleteStockHoldingModalState,
   } = store();
@@ -27,15 +40,15 @@ export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { 
   return (
     <>
       <div className={clsx('mb-4 mt-2 flex flex-col items-start sm:flex-row sm:items-center sm:justify-between', className)}>
-        <h3 className="text-md text-gray-900">{name}</h3>
+        <h3 className="text-md text-gray-900">{`${name} - ${symbol} ${new BigNumber(balance).toFormat(2)}`}</h3>
         {stocks && holdings.length < stocks.length && (
-          <div className="mt-1 grid w-full grid-cols-2 gap-x-4 sm:mt-0 sm:flex sm:w-fit sm:flex-row">
+          <div className="mt-1 grid w-full grid-cols-2 gap-4 sm:mt-0 sm:flex sm:w-fit sm:flex-row">
             <Button
               variant="contained"
               className="h-8 text-xs"
               onClick={() => {
-                updateOpenAddNewStockHoldingModal(true);
                 populateAddNewStockHoldingModalState(id);
+                updateOpenAddNewStockHoldingModal(true);
               }}
             >
               Add New Holding
@@ -44,8 +57,22 @@ export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({ data: { 
               variant="contained"
               className="h-8 text-xs"
               onClick={() => {
-                updateOpenDeleteAccountModal(true);
+                populateEditCashHoldingModalState({
+                  balance,
+                  currencyId,
+                  accountTypeId,
+                });
+                updateOpenEditCashHoldingModalState(true);
+              }}
+            >
+              Edit Cash Holding
+            </Button>
+            <Button
+              variant="contained"
+              className="h-8 text-xs"
+              onClick={() => {
                 populateDeleteAccountModalState(id);
+                updateOpenDeleteAccountModal(true);
               }}
             >
               Delete Account
