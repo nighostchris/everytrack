@@ -2,8 +2,8 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { store } from '../zustand';
-import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
+import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
 export interface BrokerAccountTableHolding {
@@ -33,6 +33,13 @@ export interface BrokerAccountTableRow {
   accounts: BrokerAccountDetails[];
 }
 
+export interface StockHoldingDistributionData {
+  name: string;
+  color: string;
+  balance: string;
+  percentage: number;
+}
+
 export const useBrokersState = () => {
   const { brokerDetails, updateBrokerDetails } = store();
   const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings, brokerAccounts } = globalStore();
@@ -56,7 +63,7 @@ export const useBrokersState = () => {
     return map;
   }, [stocks]);
 
-  const assetDistribution = React.useMemo(() => {
+  const assetDistribution: StockHoldingDistributionData[] = React.useMemo(() => {
     if (stocks && currencyId && exchangeRates && accountStockHoldings) {
       const allHoldings = (accountStockHoldings ?? []).reduce<StockHolding[]>((acc, current) => acc.concat(current.holdings), []);
       const distribution = allHoldings.map(({ unit, cost, stockId }) => {
@@ -70,7 +77,12 @@ export const useBrokersState = () => {
         return { id: ticker, value: new BigNumber(unit).multipliedBy(cost).multipliedBy(exchangeRate.rate) };
       });
       const totalValue = distribution.reduce((acc, current) => acc.plus(current.value), new BigNumber(0));
-      return distribution.map(({ id, value }) => ({ id, value: new BigNumber(value).dividedBy(totalValue).multipliedBy(100).toFormat(2) }));
+      return distribution.map(({ id: name, value }) => ({
+        name,
+        balance: value.toFormat(2),
+        percentage: Number(value.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
+        color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', value.dividedBy(totalValue).toNumber()),
+      }));
     }
     return [];
   }, [stocks, currencyId, exchangeRates, accountStockHoldings]);

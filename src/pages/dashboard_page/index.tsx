@@ -44,7 +44,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <div className="mt-6 flex h-full w-full flex-col space-y-4 overflow-y-hidden pt-4">
               <h3 className="text-xl font-semibold text-gray-900">Recent Expenses</h3>
-              <Timeline feeds={recentExpenses} className="h-full overflow-y-auto" />
+              <Timeline feeds={recentExpenses.slice(0, 7)} className="h-full overflow-y-auto" />
             </div>
           </div>
         </div>

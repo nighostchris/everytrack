@@ -5,3 +5,4 @@ export * from './add_new_account_modal';
 export * from './delete_stock_holding_modal';
 export * from './add_new_stock_holding_modal';
 export * from './edit_stock_holding_cost_modal';
+export * from './stock_holding_distribution_chart';

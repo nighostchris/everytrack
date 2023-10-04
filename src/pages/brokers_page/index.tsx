@@ -2,7 +2,6 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { ResponsivePie } from '@nivo/pie';
 import { ToastContainer } from 'react-toastify';
 import { useOutletContext } from 'react-router-dom';
 import { FaSackDollar, FaQuestion } from 'react-icons/fa6';
@@ -19,9 +18,9 @@ import {
   AddNewStockHoldingModal,
   DeleteStockHoldingModal,
   EditStockHoldingCostModal,
+  StockHoldingDistributionChart,
 } from '@features/brokers/components';
 import { store } from '@features/brokers/zustand';
-import { calculateInterpolateColor } from '@utils';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
 
@@ -29,16 +28,6 @@ export const BrokersPage: React.FC = () => {
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
   const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
-
-  const assetDistributionColors = React.useMemo(() => {
-    const colors: string[] = [];
-    assetDistribution.forEach(({ value }) =>
-      colors.push(
-        calculateInterpolateColor('#FFFFFF', '#0F2C4A', Number(new BigNumber(value.replaceAll(',', '')).dividedBy(100).toFixed(2))),
-      ),
-    );
-    return colors;
-  }, [assetDistribution]);
 
   return (
     <Root>
@@ -93,26 +82,7 @@ export const BrokersPage: React.FC = () => {
           </div>
           <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
             <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
-            <div className="h-full w-full p-6 pt-0">
-              <ResponsivePie
-                // @ts-ignore
-                data={assetDistribution}
-                borderWidth={1}
-                cornerRadius={3}
-                theme={{ labels: { text: { fontSize: 14 } } }}
-                arcLabelsSkipAngle={10}
-                arcLabelsTextColor="black"
-                arcLinkLabelsThickness={2}
-                activeOuterRadiusOffset={8}
-                arcLinkLabelsSkipAngle={10}
-                arcLinkLabelsTextColor="#333333"
-                colors={assetDistributionColors}
-                arcLabel={(item) => `${item.value}%`}
-                arcLinkLabelsColor={{ from: 'color' }}
-                margin={{ top: 30, right: 20, bottom: 30, left: 20 }}
-                borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-              />
-            </div>
+            <StockHoldingDistributionChart data={assetDistribution} />
           </div>
         </div>
         <div className="mt-10 flex flex-col">
