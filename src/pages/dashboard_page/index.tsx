@@ -7,12 +7,13 @@ import { GiReceiveMoney, GiLockedChest, GiPayMoney } from 'react-icons/gi';
 import Root from '@layouts/root';
 import { StatCard, Timeline } from '@components';
 import { store as globalStore } from '@lib/zustand';
+import { AssetDistributionChart } from '@features/dashboard/components';
 import { useDashboardState } from '@features/dashboard/hooks/use_dashboard_state';
 
 export const DashboardPage: React.FC = () => {
   const { username } = globalStore();
   const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { lockedFund, totalBalance, recentExpenses, spentThisMonth, instantAccessibleBalance } = useDashboardState();
+  const { lockedFund, totalBalance, recentExpenses, spentThisMonth, assetDistribution, instantAccessibleBalance } = useDashboardState();
 
   return (
     <Root>
@@ -27,7 +28,7 @@ export const DashboardPage: React.FC = () => {
             </StatCard>
             <div className="mt-4 flex h-full flex-col rounded-lg border border-gray-300">
               <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
-              <div className="h-full w-full"></div>
+              <AssetDistributionChart data={assetDistribution} />
             </div>
           </div>
           <div className="flex h-full flex-col pb-6 xl:col-span-2 xl:px-6">
