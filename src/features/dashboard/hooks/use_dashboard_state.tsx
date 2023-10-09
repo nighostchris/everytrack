@@ -64,13 +64,13 @@ export const useDashboardState = () => {
           name: 'Cash',
           amount: instantAccessibleBalance.toFormat(2),
           percentage: Number(instantAccessibleBalance.dividedBy(totalBalance).multipliedBy(100).toFormat(2)),
-          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', instantAccessibleBalance.dividedBy(totalBalance).toNumber()),
+          color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', instantAccessibleBalance.dividedBy(totalBalance).toNumber()),
         },
         {
           name: 'Equities',
           amount: lockedFund.toFormat(2),
           percentage: Number(lockedFund.dividedBy(totalBalance).multipliedBy(100).toFormat(2)),
-          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', lockedFund.dividedBy(totalBalance).toNumber()),
+          color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', lockedFund.dividedBy(totalBalance).toNumber()),
         },
       ] as AssetDistributionData[],
     };

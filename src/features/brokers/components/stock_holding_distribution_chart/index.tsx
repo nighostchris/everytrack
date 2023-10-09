@@ -21,8 +21,8 @@ export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionCha
         <PieChart>
           <Pie
             data={data}
-            innerRadius={70}
-            outerRadius={100}
+            innerRadius={60}
+            outerRadius={80}
             dataKey="percentage"
             activeIndex={distributionChartIndex}
             onMouseEnter={(_, index) => setDistributionChartIndex(index)}

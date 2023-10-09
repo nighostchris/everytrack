@@ -103,13 +103,13 @@ export const useBrokersState = () => {
           name: 'Cash',
           balance: cashHoldings.toFormat(2),
           percentage: Number(cashHoldings.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
-          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', cashHoldings.dividedBy(totalValue).toNumber()),
+          color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', cashHoldings.dividedBy(totalValue).toNumber()),
         },
         ...distribution.map(({ id: name, value }) => ({
           name,
           balance: value.toFormat(2),
           percentage: Number(value.dividedBy(totalValue).multipliedBy(100).toFormat(2)),
-          color: calculateInterpolateColor('#FFFFFF', '#0F2C4A', value.dividedBy(totalValue).toNumber()),
+          color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', value.dividedBy(totalValue).toNumber()),
         })),
       ].sort((a, b) => (new BigNumber(a.balance).isGreaterThan(b.balance) ? -1 : 1));
     }
