@@ -2,10 +2,10 @@
   "env": {
     "es6": true,
     "browser": true,
-    "commonjs": true
+    "commonjs": true,
   },
   "globals": {
-    "JSX": true
+    "JSX": true,
   },
   "settings": {
     "import/resolver": {
@@ -22,30 +22,33 @@
           ["@ettypes", "./src/types"],
           ["@layouts", "./src/layouts"],
           ["@features", "./src/features"],
-          ["@components", "./src/components"]
+          ["@components", "./src/components"],
         ],
-        "extensions": [".js", ".ts", ".jsx", ".tsx", ".json"]
+        "extensions": [".js", ".ts", ".jsx", ".tsx", ".json"],
       },
       "node": {
         "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+      },
     },
     "react": {
-      "version": "detect"
-    }
+      "version": "detect",
+    },
   },
-  "plugins": ["react", "import", "jsx-a11y", "@typescript-eslint"],
+  "plugins": ["react", "import", "jsx-a11y", "@tanstack/query", "@typescript-eslint"],
   "extends": ["eslint:recommended", "eslint-config-prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": "latest",
-    "project": ["./tsconfig.json"]
+    "project": ["./tsconfig.json"],
   },
   "rules": {
     "linebreak-style": "off",
     "no-unused-vars": "warn",
-    "max-len": ["error", { "code": 140 }]
-  }
+    "max-len": ["error", { "code": 140 }],
+    "@tanstack/query/exhaustive-deps": "error",
+    "@tanstack/query/stable-query-client": "error",
+    "@tanstack/query/no-rest-destructuring": "warn",
+  },
 }

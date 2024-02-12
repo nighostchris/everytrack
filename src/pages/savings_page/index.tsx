@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import React from 'react';
 import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
-import { useOutletContext } from 'react-router-dom';
 
 import { Root } from '@layouts/root';
 import {
@@ -14,6 +13,7 @@ import {
   EditAccountBalanceModal,
 } from '@features/savings/components';
 import { StatCard } from '@components';
+import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/savings/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 
@@ -27,8 +27,8 @@ export const SavingsPage: React.FC = () => {
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
   } = store();
-  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
-  const { isLoading, totalBalance, canAddNewProvider, savingProviderTableRows } = useSavingsState();
+  const { symbol, error: displayCurrencyError } = useDisplayCurrency();
+  const { error: savingsStateError, totalBalance, enableAddNewProvider, savingProviderTableRows } = useSavingsState();
 
   return (
     <Root>
@@ -47,7 +47,7 @@ export const SavingsPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Savings</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your bank accounts</p>
           </div>
-          {canAddNewProvider && (
+          {enableAddNewProvider && (
             <button
               type="button"
               onClick={() => updateOpenAddNewProviderModal(true)}
@@ -58,7 +58,7 @@ export const SavingsPage: React.FC = () => {
           )}
         </div>
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
-          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
         </StatCard>
         {savingProviderTableRows.map((row) => (
           <div key={`provider-table-${row.id}`} className="mt-8 flex flex-col">

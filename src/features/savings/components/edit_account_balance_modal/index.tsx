@@ -6,8 +6,8 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
-import { store as globalStore } from '@lib/zustand';
-import { getAllAccounts, updateAccount } from '@api/everytrack_backend';
+import { useBankAccounts, useCurrencies } from '@hooks';
+import { updateAccount } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
 
 const editAccountBalanceFormSchema = z.object({
@@ -17,6 +17,7 @@ const editAccountBalanceFormSchema = z.object({
 });
 
 export const EditAccountBalanceModal: React.FC = () => {
+  const { currencies } = useCurrencies();
   const {
     balance,
     currencyId,
@@ -25,7 +26,7 @@ export const EditAccountBalanceModal: React.FC = () => {
     openEditAccountBalanceModal: open,
     updateOpenEditAccountBalanceModal: setOpen,
   } = store();
-  const { currencies, bankAccounts, updateBankAccounts } = globalStore();
+  const { bankAccounts, refetch: refetchBankAccounts } = useBankAccounts();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -61,8 +62,7 @@ export const EditAccountBalanceModal: React.FC = () => {
       if (success) {
         setOpen(false);
         resetEditAccountBalanceModalState();
-        const { data } = await getAllAccounts('savings');
-        updateBankAccounts(data);
+        refetchBankAccounts();
         reset();
       }
       setIsLoading(false);

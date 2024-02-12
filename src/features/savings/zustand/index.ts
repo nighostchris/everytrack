@@ -4,13 +4,11 @@ import { immer } from 'zustand/middleware/immer';
 
 import { SavingsState } from './types';
 import { createModalStateSlice } from './slices/modal_state_slice';
-import { createSavingsPageStateSlice } from './slices/savings_page_state_slice';
 
 export const store = create<SavingsState, [['zustand/devtools', never], ['zustand/immer', never]]>(
   devtools(
     immer((...a) => ({
       ...createModalStateSlice(...a),
-      ...createSavingsPageStateSlice(...a),
     })),
   ),
 );

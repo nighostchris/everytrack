@@ -1,10 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { Account, Provider } from '@api/everytrack_backend';
-
-export type SavingsPageStateSlice = {
-  bankDetails?: Provider[];
-  updateBankDetails: (newBankDetails: Provider[]) => void;
-};
 
 export type ModalStateSlice = {
   balance?: string;
@@ -36,4 +30,4 @@ export type ModalStateSlice = {
   updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
 };
 
-export type SavingsState = SavingsPageStateSlice & ModalStateSlice;
+export type SavingsState = ModalStateSlice;

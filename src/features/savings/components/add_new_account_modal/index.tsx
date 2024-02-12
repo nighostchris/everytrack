@@ -6,9 +6,9 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
-import { store as globalStore } from '@lib/zustand';
+import { createNewAccount } from '@api/everytrack_backend';
+import { useBankAccounts, useBankDetails, useCurrencies } from '@hooks';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
-import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
 
 const addNewAccountFormSchema = z.object({
   name: z.string(),
@@ -17,14 +17,10 @@ const addNewAccountFormSchema = z.object({
 });
 
 export const AddNewAccountModal: React.FC = () => {
-  const { currencies, updateBankAccounts } = globalStore();
-  const {
-    bankDetails,
-    assetProviderId,
-    resetAddNewAccountModalState,
-    openAddNewAccountModal: open,
-    updateOpenAddNewAccountModal: setOpen,
-  } = store();
+  const { currencies } = useCurrencies();
+  const { bankDetails } = useBankDetails();
+  const { refetch: refetchBankAccounts } = useBankAccounts();
+  const { assetProviderId, resetAddNewAccountModalState, openAddNewAccountModal: open, updateOpenAddNewAccountModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -62,8 +58,7 @@ export const AddNewAccountModal: React.FC = () => {
       if (success) {
         setOpen(false);
         resetAddNewAccountModalState();
-        const { data } = await getAllAccounts('savings');
-        updateBankAccounts(data);
+        refetchBankAccounts();
         reset();
       }
       setIsLoading(false);

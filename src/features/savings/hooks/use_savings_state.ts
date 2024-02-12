@@ -1,10 +1,9 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { store } from '../zustand';
-import { store as globalStore } from '@lib/zustand';
-import { getAllProviders } from '@api/everytrack_backend';
 import { calculateDisplayAmount } from '@utils';
+import { store as globalStore } from '@lib/zustand';
+import { useCurrencies, useBankDetails, useBankAccounts, useExchangeRates, useEnableAddNewProvider } from '@hooks';
 
 export interface SavingProviderTableAccount {
   id: string;
@@ -25,21 +24,21 @@ export interface SavingProviderTableRow {
 }
 
 export const useSavingsState = () => {
-  const { bankDetails, updateBankDetails } = store();
-  const { bankAccounts, currencyId, currencies, exchangeRates } = globalStore();
+  const { currencyId } = globalStore();
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { bankDetails, error: fetchBankDetailsError } = useBankDetails();
+  const { bankAccounts, error: fetchBankAccountsError } = useBankAccounts();
+  const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
 
-  const initBankDetails = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllProviders('savings');
-      if (success) {
-        updateBankDetails(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
+  const error = React.useMemo(
+    () =>
+      fetchCurrenciesError?.message ??
+      fetchBankDetailsError?.message ??
+      fetchBankAccountsError?.message ??
+      fetchExchangeRatesError?.message,
+    [fetchCurrenciesError, fetchBankDetailsError, fetchBankAccountsError, fetchExchangeRatesError],
+  );
 
   const totalBalance = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
@@ -80,22 +79,12 @@ export const useSavingsState = () => {
     return result.sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [bankDetails, bankAccounts, currencies]);
 
-  const canAddNewProvider = React.useMemo(() => {
-    if (!bankDetails || !bankAccounts) {
-      return false;
-    }
-    const existingProviderMap = new Map<string, boolean>();
-    bankAccounts.forEach(({ assetProviderId }) => existingProviderMap.set(assetProviderId, true));
-    return Array.from(existingProviderMap.keys()).length < bankDetails.length;
-  }, [bankDetails, bankAccounts]);
+  const enableAddNewProvider = React.useMemo(
+    () => useEnableAddNewProvider(bankDetails ?? [], bankAccounts ?? []),
+    [bankDetails, bankAccounts],
+  );
 
-  React.useEffect(() => {
-    setIsLoading(true);
-    initBankDetails();
-    setIsLoading(false);
-  }, [initBankDetails]);
-
-  return { isLoading, totalBalance, canAddNewProvider, savingProviderTableRows };
+  return { error, totalBalance, enableAddNewProvider, savingProviderTableRows };
 };
 
 export default useSavingsState;

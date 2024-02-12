@@ -3,18 +3,13 @@ import { toast } from 'react-toastify';
 
 import { Button, Dialog } from '@components';
 import { store } from '@features/savings/zustand';
-import { store as globalStore } from '@lib/zustand';
-import { deleteAccount, getAllAccounts } from '@api/everytrack_backend';
+import { deleteAccount } from '@api/everytrack_backend';
+import { useBankDetails, useBankAccounts } from '@hooks';
 
 export const DeleteAccountModal: React.FC = () => {
-  const {
-    accountId,
-    bankDetails,
-    resetDeleteAccountModalState,
-    openDeleteAccountModal: open,
-    updateOpenDeleteAccountModal: setOpen,
-  } = store();
-  const { bankAccounts, updateBankAccounts } = globalStore();
+  const { bankDetails } = useBankDetails();
+  const { bankAccounts, refetch: refetchBankAccounts } = useBankAccounts();
+  const { accountId, resetDeleteAccountModalState, openDeleteAccountModal: open, updateOpenDeleteAccountModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -39,8 +34,7 @@ export const DeleteAccountModal: React.FC = () => {
         if (success) {
           setOpen(false);
           resetDeleteAccountModalState();
-          const { data } = await getAllAccounts('savings');
-          updateBankAccounts(data);
+          refetchBankAccounts();
         }
         setIsLoading(false);
         toast.info('Success!');

@@ -4,7 +4,6 @@
     "paths": {
       "@api/*": ["src/api/*"],
       "@lib/*": ["src/lib/*"],
-      "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],
       "@consts": ["src/consts.ts"],
       "@config": ["src/config.ts"],
@@ -13,6 +12,7 @@
       "@layouts/*": ["src/layouts/*"],
       "@utils": ["src/utils/index.ts"],
       "@pages": ["src/pages/index.ts"],
+      "@hooks": ["src/hooks/index.ts"],
       "@features/*": ["src/features/*"],
       "@components/*": ["src/components/*"],
       "@components": ["src/components/index.ts"]
