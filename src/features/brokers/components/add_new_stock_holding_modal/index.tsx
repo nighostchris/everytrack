@@ -6,9 +6,9 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { store as globalStore } from '@lib/zustand';
+import { createNewStockHolding } from '@api/everytrack_backend';
+import { useStocks, useStockHoldings, useBrokerAccounts } from '@hooks';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
-import { createNewStockHolding, getAllStockHoldings } from '@api/everytrack_backend';
 
 const addNewStockHoldingFormSchema = z.object({
   unit: z.string(),
@@ -18,13 +18,16 @@ const addNewStockHoldingFormSchema = z.object({
 });
 
 export const AddNewStockHoldingModal: React.FC = () => {
+  const { stocks } = useStocks();
+  const { brokerAccounts } = useBrokerAccounts();
+  const { stockHoldings, refetch: refetchStockHoldings } = useStockHoldings();
+
   const {
     accountId,
     resetAddNewStockHoldingModalState,
     openAddNewStockHoldingModal: open,
     updateOpenAddNewStockHoldingModal: setOpen,
   } = store();
-  const { stocks, brokerAccounts, accountStockHoldings, updateAccountStockHoldings } = globalStore();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -48,22 +51,22 @@ export const AddNewStockHoldingModal: React.FC = () => {
 
   const accountStockHoldingsMap = React.useMemo(() => {
     const map = new Map<string, string>();
-    (accountStockHoldings ?? []).forEach(({ accountId: id, holdings }) => holdings.forEach(({ stockId }) => map.set(stockId, id)));
+    (stockHoldings ?? []).forEach(({ accountId: id, holdings }) => holdings.forEach(({ stockId }) => map.set(stockId, id)));
     return map;
-  }, [accountStockHoldings]);
+  }, [stockHoldings]);
   const accountName = React.useMemo(
     () => (brokerAccounts && accountId ? brokerAccounts.filter(({ id }) => id === accountId)[0].name : ''),
     [accountId, brokerAccounts],
   );
   const stockOptions: SelectOption[] = React.useMemo(
     () =>
-      stocks && accountStockHoldings
+      stocks && stockHoldings
         ? stocks
             .filter(({ id }) => !accountStockHoldingsMap.get(id))
             .map(({ id, name }) => ({ value: id, display: name }))
             .sort((a, b) => (a.display > b.display ? 1 : -1))
         : [],
-    [stocks, accountStockHoldings],
+    [stocks, stockHoldings],
   );
 
   const onSubmitAddNewStockHoldingForm = async (data: any) => {
@@ -74,8 +77,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
       if (success) {
         setOpen(false);
         resetAddNewStockHoldingModalState();
-        const { data } = await getAllStockHoldings();
-        updateAccountStockHoldings(data);
+        refetchStockHoldings();
         reset();
       }
       setIsLoading(false);

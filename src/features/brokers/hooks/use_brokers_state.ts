@@ -1,10 +1,18 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { store } from '../zustand';
+import {
+  useStocks,
+  useCurrencies,
+  useExchangeRates,
+  useBrokerDetails,
+  useStockHoldings,
+  useBrokerAccounts,
+  useEnableAddNewProvider,
+} from '@hooks';
 import { store as globalStore } from '@lib/zustand';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
-import { getAllProviders, Stock, Currency, StockHolding } from '@api/everytrack_backend';
+import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
 
 export interface BrokerAccountTableHolding {
   id: string;
@@ -47,21 +55,32 @@ export interface StockHoldingDistributionData {
 }
 
 export const useBrokersState = () => {
-  const { brokerDetails, updateBrokerDetails } = store();
-  const { stocks, currencyId, currencies, exchangeRates, accountStockHoldings, brokerAccounts } = globalStore();
+  const { currencyId } = globalStore();
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const { stocks, error: fetchStocksError } = useStocks();
+  const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
+  const { stockHoldings, error: fetchStockHoldingsError } = useStockHoldings();
+  const { brokerDetails, error: fetchBrokerDetailsError } = useBrokerDetails();
+  const { brokerAccounts, error: fetchBrokerAccountsError } = useBrokerAccounts();
 
-  const initBrokerDetails = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllProviders('broker');
-      if (success) {
-        updateBrokerDetails(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
+  const error = React.useMemo(
+    () =>
+      fetchStocksError?.message ??
+      fetchCurrenciesError?.message ??
+      fetchExchangeRatesError?.message ??
+      fetchStockHoldingsError?.message ??
+      fetchBrokerDetailsError?.message ??
+      fetchBrokerAccountsError?.message,
+    [
+      fetchStocksError,
+      fetchCurrenciesError,
+      fetchExchangeRatesError,
+      fetchStockHoldingsError,
+      fetchBrokerDetailsError,
+      fetchBrokerAccountsError,
+    ],
+  );
 
   const stocksMap = React.useMemo(() => {
     const map: Map<string, Stock> = new Map();
@@ -76,8 +95,8 @@ export const useBrokersState = () => {
   }, [currencies]);
 
   const assetDistribution: StockHoldingDistributionData[] = React.useMemo(() => {
-    if (stocks && currencyId && exchangeRates && brokerAccounts && accountStockHoldings) {
-      const allHoldings = (accountStockHoldings ?? []).reduce<StockHolding[]>((acc, current) => acc.concat(current.holdings), []);
+    if (stocks && currencyId && exchangeRates && brokerAccounts && stockHoldings) {
+      const allHoldings = (stockHoldings ?? []).reduce<StockHolding[]>((acc, current) => acc.concat(current.holdings), []);
       const distribution = allHoldings.map(({ unit, cost, stockId }) => {
         const { ticker, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
         const exchangeRate =
@@ -114,18 +133,18 @@ export const useBrokersState = () => {
       ].sort((a, b) => (new BigNumber(a.balance).isGreaterThan(b.balance) ? -1 : 1));
     }
     return [];
-  }, [stocks, currencyId, exchangeRates, brokerAccounts, accountStockHoldings]);
+  }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
 
   const { totalBalance, winLoseAmount } = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
     let winLoseAmount = new BigNumber(0);
-    if (accountStockHoldings && brokerAccounts && exchangeRates && currencyId && stocks) {
+    if (stockHoldings && brokerAccounts && exchangeRates && currencyId && stocks) {
       // Calculate broker account balance
       brokerAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
         totalBalance = totalBalance.plus(calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates));
       });
       // Calculate stock holdings balance
-      accountStockHoldings.forEach(({ holdings }) => {
+      stockHoldings.forEach(({ holdings }) => {
         holdings.forEach(({ unit, cost, stockId }) => {
           const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
           totalBalance = totalBalance.plus(
@@ -143,16 +162,16 @@ export const useBrokersState = () => {
       });
     }
     return { totalBalance: totalBalance.toFormat(2), winLoseAmount: winLoseAmount.toFormat(2) };
-  }, [stocks, currencyId, exchangeRates, brokerAccounts, accountStockHoldings]);
+  }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
 
   const brokerAccountTableRows = React.useMemo(() => {
     const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
-    const accountStockHoldingsMap = new Map<string, StockHolding[]>();
+    const stockHoldingsMap = new Map<string, StockHolding[]>();
     const result: BrokerAccountTableRow[] = [];
-    if (brokerDetails && brokerAccounts && currencies && stocks && accountStockHoldings) {
+    if (brokerDetails && brokerAccounts && currencies && stocks && stockHoldings) {
       // Generate a account stock holding map
-      accountStockHoldings.forEach(({ accountId, holdings }) => {
-        accountStockHoldingsMap.set(accountId, holdings);
+      stockHoldings.forEach(({ accountId, holdings }) => {
+        stockHoldingsMap.set(accountId, holdings);
       });
       // Generate a broker detail map
       brokerDetails.forEach(({ id, name, icon }) => brokerDetailsMap.set(id, { id, name, icon, accounts: [] }));
@@ -166,7 +185,7 @@ export const useBrokersState = () => {
           id: accountId,
           currency: { id: accountCurrencyId, symbol: String(currenciesMap.get(accountCurrencyId)?.symbol) },
         };
-        const holdings = accountStockHoldingsMap.get(accountId) ?? [];
+        const holdings = stockHoldingsMap.get(accountId) ?? [];
         holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
           const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;
           const { id, symbol } = currenciesMap.get(currencyId) as Currency;
@@ -187,24 +206,14 @@ export const useBrokersState = () => {
       });
     }
     return result.sort((a, b) => (a.name > b.name ? 1 : -1));
-  }, [stocks, currencies, brokerDetails, brokerAccounts, accountStockHoldings]);
+  }, [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings]);
 
-  const canAddNewBroker = React.useMemo(() => {
-    if (!brokerDetails || !brokerAccounts) {
-      return false;
-    }
-    const existingBrokerMap = new Map<string, boolean>();
-    brokerAccounts.forEach(({ assetProviderId }) => existingBrokerMap.set(assetProviderId, true));
-    return Array.from(existingBrokerMap.keys()).length < brokerDetails.length;
-  }, [brokerDetails, brokerAccounts]);
+  const enableAddNewProvider = React.useMemo(
+    () => useEnableAddNewProvider(brokerDetails ?? [], brokerAccounts ?? []),
+    [brokerDetails, brokerAccounts],
+  );
 
-  React.useEffect(() => {
-    setIsLoading(true);
-    initBrokerDetails();
-    setIsLoading(false);
-  }, [initBrokerDetails]);
-
-  return { isLoading, canAddNewBroker, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
+  return { error, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
 };
 
 export default useBrokersState;

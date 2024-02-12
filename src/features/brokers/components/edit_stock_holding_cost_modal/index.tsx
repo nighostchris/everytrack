@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { store as globalStore } from '@lib/zustand';
+import { useStockHoldings, useStocks } from '@hooks';
 import { Button, Dialog, Input } from '@components/index';
-import { getAllStockHoldings, updateStockHolding } from '@api/everytrack_backend';
+import { updateStockHolding } from '@api/everytrack_backend';
 
 const editStockHoldingFormSchema = z.object({
   unit: z.string(),
@@ -17,7 +17,7 @@ const editStockHoldingFormSchema = z.object({
 });
 
 export const EditStockHoldingCostModal: React.FC = () => {
-  const { stocks, updateAccountStockHoldings } = globalStore();
+  const { stocks } = useStocks();
   const {
     unit,
     cost,
@@ -27,6 +27,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
     openEditStockHoldingModal: open,
     updateOpenEditStockHoldingModal: setOpen,
   } = store();
+  const { refetch: refetchStockHoldings } = useStockHoldings();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -53,8 +54,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
       if (success) {
         setOpen(false);
         resetEditStockHoldingModalState();
-        const { data } = await getAllStockHoldings();
-        updateAccountStockHoldings(data);
+        refetchStockHoldings();
         reset();
       }
       setIsLoading(false);

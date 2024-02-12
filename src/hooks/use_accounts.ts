@@ -11,6 +11,6 @@ export const useBankAccounts = () => {
 };
 
 export const useBrokerAccounts = () => {
-  const { data, isLoading, error } = useQuery({ queryKey: ['accounts', 'broker'], queryFn: async () => getAllAccounts('broker') });
-  return { brokerAccounts: data?.data, isLoading, error: !error ? undefined : error };
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['accounts', 'broker'], queryFn: async () => getAllAccounts('broker') });
+  return { brokerAccounts: data?.data, isLoading, error: !error ? undefined : error, refetch };
 };

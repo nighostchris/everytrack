@@ -1,10 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { Account, AccountStockHolding, Provider, Stock } from '@api/everytrack_backend';
-
-export type BrokersPageStateSlice = {
-  brokerDetails?: Provider[];
-  updateBrokerDetails: (newBrokerDetails: Provider[]) => void;
-};
 
 export type ModalStateSlice = {
   unit?: string;
@@ -62,4 +56,4 @@ export type ModalStateSlice = {
   populateDeleteStockHoldingModalState: ({ stockId, accountStockId }: { stockId: string; accountStockId: string }) => void;
 };
 
-export type BrokersState = BrokersPageStateSlice & ModalStateSlice;
+export type BrokersState = ModalStateSlice;

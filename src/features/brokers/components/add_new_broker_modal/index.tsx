@@ -6,9 +6,9 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { store as globalStore } from '@lib/zustand';
+import { createNewAccount } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
-import { createNewAccount, getAllAccounts } from '@api/everytrack_backend';
+import { useBrokerAccounts, useBrokerDetails, useCountries, useCurrencies } from '@hooks';
 
 const addNewBrokerFormSchema = z.object({
   name: z.string(),
@@ -18,8 +18,11 @@ const addNewBrokerFormSchema = z.object({
 });
 
 export const AddNewBrokerModal: React.FC = () => {
-  const { countries, currencies, brokerAccounts, updateBrokerAccounts } = globalStore();
-  const { brokerDetails, openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
+  const { countries } = useCountries();
+  const { currencies } = useCurrencies();
+  const { brokerDetails } = useBrokerDetails();
+  const { brokerAccounts, refetch: refetchBrokerAccounts } = useBrokerAccounts();
+  const { openAddNewBrokerModal: open, updateOpenAddNewBrokerModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -70,8 +73,7 @@ export const AddNewBrokerModal: React.FC = () => {
       const { success } = await createNewAccount({ name, currencyId, assetProviderId });
       if (success) {
         setOpen(false);
-        const { data } = await getAllAccounts('broker');
-        updateBrokerAccounts(data);
+        refetchBrokerAccounts();
         reset();
       }
       setIsLoading(false);

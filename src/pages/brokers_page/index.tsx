@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import { ToastContainer } from 'react-toastify';
-import { useOutletContext } from 'react-router-dom';
 import { FaSackDollar, FaQuestion } from 'react-icons/fa6';
 import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
@@ -21,14 +20,22 @@ import {
   EditStockHoldingCostModal,
   StockHoldingDistributionChart,
 } from '@features/brokers/components';
+import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/brokers/zustand';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
 
 export const BrokersPage: React.FC = () => {
-  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const {
+    totalBalance,
+    winLoseAmount,
+    assetDistribution,
+    enableAddNewProvider,
+    brokerAccountTableRows,
+    error: brokersStateError,
+  } = useBrokersState();
+  const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
-  const { isLoading, totalBalance, canAddNewBroker, winLoseAmount, assetDistribution, brokerAccountTableRows } = useBrokersState();
 
   return (
     <Root>
@@ -45,7 +52,7 @@ export const BrokersPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Broker Assets</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your broker accounts</p>
           </div>
-          {canAddNewBroker && (
+          {enableAddNewProvider && (
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
               <button
                 type="button"
@@ -60,7 +67,7 @@ export const BrokersPage: React.FC = () => {
         <div className="mt-8 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
             <StatCard title="Total Balance" icon={FaSackDollar}>
-              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${displayCurrency} ${totalBalance}`}</p>
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
             </StatCard>
             <StatCard title="W / L" icon={AiOutlineStock}>
               <div className="mt-1 flex flex-row items-center">
@@ -75,7 +82,7 @@ export const BrokersPage: React.FC = () => {
                     'text-green-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isPositive(),
                     'text-red-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isNegative(),
                   })}
-                >{`${displayCurrency} ${winLoseAmount}`}</p>
+                >{`${symbol} ${winLoseAmount}`}</p>
               </div>
             </StatCard>
             <StatCard title="Other Metrics" icon={FaQuestion}>

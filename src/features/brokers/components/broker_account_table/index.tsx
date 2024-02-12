@@ -2,8 +2,8 @@ import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { useStocks } from '@hooks';
 import { store } from '../../zustand';
-import { store as globalStore } from '@lib/zustand';
 import { BrokerAccountDetails } from '@features/brokers/hooks/use_brokers_state';
 import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
 
@@ -23,7 +23,7 @@ export const BrokerAccountTable: React.FC<BrokerAccountTableProps> = ({
   },
   className,
 }) => {
-  const { stocks } = globalStore();
+  const { stocks } = useStocks();
   const {
     updateOpenDeleteAccountModal,
     updateOpenEditStockHoldingModal,

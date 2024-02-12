@@ -6,7 +6,7 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { store as globalStore } from '@lib/zustand';
+import { useBrokerAccounts, useCurrencies } from '@hooks';
 import { getAllAccounts, updateAccount } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
 
@@ -20,6 +20,7 @@ const editCashHoldingFormSchema = z.object({
 });
 
 export const EditCashHoldingModal: React.FC = () => {
+  const { currencies } = useCurrencies();
   const {
     balance,
     currencyId,
@@ -28,7 +29,7 @@ export const EditCashHoldingModal: React.FC = () => {
     openEditCashHoldingModal: open,
     updateOpenEditCashHoldingModalState: setOpen,
   } = store();
-  const { currencies, brokerAccounts, updateBrokerAccounts } = globalStore();
+  const { brokerAccounts, refetch: refetchBrokerAccounts } = useBrokerAccounts();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -64,8 +65,7 @@ export const EditCashHoldingModal: React.FC = () => {
       if (success) {
         setOpen(false);
         resetEditCashHoldingModalState();
-        const { data } = await getAllAccounts('broker');
-        updateBrokerAccounts(data);
+        refetchBrokerAccounts();
         reset();
       }
       setIsLoading(false);

@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { Cell, Pie, PieChart, Sector, ResponsiveContainer } from 'recharts';
 
+import { useDisplayCurrency } from '@hooks';
 import { StockHoldingDistributionData } from '../../hooks/use_brokers_state';
 
 interface StockHoldingDistributionChartProps {
@@ -11,7 +11,7 @@ interface StockHoldingDistributionChartProps {
 }
 
 export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionChartProps> = ({ data, className }) => {
-  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const [distributionChartIndex, setDistributionChartIndex] = React.useState<number>(0);
 
   return (
@@ -26,7 +26,8 @@ export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionCha
             dataKey="percentage"
             activeIndex={distributionChartIndex}
             onMouseEnter={(_, index) => setDistributionChartIndex(index)}
-            activeShape={(props) => {
+            // TO FIX: do not use any type for props
+            activeShape={(props: any) => {
               const RADIAN = Math.PI / 180;
               const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, name, balance, percentage } = props;
               const sin = Math.sin(-RADIAN * midAngle);
@@ -67,7 +68,7 @@ export const StockHoldingDistributionChart: React.FC<StockHoldingDistributionCha
                     {name}
                   </text>
                   <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999" className="text-sm">
-                    {`${displayCurrency} ${balance} `}
+                    {`${symbol} ${balance} `}
                   </text>
                   <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={36} textAnchor={textAnchor} fill="#999" className="text-sm">
                     {`${percentage}%`}
