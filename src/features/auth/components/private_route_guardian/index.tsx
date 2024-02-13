@@ -1,93 +1,15 @@
 import React from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 
-import {
-  verify,
-  getAllStocks,
-  getAllExpenses,
-  getAllAccounts,
-  getAllCountries,
-  getAllCurrencies,
-  getAllExchangeRates,
-  getAllStockHoldings,
-  getAllClientSettings,
-} from '@api/everytrack_backend';
 import { store } from '@lib/zustand';
 import { Spinner } from '@components';
+import { verify, getAllClientSettings } from '@api/everytrack_backend';
 
 export const PrivateRouteGuardian: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    currencies,
-    currencyId,
-    updateStocks,
-    updateExpenses,
-    updateUsername,
-    updateCountries,
-    updateCurrencyId,
-    updateCurrencies,
-    updateBankAccounts,
-    updateExchangeRates,
-    updateBrokerAccounts,
-    updateAccountStockHoldings,
-  } = store();
+  const { updateUsername, updateCurrencyId } = store();
 
   const [isLoading, setIsLoading] = React.useState(true);
-
-  const initAccountStockHoldings = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllStockHoldings();
-      if (success) {
-        updateAccountStockHoldings(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initBankAccounts = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllAccounts('savings');
-      if (success) {
-        updateBankAccounts(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initBrokerAccounts = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllAccounts('broker');
-      if (success) {
-        updateBrokerAccounts(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initCountries = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllCountries();
-      if (success) {
-        updateCountries(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initCurrencies = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllCurrencies();
-      if (success) {
-        updateCurrencies(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
 
   const initClientSettings = React.useCallback(async () => {
     try {
@@ -100,44 +22,6 @@ export const PrivateRouteGuardian: React.FC = () => {
       console.error(error);
     }
   }, []);
-
-  const initExchangeRates = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllExchangeRates();
-      if (success) {
-        updateExchangeRates(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initExpenses = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllExpenses();
-      if (success) {
-        updateExpenses(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const initStocks = React.useCallback(async () => {
-    try {
-      const { success, data } = await getAllStocks();
-      if (success) {
-        updateStocks(data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    }
-  }, []);
-
-  const displayCurrency = React.useMemo(
-    () => (currencies && currencyId ? currencies.filter(({ id }) => id === currencyId)[0].symbol : ''),
-    [currencyId, currencies],
-  );
 
   React.useEffect(() => {
     const verifyAccessToken = async () => {
@@ -155,33 +39,15 @@ export const PrivateRouteGuardian: React.FC = () => {
     };
 
     verifyAccessToken();
-    initStocks();
-    initExpenses();
-    initCountries();
-    initCurrencies();
-    initBankAccounts();
-    initExchangeRates();
     initClientSettings();
-    initBrokerAccounts();
-    initAccountStockHoldings();
-  }, [
-    initStocks,
-    initExpenses,
-    initCountries,
-    initCurrencies,
-    initBankAccounts,
-    initExchangeRates,
-    initBrokerAccounts,
-    initClientSettings,
-    initAccountStockHoldings,
-  ]);
+  }, [initClientSettings]);
 
   return isLoading ? (
     <div className="flex h-full w-full items-center justify-center">
       <Spinner isLoading={isLoading} size="lg" />
     </div>
   ) : (
-    <Outlet context={{ displayCurrency }} />
+    <Outlet />
   );
 };
 

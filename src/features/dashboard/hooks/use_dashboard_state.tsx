@@ -1,12 +1,16 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { Feed } from '@components';
 import { store as globalStore } from '@lib/zustand';
 import { Currency, Stock } from '@api/everytrack_backend';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
+import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS, EXPENSE_CATEGORY_ICON_COLORS } from '@consts';
+
+dayjs.extend(isSameOrAfter);
 
 export interface AssetDistributionData {
   name: string;
@@ -16,7 +20,35 @@ export interface AssetDistributionData {
 }
 
 export const useDashboardState = () => {
-  const { bankAccounts, brokerAccounts, accountStockHoldings, expenses, stocks, currencies, currencyId, exchangeRates } = globalStore();
+  const { currencyId } = globalStore();
+
+  const { stocks, error: fetchStocksError } = useStocks();
+  const { expenses, error: fetchExpensesError } = useExpenses();
+  const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { bankAccounts, error: fetchBankAccountsError } = useBankAccounts();
+  const { stockHoldings, error: fetchStockHoldingsError } = useStockHoldings();
+  const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
+  const { brokerAccounts, error: fetchBrokerAccountsError } = useBrokerAccounts();
+
+  const error = React.useMemo(
+    () =>
+      fetchStocksError?.message ??
+      fetchExpensesError?.message ??
+      fetchCurrenciesError?.message ??
+      fetchBankAccountsError?.message ??
+      fetchStockHoldingsError?.message ??
+      fetchExchangeRatesError?.message ??
+      fetchBrokerAccountsError?.message,
+    [
+      fetchStocksError,
+      fetchExpensesError,
+      fetchCurrenciesError,
+      fetchBankAccountsError,
+      fetchStockHoldingsError,
+      fetchExchangeRatesError,
+      fetchBrokerAccountsError,
+    ],
+  );
 
   const stocksMap = React.useMemo(() => {
     const map: Map<string, Stock> = new Map();
@@ -33,7 +65,7 @@ export const useDashboardState = () => {
   const { lockedFund, totalBalance, instantAccessibleBalance, assetDistribution } = React.useMemo(() => {
     let lockedFund = new BigNumber(0);
     let instantAccessibleBalance = new BigNumber(0);
-    if (bankAccounts && brokerAccounts && exchangeRates && currencyId && accountStockHoldings && stocks) {
+    if (bankAccounts && brokerAccounts && exchangeRates && currencyId && stockHoldings && stocks) {
       // Calculate instant accessible balance
       bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
         instantAccessibleBalance = instantAccessibleBalance.plus(
@@ -46,7 +78,7 @@ export const useDashboardState = () => {
         );
       });
       // Calculate locked funds
-      accountStockHoldings.forEach(({ holdings }) => {
+      stockHoldings.forEach(({ holdings }) => {
         holdings.forEach(({ unit, stockId }) => {
           const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
           const holdingBalance = new BigNumber(currentPrice).multipliedBy(unit);
@@ -74,12 +106,13 @@ export const useDashboardState = () => {
         },
       ] as AssetDistributionData[],
     };
-  }, [stocks, accountStockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
+  }, [stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
 
+  // TODO: abstract this function into utils / hooks to reduce code duplication with expenses state
   const { spentThisMonth } = React.useMemo(() => {
     let spentThisMonth = new BigNumber(0);
     if (currencyId && expenses && exchangeRates) {
-      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isAfter(dayjs().startOf('month')));
+      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isSameOrAfter(dayjs().startOf('month')));
       expensesInThisMonth.forEach(({ amount, currencyId: expenseCurrencyId }) => {
         spentThisMonth = spentThisMonth.plus(calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates));
       });
@@ -99,7 +132,7 @@ export const useDashboardState = () => {
               {` on ${name}`}
             </p>
           ),
-          date: dayjs.unix(executedAt).format('MMM DD'),
+          date: dayjs.unix(executedAt).format('MMM DD, YYYY'),
           icon: {
             svg: EXPENSE_CATEGORY_ICONS[category],
             background: EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS[category],
@@ -108,10 +141,10 @@ export const useDashboardState = () => {
         });
       });
     }
-    return feeds;
+    return feeds.sort((a, b) => (dayjs(a.date).isBefore(dayjs(b.date)) ? 1 : -1));
   }, [currencies, expenses]);
 
-  return { lockedFund, totalBalance, recentExpenses, spentThisMonth, assetDistribution, instantAccessibleBalance };
+  return { error, lockedFund, totalBalance, recentExpenses, spentThisMonth, assetDistribution, instantAccessibleBalance };
 };
 
 export default useDashboardState;

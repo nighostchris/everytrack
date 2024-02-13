@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useDisplayCurrency } from '@hooks';
 import { Cell, Pie, PieChart, Sector, ResponsiveContainer } from 'recharts';
 
 import { AssetDistributionData } from '../../hooks/use_dashboard_state';
@@ -11,7 +11,7 @@ interface AssetDistributionChartProps {
 }
 
 export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ data, className }) => {
-  const { displayCurrency } = useOutletContext<{ displayCurrency: string }>();
+  const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const [distributionChartIndex, setDistributionChartIndex] = React.useState<number>(0);
 
   return (
@@ -53,7 +53,7 @@ export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ 
                     {name}
                   </text>
                   <text x={cx} y={cy} dy={6} textAnchor="middle" fill="#999" className="text-xs">
-                    {`${displayCurrency} ${amount}`}
+                    {`${symbol} ${amount}`}
                   </text>
                   <text x={cx} y={cy} dy={24} textAnchor="middle" fill="#999" className="text-xs">
                     {`${percentage}%`}

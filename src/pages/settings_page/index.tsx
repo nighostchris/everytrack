@@ -7,8 +7,9 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import { Root } from '@layouts/root';
 import { store } from '@lib/zustand';
+import { useCurrencies } from '@hooks';
+import { Button, Input, Select, SelectOption } from '@components';
 import { getAllClientSettings, updateSettings } from '@api/everytrack_backend';
-import { Input, Select, SelectOption } from '@components';
 
 const updateSettingsSchema = z.object({
   username: z
@@ -26,7 +27,8 @@ const updateSettingsSchema = z.object({
 });
 
 export const SettingsPage: React.FC = () => {
-  const { username, currencyId, currencies, updateClientSettings } = store();
+  const { currencies } = useCurrencies();
+  const { username, currencyId, updateClientSettings } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -46,6 +48,7 @@ export const SettingsPage: React.FC = () => {
   );
 
   const onSubmitUpdateSettingsForm = async (data: any) => {
+    setIsLoading(true);
     const { username, currencyId } = data as z.infer<typeof updateSettingsSchema>;
     try {
       const { success } = await updateSettings({ username, currencyId });
@@ -53,9 +56,10 @@ export const SettingsPage: React.FC = () => {
         const { data } = await getAllClientSettings();
         updateClientSettings(data);
       }
+      setIsLoading(false);
       toast.info('Success!');
     } catch (error: any) {
-      console.error(error);
+      setIsLoading(false);
       toast.error(error.message);
     }
   };
@@ -80,13 +84,15 @@ export const SettingsPage: React.FC = () => {
           placeholder="Select currency..."
           error={errors.currencyId && errors.currencyId.message?.toString()}
         />
-        <button
+        <Button
           type="button"
+          variant="contained"
+          isLoading={isLoading}
           onClick={handleSubmit(onSubmitUpdateSettingsForm)}
-          className="mt-8 max-w-sm rounded-md border border-transparent bg-gray-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 sm:text-sm"
+          className="mt-8 w-full max-w-sm"
         >
           Submit
-        </button>
+        </Button>
       </div>
       <ToastContainer />
     </Root>

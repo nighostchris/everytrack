@@ -6,6 +6,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
 import { Currency, ExpenseCategory } from '@api/everytrack_backend';
+import { useCurrencies, useExchangeRates, useExpenses } from '@hooks';
 
 dayjs.extend(isSameOrAfter);
 
@@ -24,9 +25,16 @@ export interface ExpenseBarChartData {
 }
 
 export const useExpensesState = () => {
-  const { expenses, currencies, currencyId, exchangeRates } = globalStore();
+  const { currencyId } = globalStore();
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const { expenses, error: fetchExpensesError } = useExpenses();
+  const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
+
+  const error = React.useMemo(
+    () => fetchExpensesError?.message ?? fetchCurrenciesError?.message ?? fetchExchangeRatesError?.message,
+    [fetchExpensesError, fetchCurrenciesError, fetchExchangeRatesError],
+  );
 
   const expensesTableRows = React.useMemo(() => {
     const result: ExpensesTableRow[] = [];
@@ -108,12 +116,7 @@ export const useExpensesState = () => {
     return { monthlyExpenseChartData: monthlyExpenseChartData.sort((a, b) => (a.spentDate > b.spentDate ? 1 : -1)) };
   }, [currencyId, expenses, exchangeRates]);
 
-  React.useEffect(() => {
-    setIsLoading(true);
-    setIsLoading(false);
-  }, []);
-
-  return { isLoading, expensesTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData };
+  return { error, expensesTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData };
 };
 
 export default useExpensesState;

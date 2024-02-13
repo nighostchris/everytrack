@@ -7,8 +7,8 @@ interface DisplayCurrency {
 }
 
 export const useDisplayCurrency = (): DisplayCurrency => {
-  const { currencies, error } = useCurrencies();
   const { currencyId } = store();
+  const { currencies, error } = useCurrencies();
   if (error) {
     return { symbol: '', error: error.message };
   }

@@ -1,4 +1,5 @@
 export * from './use_stocks';
+export * from './use_expenses';
 export * from './use_accounts';
 export * from './use_countries';
 export * from './use_currencies';

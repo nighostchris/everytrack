@@ -9,12 +9,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { EXPENSE_CATEGORIES } from '@consts';
-import { store as globalStore } from '@lib/zustand';
+import { useBankAccounts, useCurrencies, useExpenses } from '@hooks';
+import { Currency, ExpenseCategory, createNewExpense } from '@api/everytrack_backend';
 import { Button, DatePicker, Dialog, Input, Select, SelectOption, Switch } from '@components';
-import { Currency, ExpenseCategory, createNewExpense, getAllAccounts, getAllExpenses } from '@api/everytrack_backend';
 
 export const AddNewExpenseModal: React.FC = () => {
-  const { currencies, bankAccounts, updateExpenses, updateBankAccounts } = globalStore();
+  const { currencies } = useCurrencies();
+  const { bankAccounts } = useBankAccounts();
+  const { refetch: refetchExpenses } = useExpenses();
+  const { refetch: refetchBankAccounts } = useBankAccounts();
   const { openAddNewExpenseModal: open, updateOpenAddNewExpenseModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -117,10 +120,8 @@ export const AddNewExpenseModal: React.FC = () => {
       if (success) {
         setOpen(false);
         setUseAccount(false);
-        const { data } = await getAllExpenses();
-        updateExpenses(data);
-        const { data: newBankAccounts } = await getAllAccounts('savings');
-        updateBankAccounts(newBankAccounts);
+        refetchExpenses();
+        refetchBankAccounts();
         reset();
       }
       setIsLoading(false);
