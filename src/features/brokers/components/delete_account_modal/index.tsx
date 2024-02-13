@@ -4,18 +4,13 @@ import { toast } from 'react-toastify';
 import { store } from '../../zustand';
 import { Button, Dialog } from '@components';
 import { deleteAccount } from '@api/everytrack_backend';
-import { useBrokerAccounts, useStockHoldings } from '@hooks';
+import { useBrokerAccounts, useBrokerDetails, useStockHoldings } from '@hooks';
 
 export const DeleteAccountModal: React.FC = () => {
-  const {
-    accountId,
-    brokerDetails,
-    resetDeleteAccountModalState,
-    openDeleteAccountModal: open,
-    updateOpenDeleteAccountModal: setOpen,
-  } = store();
+  const { brokerDetails } = useBrokerDetails();
   const { refetch: refetchStockHoldings } = useStockHoldings();
   const { brokerAccounts, refetch: refetchBrokerAccounts } = useBrokerAccounts();
+  const { accountId, resetDeleteAccountModalState, openDeleteAccountModal: open, updateOpenDeleteAccountModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

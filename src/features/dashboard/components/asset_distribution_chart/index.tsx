@@ -26,7 +26,8 @@ export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ 
             dataKey="percentage"
             activeIndex={distributionChartIndex}
             onMouseEnter={(_, index) => setDistributionChartIndex(index)}
-            activeShape={(props) => {
+            // TO FIX: do not use any type for props
+            activeShape={(props: any) => {
               const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, name, amount, percentage } = props;
               return (
                 <g>

@@ -58,7 +58,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
             accessorKey: 'spentDate',
             header: ({ column }) => <TableColumnHeader column={column} title="Spent Date" />,
             cell: ({ row }) => {
-              return <div className="w-[80px]">{row.getValue('spentDate')}</div>;
+              return <div className="w-[120px]">{row.getValue('spentDate')}</div>;
             },
             sortingFn: (rowA, rowB) => {
               const rowADate = dayjs(rowA.getValue('spentDate'));

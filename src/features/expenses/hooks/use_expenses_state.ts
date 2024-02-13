@@ -1,10 +1,13 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
 import { Currency, ExpenseCategory } from '@api/everytrack_backend';
+
+dayjs.extend(isSameOrAfter);
 
 export interface ExpensesTableRow {
   id: string;
@@ -39,7 +42,7 @@ export const useExpensesState = () => {
           name,
           remarks,
           category,
-          spentDate: dayjs.unix(executedAt).format('MMM DD'),
+          spentDate: dayjs.unix(executedAt).format('MMM DD, YYYY'),
           amount: `${currency} ${new BigNumber(amount).toFormat(2)}`,
         });
       });
@@ -51,8 +54,8 @@ export const useExpensesState = () => {
     let spentThisYear = new BigNumber(0);
     let spentThisMonth = new BigNumber(0);
     if (currencyId && expenses && exchangeRates) {
-      const expensesInThisYear = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isAfter(dayjs().startOf('year')));
-      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isAfter(dayjs().startOf('month')));
+      const expensesInThisYear = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isSameOrAfter(dayjs().startOf('year')));
+      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isSameOrAfter(dayjs().startOf('month')));
       expensesInThisMonth.forEach(({ amount, currencyId: expenseCurrencyId }) => {
         spentThisMonth = spentThisMonth.plus(calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates));
       });
