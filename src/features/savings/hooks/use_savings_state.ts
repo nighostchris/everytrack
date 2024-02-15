@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
-import { useCurrencies, useBankDetails, useBankAccounts, useExchangeRates, useEnableAddNewProvider } from '@hooks';
+import { useCash, useCurrencies, useBankDetails, useBankAccounts, useExchangeRates, useEnableAddNewProvider } from '@hooks';
 
 export interface SavingProviderTableAccount {
   id: string;
@@ -23,9 +23,20 @@ export interface SavingProviderTableRow {
   accounts: SavingProviderTableAccount[];
 }
 
+export interface CashTableRecord {
+  id: string;
+  amount: string;
+  currency: {
+    id: string;
+    ticker: string;
+    symbol: string;
+  };
+}
+
 export const useSavingsState = () => {
   const { currencyId } = globalStore();
 
+  const { cash, error: fetchCashError } = useCash();
   const { currencies, error: fetchCurrenciesError } = useCurrencies();
   const { bankDetails, error: fetchBankDetailsError } = useBankDetails();
   const { bankAccounts, error: fetchBankAccountsError } = useBankAccounts();
@@ -33,11 +44,12 @@ export const useSavingsState = () => {
 
   const error = React.useMemo(
     () =>
+      fetchCashError?.message ??
       fetchCurrenciesError?.message ??
       fetchBankDetailsError?.message ??
       fetchBankAccountsError?.message ??
       fetchExchangeRatesError?.message,
-    [fetchCurrenciesError, fetchBankDetailsError, fetchBankAccountsError, fetchExchangeRatesError],
+    [fetchCashError, fetchCurrenciesError, fetchBankDetailsError, fetchBankAccountsError, fetchExchangeRatesError],
   );
 
   const totalBalance = React.useMemo(() => {
@@ -79,12 +91,30 @@ export const useSavingsState = () => {
     return result.sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [bankDetails, bankAccounts, currencies]);
 
+  const cashTableRecords = React.useMemo(() => {
+    const currenciesMap = new Map<string, { ticker: string; symbol: string }>();
+    const result: CashTableRecord[] = [];
+    if (cash && currencies) {
+      // Generate a currency map
+      currencies.forEach(({ id, ticker, symbol }) => currenciesMap.set(id, { ticker, symbol }));
+      cash.forEach(({ id, amount, currencyId }) => {
+        const { ticker, symbol } = currenciesMap.get(currencyId)!;
+        result.push({
+          id,
+          amount,
+          currency: { id: currencyId, ticker, symbol },
+        });
+      });
+    }
+    return result;
+  }, [cash, currencies]);
+
   const enableAddNewProvider = React.useMemo(
     () => useEnableAddNewProvider(bankDetails ?? [], bankAccounts ?? []),
     [bankDetails, bankAccounts],
   );
 
-  return { error, totalBalance, enableAddNewProvider, savingProviderTableRows };
+  return { error, totalBalance, enableAddNewProvider, savingProviderTableRows, cashTableRecords };
 };
 
 export default useSavingsState;

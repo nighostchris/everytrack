@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './cash';
 export * from './types';
 export * from './exrate';
 export * from './stocks';

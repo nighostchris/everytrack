@@ -50,6 +50,32 @@ export interface LoginResponse extends BaseResponse {
 }
 
 // ============================================================
+// /v1/cash endpoints
+// ============================================================
+// GET /v1/cash
+export interface GetAllCashResponse extends BaseResponse {
+  data: Cash[];
+}
+// POST /v1/cash
+export interface CreateNewCashRequest {
+  amount: string;
+  currencyId: string;
+}
+export interface CreateNewCashResponse extends BaseResponse {}
+// PUT /v1/cash
+export interface UpdateCashRequest {
+  id: string;
+  amount: string;
+  currencyId: string;
+}
+export interface UpdateCashResponse extends BaseResponse {}
+// DELETE /v1/cash
+export interface DeleteCashRequest {
+  cashId: string;
+}
+export interface DeleteCashResponse extends BaseResponse {}
+
+// ============================================================
 // /v1/countries endpoints
 // ============================================================
 // GET /v1/countries
@@ -229,4 +255,10 @@ export interface Stock {
 export interface AccountStockHolding {
   accountId: string;
   holdings: StockHolding[];
+}
+
+export interface Cash {
+  id: string;
+  amount: string;
+  currencyId: string;
 }

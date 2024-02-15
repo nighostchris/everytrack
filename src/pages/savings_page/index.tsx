@@ -3,9 +3,12 @@ import clsx from 'clsx';
 import React from 'react';
 import { FaSackDollar } from 'react-icons/fa6';
 import { ToastContainer } from 'react-toastify';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Root } from '@layouts/root';
 import {
+  CashTable,
+  AddNewCashModal,
   AddNewAccountModal,
   DeleteAccountModal,
   AddNewProviderModal,
@@ -21,31 +24,61 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
   const {
+    openAddNewCashModal,
     openAddNewAccountModal,
     openDeleteAccountModal,
     openAddNewProviderModal,
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
-  } = store();
+  } = store(
+    useShallow(
+      ({
+        openAddNewCashModal,
+        openAddNewAccountModal,
+        openDeleteAccountModal,
+        openAddNewProviderModal,
+        openEditAccountBalanceModal,
+        updateOpenAddNewProviderModal,
+      }) => ({
+        openAddNewCashModal,
+        openAddNewAccountModal,
+        openDeleteAccountModal,
+        openAddNewProviderModal,
+        openEditAccountBalanceModal,
+        updateOpenAddNewProviderModal,
+      }),
+    ),
+  );
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
-  const { error: savingsStateError, totalBalance, enableAddNewProvider, savingProviderTableRows } = useSavingsState();
+  const { error: savingsStateError, totalBalance, enableAddNewProvider, savingProviderTableRows, cashTableRecords } = useSavingsState();
 
   return (
     <Root>
+      <AddNewCashModal />
       <AddNewAccountModal />
       <DeleteAccountModal />
       <AddNewProviderModal />
       <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-8 py-6', {
-          'z-0': openAddNewProviderModal || openDeleteAccountModal || openEditAccountBalanceModal || openAddNewAccountModal,
-          'z-10': !openAddNewProviderModal && !openDeleteAccountModal && !openEditAccountBalanceModal && !openAddNewAccountModal,
+          'z-0':
+            openAddNewCashModal ||
+            openAddNewProviderModal ||
+            openDeleteAccountModal ||
+            openEditAccountBalanceModal ||
+            openAddNewAccountModal,
+          'z-10':
+            !openAddNewCashModal &&
+            !openAddNewProviderModal &&
+            !openDeleteAccountModal &&
+            !openEditAccountBalanceModal &&
+            !openAddNewAccountModal,
         })}
       >
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-xl font-semibold text-gray-900">Savings</h1>
-            <p className="mt-2 text-sm text-gray-700">Balance of all your bank accounts</p>
+            <p className="mt-2 text-sm text-gray-700">Balance of all your bank accounts and cash holdings</p>
           </div>
           {enableAddNewProvider && (
             <button
@@ -67,7 +100,12 @@ export const SavingsPage: React.FC = () => {
             </div>
           </div>
         ))}
-        {savingProviderTableRows.length === 0 && (
+        <div className="mt-8 flex flex-col">
+          <div className="overflow-x-auto rounded-lg border border-gray-300">
+            <CashTable data={cashTableRecords} />
+          </div>
+        </div>
+        {cashTableRecords.length === 0 && savingProviderTableRows.length === 0 && (
           <div className="flex w-full flex-col items-center py-6">
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Oops! 😢</h1>
             <p className="mt-6 text-lg leading-7 text-gray-600">Your pocket seems to be empty 💸💸💸</p>
