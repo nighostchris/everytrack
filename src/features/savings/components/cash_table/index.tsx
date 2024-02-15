@@ -11,7 +11,13 @@ interface CashTableProps {
 }
 
 export const CashTable: React.FC<CashTableProps> = ({ data }) => {
-  const { updateOpenAddNewCashModal } = store(useShallow(({ updateOpenAddNewCashModal }) => ({ updateOpenAddNewCashModal })));
+  const { updateOpenAddNewCashModal, updateOpenDeleteCashModal, populateDeleteCashModalState } = store(
+    useShallow(({ updateOpenAddNewCashModal, updateOpenDeleteCashModal, populateDeleteCashModalState }) => ({
+      updateOpenAddNewCashModal,
+      updateOpenDeleteCashModal,
+      populateDeleteCashModalState,
+    })),
+  );
 
   return (
     <table className="min-w-full">
@@ -53,8 +59,8 @@ export const CashTable: React.FC<CashTableProps> = ({ data }) => {
                 <a
                   onClick={(e) => {
                     e.preventDefault();
-                    // populateDeleteAccountModalState(id);
-                    // updateOpenDeleteAccountModal(true);
+                    populateDeleteCashModalState(id);
+                    updateOpenDeleteCashModal(true);
                   }}
                   className="ml-4 text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
                 >

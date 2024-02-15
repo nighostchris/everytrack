@@ -54,13 +54,16 @@ export const useSavingsState = () => {
 
   const totalBalance = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
-    if (bankAccounts && exchangeRates && currencyId) {
+    if (cash && bankAccounts && exchangeRates && currencyId) {
+      cash.forEach(({ amount, currencyId: cashCurrencyId }) => {
+        totalBalance = totalBalance.plus(calculateDisplayAmount(amount, currencyId, cashCurrencyId, exchangeRates));
+      });
       bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
         totalBalance = totalBalance.plus(calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates));
       });
     }
     return totalBalance.toFormat(2);
-  }, [currencyId, bankAccounts, exchangeRates]);
+  }, [cash, currencyId, bankAccounts, exchangeRates]);
 
   const savingProviderTableRows = React.useMemo(() => {
     const currenciesMap = new Map<string, string>();

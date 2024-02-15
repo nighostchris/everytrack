@@ -9,6 +9,7 @@ import { Root } from '@layouts/root';
 import {
   CashTable,
   AddNewCashModal,
+  DeleteCashModal,
   AddNewAccountModal,
   DeleteAccountModal,
   AddNewProviderModal,
@@ -25,6 +26,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export const SavingsPage: React.FC = () => {
   const {
     openAddNewCashModal,
+    openDeleteCashModal,
     openAddNewAccountModal,
     openDeleteAccountModal,
     openAddNewProviderModal,
@@ -34,6 +36,7 @@ export const SavingsPage: React.FC = () => {
     useShallow(
       ({
         openAddNewCashModal,
+        openDeleteCashModal,
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
@@ -41,6 +44,7 @@ export const SavingsPage: React.FC = () => {
         updateOpenAddNewProviderModal,
       }) => ({
         openAddNewCashModal,
+        openDeleteCashModal,
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
@@ -55,6 +59,7 @@ export const SavingsPage: React.FC = () => {
   return (
     <Root>
       <AddNewCashModal />
+      <DeleteCashModal />
       <AddNewAccountModal />
       <DeleteAccountModal />
       <AddNewProviderModal />
@@ -66,8 +71,10 @@ export const SavingsPage: React.FC = () => {
             openAddNewProviderModal ||
             openDeleteAccountModal ||
             openEditAccountBalanceModal ||
-            openAddNewAccountModal,
+            openAddNewAccountModal ||
+            openDeleteCashModal,
           'z-10':
+            !openDeleteCashModal &&
             !openAddNewCashModal &&
             !openAddNewProviderModal &&
             !openDeleteAccountModal &&

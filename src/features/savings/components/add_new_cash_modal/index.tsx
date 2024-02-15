@@ -70,7 +70,7 @@ export const AddNewCashModal: React.FC = () => {
   return (
     <Dialog open={open}>
       <div className="rounded-t-md bg-white p-6 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900">Add New Cash Record</h3>
+        <h3 className="text-lg font-medium text-gray-900">Add New Cash Holding</h3>
         <p className="mt-1 text-sm">You are adding new cash record for one of the supported currencies</p>
         <Select
           label="Currency"
