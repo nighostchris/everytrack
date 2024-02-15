@@ -29,7 +29,7 @@ export const AddNewCashModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewCashFormSchema>>({
     defaultValues: {
       amount: undefined,
@@ -57,7 +57,6 @@ export const AddNewCashModal: React.FC = () => {
       if (success) {
         setOpen(false);
         refetchCash();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -66,6 +65,12 @@ export const AddNewCashModal: React.FC = () => {
       toast.error(error.message);
     }
   };
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

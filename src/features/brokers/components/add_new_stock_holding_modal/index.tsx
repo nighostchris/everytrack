@@ -37,7 +37,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewStockHoldingFormSchema>>({
     defaultValues: {
       unit: undefined,
@@ -78,7 +78,6 @@ export const AddNewStockHoldingModal: React.FC = () => {
         setOpen(false);
         resetAddNewStockHoldingModalState();
         refetchStockHoldings();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -91,6 +90,12 @@ export const AddNewStockHoldingModal: React.FC = () => {
   React.useEffect(() => {
     reset({ accountId });
   }, [accountId]);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

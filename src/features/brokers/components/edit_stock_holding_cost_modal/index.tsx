@@ -35,7 +35,7 @@ export const EditStockHoldingCostModal: React.FC = () => {
     reset,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof editStockHoldingFormSchema>>({
     defaultValues: {
       unit: undefined,
@@ -76,6 +76,12 @@ export const EditStockHoldingCostModal: React.FC = () => {
   React.useEffect(() => {
     reset({ unit, cost, stockId, accountId });
   }, [unit, cost, stockId, accountId]);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

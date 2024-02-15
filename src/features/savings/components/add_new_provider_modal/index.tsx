@@ -32,7 +32,7 @@ export const AddNewProviderModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewProviderFormSchema>>({
     defaultValues: {
       name: undefined,
@@ -74,7 +74,6 @@ export const AddNewProviderModal: React.FC = () => {
       if (success) {
         setOpen(false);
         refetchBankAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -83,6 +82,12 @@ export const AddNewProviderModal: React.FC = () => {
       toast.error(error.message);
     }
   };
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

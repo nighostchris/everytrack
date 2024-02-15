@@ -32,7 +32,7 @@ export const AddNewBrokerModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewBrokerFormSchema>>({
     defaultValues: {
       name: undefined,
@@ -74,7 +74,6 @@ export const AddNewBrokerModal: React.FC = () => {
       if (success) {
         setOpen(false);
         refetchBrokerAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -83,6 +82,12 @@ export const AddNewBrokerModal: React.FC = () => {
       toast.error(error.message);
     }
   };
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

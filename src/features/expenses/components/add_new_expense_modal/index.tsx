@@ -75,7 +75,7 @@ export const AddNewExpenseModal: React.FC = () => {
     register,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewExpenseFormSchema>>({
     defaultValues: {
       name: undefined,
@@ -122,7 +122,6 @@ export const AddNewExpenseModal: React.FC = () => {
         setUseAccount(false);
         refetchExpenses();
         refetchBankAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -131,6 +130,12 @@ export const AddNewExpenseModal: React.FC = () => {
       toast.error(error.message);
     }
   };
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl lg:overflow-visible">

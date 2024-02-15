@@ -6,8 +6,8 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
+import { updateAccount } from '@api/everytrack_backend';
 import { useBrokerAccounts, useCurrencies } from '@hooks';
-import { getAllAccounts, updateAccount } from '@api/everytrack_backend';
 import { Button, Dialog, Input, Select, SelectOption } from '@components';
 
 const editCashHoldingFormSchema = z.object({
@@ -38,7 +38,7 @@ export const EditCashHoldingModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof editCashHoldingFormSchema>>({
     defaultValues: {
       balance: undefined,
@@ -66,7 +66,6 @@ export const EditCashHoldingModal: React.FC = () => {
         setOpen(false);
         resetEditCashHoldingModalState();
         refetchBrokerAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -81,6 +80,12 @@ export const EditCashHoldingModal: React.FC = () => {
       reset({ balance, currencyId, accountTypeId });
     }
   }, [balance, currencyId, accountTypeId]);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

@@ -35,7 +35,7 @@ export const EditAccountBalanceModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof editAccountBalanceFormSchema>>({
     defaultValues: {
       balance: undefined,
@@ -63,7 +63,6 @@ export const EditAccountBalanceModal: React.FC = () => {
         setOpen(false);
         resetEditAccountBalanceModalState();
         refetchBankAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -78,6 +77,12 @@ export const EditAccountBalanceModal: React.FC = () => {
       reset({ balance, currencyId, accountTypeId });
     }
   }, [balance, currencyId, accountTypeId]);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>

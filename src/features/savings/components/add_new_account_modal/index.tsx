@@ -30,7 +30,7 @@ export const AddNewAccountModal: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewAccountFormSchema>>({
     defaultValues: {
       name: undefined,
@@ -59,7 +59,6 @@ export const AddNewAccountModal: React.FC = () => {
         setOpen(false);
         resetAddNewAccountModalState();
         refetchBankAccounts();
-        reset();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -72,6 +71,12 @@ export const AddNewAccountModal: React.FC = () => {
   React.useEffect(() => {
     reset({ assetProviderId });
   }, [assetProviderId]);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>
