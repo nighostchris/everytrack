@@ -1,17 +1,40 @@
 # Everytrack
 
-Track everything
+Web application that aims to get everything tracked and provide easy-to-understand metrics. From your account balances, expenses to rolling subscription, Everytrack will assist you in getting them organized with minimal input.
 
-## Pre-requisite
+# Table of Contents
+
+- [Features](#features)
+  - [Future Roadmap](#future-roadmap)
+- [How to start developing](#how-to-start)
+  - [Pre-requisite](#pre-requisite)
+  - [Commands](#commands)
+  - [Import Alias](#import-alias)
+  - [How to enable HTTPS for localhost](#how-to-enable-https-for-localhost)
+
+## Features
+
+- Bank Account Balance Tracking
+- Broker Account Balance + Stock Holdings Tracking (limited US stocks only)
+- Cash Holdings Tracking
+- Expenses Tracking
+
+### Future Roadmap
+
+- Future Payments Tracking (rolling and one-off income and subscription)
+- Credit Card Balance Tracking
+- Metrics like future total asset value calculation
+
+## How to use developing
+
+### Pre-requisite
 
 ```bash
 ❯ npm --version
-10.1.0
+10.4.0
 ❯ node --version
-v18.17.0
+v20.11.0
 ```
-
-## How to use
 
 ### Commands
 
@@ -58,8 +81,6 @@ resolve: {
   ...
 }
 ```
-
-## Remarks
 
 ### How to enable HTTPS for localhost
 
