@@ -127,12 +127,12 @@ export interface GetAllFuturePaymentsResponse extends BaseResponse {
 export interface CreateNewFuturePaymentRequest {
   name: string;
   amount: string;
-  income: boolean;
-  rolling: boolean;
+  income: string; // boolean in string
+  rolling: string; // boolean in string
   accountId: string;
   currencyId: string;
   scheduledAt: number;
-  remark?: string;
+  remarks?: string;
   frequency?: number;
 }
 export interface CreateNewFuturePaymentResponse extends BaseResponse {}
@@ -141,12 +141,12 @@ export interface UpdateFuturePaymentRequest {
   id: string;
   name: string;
   amount: string;
-  income: boolean;
-  rolling: boolean;
+  income: string; // boolean in string
+  rolling: string; // boolean in string
   accountId: string;
   currencyId: string;
   scheduledAt: number;
-  remark?: string;
+  remarks?: string;
   frequency?: number;
 }
 export interface UpdateFuturePaymentResponse extends BaseResponse {}

@@ -4,9 +4,10 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { RxEnter, RxExit } from 'react-icons/rx';
 import { FaCheck, FaXmark } from 'react-icons/fa6';
+import { useShallow } from 'zustand/react/shallow';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-// import { store } from '../../zustand';
+import { store } from '../../zustand';
 import { PaymentsTableRow } from '../../hooks/use_payments_state';
 import { Badge, Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components';
 
@@ -19,7 +20,9 @@ interface PaymentsTableProps {
 }
 
 export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className }) => {
-  // const { populateDeleteExpenseModalState, updateOpenAddNewExpenseModal, updateOpenDeleteExpenseModal } = store();
+  const { updateOpenAddNewFuturePaymentModal } = store(
+    useShallow(({ updateOpenAddNewFuturePaymentModal }) => ({ updateOpenAddNewFuturePaymentModal })),
+  );
 
   return (
     <>
@@ -29,7 +32,7 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className })
           variant="contained"
           className="h-8 text-xs"
           onClick={() => {
-            // updateOpenAddNewExpenseModal(true);
+            updateOpenAddNewFuturePaymentModal(true);
           }}
         >
           Add New Payment

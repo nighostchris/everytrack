@@ -11,5 +11,6 @@ export * from './popover';
 export * from './spinner';
 export * from './timeline';
 export * from './calendar';
+export * from './radio_group';
 export * from './date_picker';
 export * from './dropdown_menu';

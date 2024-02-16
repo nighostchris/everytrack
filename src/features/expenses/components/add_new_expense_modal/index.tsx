@@ -84,7 +84,7 @@ export const AddNewExpenseModal: React.FC = () => {
       category: undefined,
       accountId: undefined,
       currencyId: undefined,
-      executedAt: dayjs().unix(),
+      executedAt: dayjs().startOf('day').unix(),
     },
     resolver: zodResolver(addNewExpenseFormSchema),
   });
@@ -167,6 +167,7 @@ export const AddNewExpenseModal: React.FC = () => {
           <DatePicker
             label="Spent Date"
             date={spentDate}
+            toDate={new Date()}
             setDate={(newDate) => {
               if (newDate) {
                 setValue('executedAt', dayjs(newDate).unix());

@@ -11,11 +11,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 interface DatePickerProps {
   date: Date;
   setDate: (newDate?: Date) => void;
+  toDate?: Date;
   label?: string;
+  fromDate?: Date;
   className?: string;
 }
 
-export const DatePicker: React.FC<DatePickerProps> = ({ date, setDate, label, className }) => {
+export const DatePicker: React.FC<DatePickerProps> = ({ date, setDate, label, toDate, fromDate, className }) => {
   return (
     <div className="space-y-2">
       {label && <label className="block text-sm font-medium leading-none text-gray-700">{label}</label>}
@@ -33,7 +35,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ date, setDate, label, cl
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <Calendar mode="single" selected={date} onSelect={setDate} initialFocus toDate={new Date()} />
+            <Calendar initialFocus mode="single" selected={date} toDate={toDate} onSelect={setDate} fromDate={fromDate} />
           </PopoverContent>
         </Popover>
       </div>
