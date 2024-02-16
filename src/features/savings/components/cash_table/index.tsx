@@ -46,7 +46,7 @@ export const CashTable: React.FC<CashTableProps> = ({ data }) => {
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(amount).toFormat(2)}`}</td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
               <div className="flex flex-row justify-end">
-                <a
+                {/* <a
                   onClick={(e) => {
                     e.preventDefault();
                     // populateEditAccountBalanceModalState({ balance, currencyId, accountTypeId });
@@ -55,7 +55,7 @@ export const CashTable: React.FC<CashTableProps> = ({ data }) => {
                   className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
                 >
                   Edit
-                </a>
+                </a> */}
                 <a
                   onClick={(e) => {
                     e.preventDefault();

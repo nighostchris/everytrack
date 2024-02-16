@@ -1,7 +1,7 @@
 import { Route, Outlet, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 
 import { HomePageGuardian, PrivateRouteGuardian } from '@features/auth/components';
-import { HomePage, SavingsPage, SettingsPage, DashboardPage, ExpensesPage, BrokersPage } from '@pages';
+import { HomePage, SavingsPage, SettingsPage, DashboardPage, ExpensesPage, BrokersPage, PaymentsPage } from '@pages';
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<Outlet />}>
@@ -14,6 +14,7 @@ const routes = createRoutesFromElements(
       <Route path="expenses" element={<ExpensesPage />} />
       <Route path="settings" element={<SettingsPage />} />
       <Route path="dashboard" element={<DashboardPage />} />
+      <Route path="payments" element={<PaymentsPage />} />
     </Route>
   </Route>,
 );

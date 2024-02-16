@@ -117,6 +117,46 @@ export interface DeleteExpenseRequest {
 export interface DeleteExpenseResponse extends BaseResponse {}
 
 // ============================================================
+// /v1/fpayments endpoints
+// ============================================================
+// GET /v1/fpayments
+export interface GetAllFuturePaymentsResponse extends BaseResponse {
+  data: FuturePayment[];
+}
+// POST /v1/fpayments
+export interface CreateNewFuturePaymentRequest {
+  name: string;
+  amount: string;
+  income: boolean;
+  rolling: boolean;
+  accountId: string;
+  currencyId: string;
+  scheduledAt: number;
+  remark?: string;
+  frequency?: number;
+}
+export interface CreateNewFuturePaymentResponse extends BaseResponse {}
+// PUT /v1/fpayments
+export interface UpdateFuturePaymentRequest {
+  id: string;
+  name: string;
+  amount: string;
+  income: boolean;
+  rolling: boolean;
+  accountId: string;
+  currencyId: string;
+  scheduledAt: number;
+  remark?: string;
+  frequency?: number;
+}
+export interface UpdateFuturePaymentResponse extends BaseResponse {}
+// DELETE /v1/fpayments
+export interface DeleteFuturePaymentRequest {
+  futurePaymentId: string;
+}
+export interface DeleteFuturePaymentResponse extends BaseResponse {}
+
+// ============================================================
 // /v1/settings endpoints
 // ============================================================
 // GET /v1/settings
@@ -261,4 +301,17 @@ export interface Cash {
   id: string;
   amount: string;
   currencyId: string;
+}
+
+export interface FuturePayment {
+  id: string;
+  name: string;
+  amount: string;
+  remarks: string;
+  income: boolean;
+  rolling: boolean;
+  frequency: number; // in milliseconds
+  accountId: string;
+  currencyId: string;
+  scheduledAt: number;
 }
