@@ -1,18 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import {
-  useStocks,
-  useCurrencies,
-  useExchangeRates,
-  useBrokerDetails,
-  useStockHoldings,
-  useBrokerAccounts,
-  useEnableAddNewProvider,
-} from '@hooks';
 import { store as globalStore } from '@lib/zustand';
-import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
+import { canAddNewProvider, calculateDisplayAmount, calculateInterpolateColor } from '@utils';
+import { useStocks, useCurrencies, useExchangeRates, useBrokerDetails, useStockHoldings, useBrokerAccounts } from '@hooks';
 
 export interface BrokerAccountTableHolding {
   id: string;
@@ -209,7 +201,7 @@ export const useBrokersState = () => {
   }, [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings]);
 
   const enableAddNewProvider = React.useMemo(
-    () => useEnableAddNewProvider(brokerDetails ?? [], brokerAccounts ?? []),
+    () => canAddNewProvider(brokerDetails ?? [], brokerAccounts ?? []),
     [brokerDetails, brokerAccounts],
   );
 

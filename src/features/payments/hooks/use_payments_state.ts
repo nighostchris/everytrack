@@ -51,7 +51,7 @@ export const usePaymentsState = () => {
         });
       });
     }
-    return result.sort((a, b) => (dayjs(a.scheduledDate).isBefore(dayjs(b.scheduledDate)) ? 1 : -1));
+    return result.sort((a, b) => (dayjs(a.scheduledDate).isAfter(dayjs(b.scheduledDate)) ? 1 : -1));
   }, [futurePayments, currencies]);
 
   return { error, paymentsTableRows };

@@ -1,8 +1,15 @@
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { getAllStocks } from '@api/everytrack_backend';
+import { Stock, getAllStocks } from '@api/everytrack_backend';
 
 export const useStocks = () => {
-  const { data, isLoading, error } = useQuery({ queryKey: ['stocks'], queryFn: getAllStocks });
-  return { stocks: data?.data, isLoading, error: !error ? undefined : error };
+  const query = useQuery({ queryKey: ['stocks'], queryFn: getAllStocks, select: ({ data }) => data });
+  const { data: stocks, error } = query;
+  const stocksMap = React.useMemo(() => {
+    const map: Map<string, Stock> = new Map();
+    (stocks ?? []).forEach((stock) => map.set(stock.id, stock));
+    return map;
+  }, [stocks]);
+  return { ...query, stocks, stocksMap, error: !error ? undefined : error };
 };

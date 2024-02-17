@@ -1,9 +1,9 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
-import { useCash, useCurrencies, useBankDetails, useBankAccounts, useExchangeRates, useEnableAddNewProvider } from '@hooks';
+import { canAddNewProvider, calculateDisplayAmount } from '@utils';
+import { useCash, useCurrencies, useBankDetails, useBankAccounts, useExchangeRates } from '@hooks';
 
 export interface SavingProviderTableAccount {
   id: string;
@@ -112,10 +112,7 @@ export const useSavingsState = () => {
     return result;
   }, [cash, currencies]);
 
-  const enableAddNewProvider = React.useMemo(
-    () => useEnableAddNewProvider(bankDetails ?? [], bankAccounts ?? []),
-    [bankDetails, bankAccounts],
-  );
+  const enableAddNewProvider = React.useMemo(() => canAddNewProvider(bankDetails ?? [], bankAccounts ?? []), [bankDetails, bankAccounts]);
 
   return { error, totalBalance, enableAddNewProvider, savingProviderTableRows, cashTableRecords };
 };
