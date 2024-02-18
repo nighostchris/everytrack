@@ -190,9 +190,9 @@ export const AddNewFuturePaymentModal: React.FC = () => {
               label="Frequency"
               control={control as Control<any, any>}
               options={[
-                { value: dayjs.duration({ days: 1 }).asMilliseconds().toString(), display: '1 Day' },
-                { value: dayjs.duration({ weeks: 1 }).asMilliseconds().toString(), display: '1 Week' },
-                { value: dayjs.duration({ months: 1 }).asMilliseconds().toString(), display: '1 Month' },
+                { value: dayjs.duration({ days: 1 }).asSeconds().toString(), display: '1 Day' },
+                { value: dayjs.duration({ weeks: 1 }).asSeconds().toString(), display: '1 Week' },
+                { value: dayjs.duration({ months: 1 }).asSeconds().toString(), display: '1 Month' },
               ]}
               error={errors.frequency && errors.frequency.message?.toString()}
             />

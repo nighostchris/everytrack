@@ -94,7 +94,11 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className })
               return (
                 <div className="w-[80px]">
                   {row.getValue('rolling')
-                    ? `Every ${dayjs.duration(row.getValue('frequency')).humanize().replaceAll('1 ', '').replaceAll('a ', '')}`
+                    ? `Every ${dayjs
+                        .duration({ seconds: row.getValue('frequency') })
+                        .humanize()
+                        .replaceAll('1 ', '')
+                        .replaceAll('a ', '')}`
                     : 'N/A'}
                 </div>
               );

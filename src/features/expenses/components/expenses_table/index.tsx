@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 
 import { store } from '../../zustand';
 import ExpenseCategoryBadge from '../expense_category_badge';
-import { ExpensesTableRow } from '@features/expenses/hooks/use_expenses_state';
+import { ExpensesTableRow } from '../../hooks/use_expenses_state';
 import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
 
 interface ExpensesTableProps {
