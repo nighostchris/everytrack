@@ -20,8 +20,12 @@ interface PaymentsTableProps {
 }
 
 export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className }) => {
-  const { updateOpenAddNewFuturePaymentModal } = store(
-    useShallow(({ updateOpenAddNewFuturePaymentModal }) => ({ updateOpenAddNewFuturePaymentModal })),
+  const { updateOpenDeleteFuturePaymentModal, updateOpenAddNewFuturePaymentModal, populateDeleteFuturePaymentModalState } = store(
+    useShallow(({ updateOpenDeleteFuturePaymentModal, updateOpenAddNewFuturePaymentModal, populateDeleteFuturePaymentModalState }) => ({
+      updateOpenDeleteFuturePaymentModal,
+      updateOpenAddNewFuturePaymentModal,
+      populateDeleteFuturePaymentModalState,
+    })),
   );
 
   return (
@@ -134,8 +138,8 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className })
                   // <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
                   <DropdownMenuItem
                     onClick={() => {
-                      // populateDeleteExpenseModalState(row.original.id);
-                      // updateOpenDeleteExpenseModal(true);
+                      populateDeleteFuturePaymentModalState(row.original.id);
+                      updateOpenDeleteFuturePaymentModal(true);
                     }}
                   >
                     Delete

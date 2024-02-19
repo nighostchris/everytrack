@@ -4,7 +4,7 @@ export type ModalStateSlice = {
   openAddNewFuturePaymentModal: boolean;
   openUpdateFuturePaymentModal: boolean;
   openDeleteFuturePaymentModal: boolean;
-  // resetDeleteExpenseModalState: () => void;
+  resetDeleteFuturePaymentModalState: () => void;
   updateOpenAddNewFuturePaymentModal: (newModalState: boolean) => void;
   updateOpenUpdateFuturePaymentModal: (newModalState: boolean) => void;
   updateOpenDeleteFuturePaymentModal: (newModalState: boolean) => void;

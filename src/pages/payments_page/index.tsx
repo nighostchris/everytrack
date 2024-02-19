@@ -10,7 +10,7 @@ import { Root } from '@layouts/root';
 // import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/payments/zustand';
 import { usePaymentsState } from '@features/payments/hooks/use_payments_state';
-import { PaymentsTable, AddNewFuturePaymentModal } from '@features/payments/components';
+import { PaymentsTable, AddNewFuturePaymentModal, DeleteFuturePaymentModal } from '@features/payments/components';
 
 export const PaymentsPage: React.FC = () => {
   const { openAddNewFuturePaymentModal, openUpdateFuturePaymentModal, openDeleteFuturePaymentModal } = store(
@@ -26,6 +26,7 @@ export const PaymentsPage: React.FC = () => {
   return (
     <Root>
       <AddNewFuturePaymentModal />
+      <DeleteFuturePaymentModal />
       <div
         className={clsx('relative flex h-full flex-col overflow-y-auto px-8 py-6', {
           'z-0': openAddNewFuturePaymentModal || openUpdateFuturePaymentModal || openDeleteFuturePaymentModal,

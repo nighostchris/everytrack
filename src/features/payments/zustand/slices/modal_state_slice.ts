@@ -12,7 +12,7 @@ export const createModalStateSlice: StateCreator<
   openAddNewFuturePaymentModal: false,
   openUpdateFuturePaymentModal: false,
   openDeleteFuturePaymentModal: false,
-  // resetDeleteExpenseModalState: () => set((state) => ({ ...state, expenseId: undefined })),
+  resetDeleteFuturePaymentModalState: () => set((state) => ({ ...state, futurePaymentId: undefined })),
   populateDeleteFuturePaymentModalState: (futurePaymentId) => set((state) => ({ ...state, futurePaymentId })),
   updateOpenAddNewFuturePaymentModal: (newModalState) => set((state) => ({ ...state, openAddNewFuturePaymentModal: newModalState })),
   updateOpenUpdateFuturePaymentModal: (newModalState) => set((state) => ({ ...state, openUpdateFuturePaymentModal: newModalState })),
