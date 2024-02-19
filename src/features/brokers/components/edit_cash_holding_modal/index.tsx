@@ -49,7 +49,7 @@ export const EditCashHoldingModal: React.FC = () => {
   });
 
   const brokerAccountName = React.useMemo(
-    () => (brokerAccounts && accountTypeId ? brokerAccounts.filter(({ accountTypeId }) => accountTypeId === accountTypeId)[0].name : ''),
+    () => (brokerAccounts && accountTypeId ? brokerAccounts.filter(({ accountTypeId: id }) => id === accountTypeId)[0].name : ''),
     [accountTypeId, brokerAccounts],
   );
   const currencyOptions: SelectOption[] = React.useMemo(

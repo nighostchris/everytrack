@@ -46,7 +46,7 @@ export const EditAccountBalanceModal: React.FC = () => {
   });
 
   const bankAccountName = React.useMemo(
-    () => (bankAccounts && accountTypeId ? bankAccounts.filter(({ accountTypeId }) => accountTypeId === accountTypeId)[0].name : ''),
+    () => (bankAccounts && accountTypeId ? bankAccounts.filter(({ accountTypeId: id }) => id === accountTypeId)[0].name : ''),
     [accountTypeId, bankAccounts],
   );
   const currencyOptions: SelectOption[] = React.useMemo(

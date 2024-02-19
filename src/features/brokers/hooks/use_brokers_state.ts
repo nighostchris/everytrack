@@ -157,10 +157,10 @@ export const useBrokersState = () => {
   }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
 
   const brokerAccountTableRows = React.useMemo(() => {
-    const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
-    const stockHoldingsMap = new Map<string, StockHolding[]>();
     const result: BrokerAccountTableRow[] = [];
     if (brokerDetails && brokerAccounts && currencies && stocks && stockHoldings) {
+      const stockHoldingsMap = new Map<string, StockHolding[]>();
+      const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
       // Generate a account stock holding map
       stockHoldings.forEach(({ accountId, holdings }) => {
         stockHoldingsMap.set(accountId, holdings);
