@@ -105,7 +105,6 @@ export const useMetricsState = () => {
             totalAssetValue = totalAssetValue.plus(amountToAdd);
             if (rolling) {
               const newScheduledPaymentDate = dayjs.unix(date).add(frequency, 'seconds').startOf('day').unix();
-              console.log({ curr: dayjs.unix(date).toDate(), newScheduledPaymentDate: dayjs.unix(newScheduledPaymentDate).toDate() });
               const newRecord = { amount, frequency, currencyId: futurePaymentCurrencyId, rolling, income };
               if (futurePaymentsMap.has(newScheduledPaymentDate)) {
                 futurePaymentsMap.set(newScheduledPaymentDate, [...futurePaymentsMap.get(newScheduledPaymentDate)!, newRecord]);

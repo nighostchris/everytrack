@@ -10,13 +10,13 @@ import { Root } from '@layouts/root';
 // import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/payments/zustand';
 import { usePaymentsState } from '@features/payments/hooks/use_payments_state';
-import { PaymentsTable, AddNewFuturePaymentModal, DeleteFuturePaymentModal } from '@features/payments/components';
+import { PaymentsTable, AddNewFuturePaymentModal, DeleteFuturePaymentModal, EditFuturePaymentModal } from '@features/payments/components';
 
 export const PaymentsPage: React.FC = () => {
-  const { openAddNewFuturePaymentModal, openUpdateFuturePaymentModal, openDeleteFuturePaymentModal } = store(
-    useShallow(({ openAddNewFuturePaymentModal, openUpdateFuturePaymentModal, openDeleteFuturePaymentModal }) => ({
+  const { openAddNewFuturePaymentModal, openEditFuturePaymentModal, openDeleteFuturePaymentModal } = store(
+    useShallow(({ openAddNewFuturePaymentModal, openEditFuturePaymentModal, openDeleteFuturePaymentModal }) => ({
+      openEditFuturePaymentModal,
       openAddNewFuturePaymentModal,
-      openUpdateFuturePaymentModal,
       openDeleteFuturePaymentModal,
     })),
   );
@@ -25,12 +25,13 @@ export const PaymentsPage: React.FC = () => {
 
   return (
     <Root>
+      <EditFuturePaymentModal />
       <AddNewFuturePaymentModal />
       <DeleteFuturePaymentModal />
       <div
         className={clsx('relative flex h-full flex-col overflow-y-auto px-8 py-6', {
-          'z-0': openAddNewFuturePaymentModal || openUpdateFuturePaymentModal || openDeleteFuturePaymentModal,
-          'z-10': !openAddNewFuturePaymentModal && !openUpdateFuturePaymentModal && !openDeleteFuturePaymentModal,
+          'z-0': openAddNewFuturePaymentModal || openEditFuturePaymentModal || openDeleteFuturePaymentModal,
+          'z-10': !openAddNewFuturePaymentModal && !openEditFuturePaymentModal && !openDeleteFuturePaymentModal,
         })}
       >
         <h1 className="text-xl font-semibold text-gray-900">Payments</h1>

@@ -20,12 +20,28 @@ interface PaymentsTableProps {
 }
 
 export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className }) => {
-  const { updateOpenDeleteFuturePaymentModal, updateOpenAddNewFuturePaymentModal, populateDeleteFuturePaymentModalState } = store(
-    useShallow(({ updateOpenDeleteFuturePaymentModal, updateOpenAddNewFuturePaymentModal, populateDeleteFuturePaymentModalState }) => ({
-      updateOpenDeleteFuturePaymentModal,
-      updateOpenAddNewFuturePaymentModal,
-      populateDeleteFuturePaymentModalState,
-    })),
+  const {
+    updateOpenEditFuturePaymentModal,
+    updateOpenDeleteFuturePaymentModal,
+    updateOpenAddNewFuturePaymentModal,
+    populateEditFuturePaymentModalState,
+    populateDeleteFuturePaymentModalState,
+  } = store(
+    useShallow(
+      ({
+        updateOpenEditFuturePaymentModal,
+        updateOpenDeleteFuturePaymentModal,
+        updateOpenAddNewFuturePaymentModal,
+        populateEditFuturePaymentModalState,
+        populateDeleteFuturePaymentModalState,
+      }) => ({
+        updateOpenEditFuturePaymentModal,
+        updateOpenDeleteFuturePaymentModal,
+        updateOpenAddNewFuturePaymentModal,
+        populateEditFuturePaymentModalState,
+        populateDeleteFuturePaymentModalState,
+      }),
+    ),
   );
 
   return (
@@ -135,7 +151,25 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className })
               <TableRowActions
                 row={row}
                 actions={[
-                  // <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
+                  <DropdownMenuItem
+                    onClick={() => {
+                      populateEditFuturePaymentModalState({
+                        name: row.original.name,
+                        income: row.original.income,
+                        amount: row.original.amount,
+                        rolling: row.original.rolling,
+                        remarks: row.original.remarks,
+                        futurePaymentId: row.original.id,
+                        frequency: row.original.frequency,
+                        accountId: row.original.accountId,
+                        currencyId: row.original.currencyId,
+                        scheduledAt: dayjs(row.original.scheduledDate, 'MMM DD, YYYY').unix(),
+                      });
+                      updateOpenEditFuturePaymentModal(true);
+                    }}
+                  >
+                    Edit
+                  </DropdownMenuItem>,
                   <DropdownMenuItem
                     onClick={() => {
                       populateDeleteFuturePaymentModalState(row.original.id);

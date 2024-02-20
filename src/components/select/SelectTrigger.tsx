@@ -20,7 +20,7 @@ export const SelectTrigger = React.forwardRef<
         className,
         { 'border-red-300': error },
         // dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900
-        'flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-gray-400',
+        'flex min-h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-gray-400',
       )}
     >
       {children}
