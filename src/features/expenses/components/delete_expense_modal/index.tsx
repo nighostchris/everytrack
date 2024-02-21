@@ -1,10 +1,17 @@
+import { z } from 'zod';
 import React from 'react';
 import { toast } from 'react-toastify';
+import { Control, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { Button, Dialog, Switch } from '@components';
 import { useBankAccounts, useExpenses } from '@hooks';
 import { deleteExpense } from '@api/everytrack_backend';
+
+const deleteExpenseFormSchema = z.object({
+  revertBalance: z.boolean(),
+});
 
 export const DeleteExpenseModal: React.FC = () => {
   const { refetch: refetchBankAccounts } = useBankAccounts();
@@ -12,7 +19,18 @@ export const DeleteExpenseModal: React.FC = () => {
   const { expenseId, resetDeleteExpenseModalState, openDeleteExpenseModal: open, updateOpenDeleteExpenseModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [revertBalance, setRevertBalance] = React.useState<boolean>(false);
+
+  const {
+    reset,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<z.infer<typeof deleteExpenseFormSchema>>({
+    defaultValues: {
+      revertBalance: false,
+    },
+    resolver: zodResolver(deleteExpenseFormSchema),
+  });
 
   const accountId = React.useMemo(() => {
     if (expenseId && expenses) {
@@ -28,29 +46,38 @@ export const DeleteExpenseModal: React.FC = () => {
     [expenses, expenseId],
   );
 
-  const handleOnClickDeleteExpenseButton = React.useCallback(async () => {
-    setIsLoading(true);
-    if (!expenseId) {
-      setIsLoading(false);
-      toast.error('Unexpected error!');
-    } else {
-      try {
-        const { success } = await deleteExpense({ expenseId, revertBalance });
-        if (success) {
-          setOpen(false);
-          setRevertBalance(false);
-          resetDeleteExpenseModalState();
-          refetchBankAccounts();
-          refetchExpenses();
+  const onSubmitDeleteExpenseForm = React.useCallback(
+    async (data: any) => {
+      setIsLoading(true);
+      const { revertBalance } = data as z.infer<typeof deleteExpenseFormSchema>;
+      if (!expenseId) {
+        setIsLoading(false);
+        toast.error('Unexpected error!');
+      } else {
+        try {
+          const { success } = await deleteExpense({ expenseId, revertBalance });
+          if (success) {
+            setOpen(false);
+            resetDeleteExpenseModalState();
+            refetchBankAccounts();
+            refetchExpenses();
+          }
+          setIsLoading(false);
+          toast.info('Success!');
+        } catch (error: any) {
+          setIsLoading(false);
+          toast.error(error.message);
         }
-        setIsLoading(false);
-        toast.info('Success!');
-      } catch (error: any) {
-        setIsLoading(false);
-        toast.error(error.message);
       }
+    },
+    [expenseId],
+  );
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
     }
-  }, [expenseId, revertBalance]);
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={open}>
@@ -62,7 +89,12 @@ export const DeleteExpenseModal: React.FC = () => {
         {accountId && (
           <>
             <p>And revert account balance change?</p>
-            <Switch checked={revertBalance} onCheckedChange={setRevertBalance} />
+            <Switch
+              label=""
+              formId="revertBalance"
+              control={control as Control<any, any>}
+              error={errors.revertBalance && errors.revertBalance.message?.toString()}
+            />
           </>
         )}
       </div>
@@ -71,7 +103,7 @@ export const DeleteExpenseModal: React.FC = () => {
           type="button"
           variant="contained"
           isLoading={isLoading}
-          onClick={() => handleOnClickDeleteExpenseButton()}
+          onClick={handleSubmit(onSubmitDeleteExpenseForm)}
           className="w-full !bg-red-600 !text-white hover:!bg-red-700 sm:ml-2 sm:w-28"
         >
           Delete

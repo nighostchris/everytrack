@@ -21,13 +21,13 @@ export const AddNewExpenseModal: React.FC = () => {
   const { openAddNewExpenseModal: open, updateOpenAddNewExpenseModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [useAccount, setUseAccount] = React.useState<boolean>(false);
 
   const addNewExpenseFormSchema = React.useMemo(
     () =>
       z
         .object({
           executedAt: z.number(),
+          useAccount: z.boolean(),
           remarks: z.string().optional(),
           accountId: z.string().optional(),
           name: z.string().min(1, 'Name cannot be empty'),
@@ -79,6 +79,7 @@ export const AddNewExpenseModal: React.FC = () => {
   } = useForm<z.infer<typeof addNewExpenseFormSchema>>({
     defaultValues: {
       name: undefined,
+      useAccount: false,
       amount: undefined,
       remarks: undefined,
       category: undefined,
@@ -89,6 +90,7 @@ export const AddNewExpenseModal: React.FC = () => {
     resolver: zodResolver(addNewExpenseFormSchema),
   });
   const watchSelectedExecutedAt = watch('executedAt');
+  const watchSelectedUseAccount = watch('useAccount');
 
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
@@ -119,7 +121,6 @@ export const AddNewExpenseModal: React.FC = () => {
       const { success } = await createNewExpense({ name, amount, remarks, category, accountId, currencyId, executedAt });
       if (success) {
         setOpen(false);
-        setUseAccount(false);
         refetchExpenses();
         refetchBankAccounts();
       }
@@ -177,8 +178,13 @@ export const AddNewExpenseModal: React.FC = () => {
           />
         </div>
         <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
-          <Switch label="Use Account" checked={useAccount} onCheckedChange={setUseAccount} />
-          {useAccount && (
+          <Switch
+            label="Use Account"
+            formId="useAccount"
+            control={control as Control<any, any>}
+            error={errors.useAccount && errors.useAccount.message?.toString()}
+          />
+          {watchSelectedUseAccount && (
             <Select
               label="Spent From"
               formId="accountId"

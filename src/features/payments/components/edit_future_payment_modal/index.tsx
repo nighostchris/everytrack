@@ -66,15 +66,14 @@ export const EditFuturePaymentModal: React.FC = () => {
     ),
   );
 
-  const [isIncome, setIsIncome] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isRolling, setIsRolling] = React.useState<boolean>(false);
 
   const editFuturePaymentFormSchema = React.useMemo(
     () =>
       z
         .object({
-          scheduledAt: z.number(),
+          income: z.boolean(),
+          rolling: z.boolean(),
           remarks: z.string().optional(),
           amount: z.coerce
             .number()
@@ -88,7 +87,7 @@ export const EditFuturePaymentModal: React.FC = () => {
           name: z.string().min(1, 'Name cannot be empty'),
           accountId: z.string().min(1, 'Account cannot be empty'),
           currencyId: z.string({ required_error: 'Invalid currency' }),
-
+          scheduledAt: z.number({ required_error: 'Invalid schedule date' }),
           futurePaymentId: z.string().min(1, 'Future payment id cannot be empty'),
         })
         .superRefine((data, ctx) => {
@@ -122,6 +121,8 @@ export const EditFuturePaymentModal: React.FC = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof editFuturePaymentFormSchema>>({
     defaultValues: {
+      income: false,
+      rolling: false,
       name: undefined,
       amount: undefined,
       remarks: undefined,
@@ -132,6 +133,7 @@ export const EditFuturePaymentModal: React.FC = () => {
     },
     resolver: zodResolver(editFuturePaymentFormSchema),
   });
+  const watchSelectedRolling = watch('rolling');
   const watchSelectedScheduledAt = watch('scheduledAt');
 
   const futurePaymentName = React.useMemo(
@@ -164,7 +166,7 @@ export const EditFuturePaymentModal: React.FC = () => {
 
   const onSubmitEditAccountBalanceForm = async (data: any) => {
     setIsLoading(true);
-    const { name, amount, remarks, currencyId, accountId, frequency, scheduledAt, futurePaymentId } = data as z.infer<
+    const { name, amount, income, rolling, remarks, currencyId, accountId, frequency, scheduledAt, futurePaymentId } = data as z.infer<
       typeof editFuturePaymentFormSchema
     >;
     try {
@@ -175,10 +177,10 @@ export const EditFuturePaymentModal: React.FC = () => {
         currencyId,
         scheduledAt,
         id: futurePaymentId,
-        income: isIncome.toString(),
-        rolling: isRolling.toString(),
+        income: income.toString(),
+        rolling: rolling.toString(),
         remarks: remarks && remarks.length > 0 ? remarks : undefined,
-        frequency: isRolling && frequency ? parseInt(frequency, 10) : undefined,
+        frequency: rolling && frequency ? parseInt(frequency, 10) : undefined,
       });
       if (success) {
         setOpen(false);
@@ -201,14 +203,18 @@ export const EditFuturePaymentModal: React.FC = () => {
       accountId &&
       scheduledAt &&
       futurePaymentId &&
+      typeof income !== 'undefined' &&
+      typeof rolling !== 'undefined' &&
       typeof remarks !== 'undefined' &&
       typeof frequency !== 'undefined'
     ) {
       reset({
         name,
         amount,
-        currencyId,
+        income,
+        rolling,
         accountId,
+        currencyId,
         scheduledAt,
         futurePaymentId,
         frequency: frequency.toString(),
@@ -222,18 +228,6 @@ export const EditFuturePaymentModal: React.FC = () => {
       reset();
     }
   }, [isSubmitSuccessful]);
-
-  React.useEffect(() => {
-    if (income) {
-      setIsIncome(income);
-    }
-  }, [income]);
-
-  React.useEffect(() => {
-    if (rolling) {
-      setIsRolling(rolling);
-    }
-  }, [rolling]);
 
   return (
     <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none md:max-w-2xl lg:max-w-4xl lg:overflow-visible">
@@ -263,8 +257,18 @@ export const EditFuturePaymentModal: React.FC = () => {
             placeholder="Select account..."
             error={errors.accountId && errors.accountId.message?.toString()}
           />
-          <Switch label="Is it income?" checked={isIncome} onCheckedChange={setIsIncome} />
-          <Switch label="Is it on rolling basis?" checked={isRolling} onCheckedChange={setIsRolling} />
+          <Switch
+            formId="income"
+            label="Is it income?"
+            control={control as Control<any, any>}
+            error={errors.income && errors.income.message?.toString()}
+          />
+          <Switch
+            formId="rolling"
+            label="Is it on rolling basis?"
+            control={control as Control<any, any>}
+            error={errors.rolling && errors.rolling.message?.toString()}
+          />
         </div>
         <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
           <DatePicker
@@ -278,7 +282,7 @@ export const EditFuturePaymentModal: React.FC = () => {
             }}
             className="[&>button]:w-full"
           />
-          {isRolling && (
+          {watchSelectedRolling && (
             <RadioGroup
               label="Frequency"
               control={control as Control<any, any>}

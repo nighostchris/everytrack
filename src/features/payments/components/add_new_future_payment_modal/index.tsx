@@ -19,14 +19,14 @@ export const AddNewFuturePaymentModal: React.FC = () => {
   const { refetch: refetchFuturePayments } = useFuturePayments();
   const { openAddNewFuturePaymentModal: open, updateOpenAddNewFuturePaymentModal: setOpen } = store();
 
-  const [isIncome, setIsIncome] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isRolling, setIsRolling] = React.useState<boolean>(false);
 
   const addNewFuturePaymentFormSchema = React.useMemo(
     () =>
       z
         .object({
+          income: z.boolean(),
+          rolling: z.boolean(),
           accountId: z.string(),
           scheduledAt: z.number(),
           remarks: z.string().optional(),
@@ -69,6 +69,8 @@ export const AddNewFuturePaymentModal: React.FC = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewFuturePaymentFormSchema>>({
     defaultValues: {
+      income: false,
+      rolling: false,
       name: undefined,
       amount: undefined,
       remarks: undefined,
@@ -79,6 +81,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
     },
     resolver: zodResolver(addNewFuturePaymentFormSchema),
   });
+  const watchSelectedRolling = watch('rolling');
   const watchSelectedScheduledAt = watch('scheduledAt');
 
   const currencyOptions: SelectOption[] = React.useMemo(
@@ -105,37 +108,34 @@ export const AddNewFuturePaymentModal: React.FC = () => {
 
   const scheduleDate = React.useMemo(() => dayjs.unix(watchSelectedScheduledAt).toDate(), [watchSelectedScheduledAt]);
 
-  const onSubmitAddNewPaymentForm = React.useCallback(
-    async (data: any) => {
-      setIsLoading(true);
-      const { name, amount, frequency, remarks, accountId, currencyId, scheduledAt } = data as z.infer<
-        typeof addNewFuturePaymentFormSchema
-      >;
-      try {
-        const { success } = await createNewFuturePayment({
-          name,
-          amount,
-          income: isIncome.toString(),
-          rolling: isRolling.toString(),
-          frequency,
-          remarks,
-          accountId,
-          currencyId,
-          scheduledAt,
-        });
-        if (success) {
-          setOpen(false);
-          refetchFuturePayments();
-        }
-        setIsLoading(false);
-        toast.info('Success!');
-      } catch (error: any) {
-        setIsLoading(false);
-        toast.error(error.message);
+  const onSubmitAddNewPaymentForm = async (data: any) => {
+    setIsLoading(true);
+    const { name, amount, income, rolling, frequency, remarks, accountId, currencyId, scheduledAt } = data as z.infer<
+      typeof addNewFuturePaymentFormSchema
+    >;
+    try {
+      const { success } = await createNewFuturePayment({
+        name,
+        amount,
+        remarks,
+        accountId,
+        frequency,
+        currencyId,
+        scheduledAt,
+        income: income.toString(),
+        rolling: rolling.toString(),
+      });
+      if (success) {
+        setOpen(false);
+        refetchFuturePayments();
       }
-    },
-    [isIncome, isRolling],
-  );
+      setIsLoading(false);
+      toast.info('Success!');
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message);
+    }
+  };
 
   React.useEffect(() => {
     if (isSubmitSuccessful) {
@@ -170,8 +170,18 @@ export const AddNewFuturePaymentModal: React.FC = () => {
             placeholder="Select account..."
             error={errors.accountId && errors.accountId.message?.toString()}
           />
-          <Switch label="Is it income?" checked={isIncome} onCheckedChange={setIsIncome} />
-          <Switch label="Is it on rolling basis?" checked={isRolling} onCheckedChange={setIsRolling} />
+          <Switch
+            formId="income"
+            label="Is it income?"
+            control={control as Control<any, any>}
+            error={errors.income && errors.income.message?.toString()}
+          />
+          <Switch
+            formId="rolling"
+            label="Is it on rolling basis?"
+            control={control as Control<any, any>}
+            error={errors.rolling && errors.rolling.message?.toString()}
+          />
         </div>
         <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
           <DatePicker
@@ -185,7 +195,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
             }}
             className="[&>button]:w-full"
           />
-          {isRolling && (
+          {watchSelectedRolling && (
             <RadioGroup
               label="Frequency"
               control={control as Control<any, any>}
