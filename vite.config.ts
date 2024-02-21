@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
@@ -18,7 +19,90 @@ export default defineConfig(({ mode }) => {
             }
           : undefined,
     },
-    plugins: [react()],
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['**/*'],
+        devOptions: {
+          enabled: true,
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,jsx,css,html,pdf,json}'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => {
+                return url.pathname.startsWith('/');
+              },
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'everytrack-cache',
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
+        manifest: {
+          name: 'Everytrack',
+          short_name: 'Everytrack',
+          description: 'Everything tracked.',
+          start_url: '/',
+          display: 'standalone',
+          orientation: 'portrait',
+          theme_color: '#F3F4F6',
+          background_color: '#FFFFFF',
+          icons: [
+            {
+              src: '/apple_touch_icons/apple_touch_icon_57x57.png',
+              sizes: '48x48',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_72x72.png',
+              sizes: '72x72',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_76x76.png',
+              sizes: '76x76',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_114x114.png',
+              sizes: '114x114',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_120x120.png',
+              sizes: '120x120',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_144x144.png',
+              sizes: '144x144',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_152x152.png',
+              sizes: '152x152',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon_180x180.png',
+              sizes: '180x180',
+              type: 'image/png',
+            },
+            {
+              src: '/apple_touch_icons/apple_touch_icon.png',
+              sizes: '194x194',
+              type: 'image/png',
+            },
+          ],
+        },
+      }),
+    ],
     resolve: {
       alias: {
         '@api': path.resolve(__dirname, './src/api'),

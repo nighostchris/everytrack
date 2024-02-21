@@ -71,7 +71,7 @@ export const HomePage: React.FC = () => {
         <img src="/logo.svg" alt="Everytrack" className="h-14 object-scale-down" />
         <div className="flex flex-col gap-y-1">
           <p className="text-xl font-semibold text-white">"Everything Tracked."</p>
-          <p className="text-sm text-slate-500">The Everytrack Team © 2023</p>
+          <p className="text-sm text-slate-500">The Everytrack Team © 2023-2024</p>
         </div>
       </div>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
