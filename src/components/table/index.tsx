@@ -20,6 +20,7 @@ import { TableCell } from './TableCell';
 import { TableHead } from './TableHead';
 import { BaseTable } from './BaseTable';
 import { TableHeader } from './TableHeader';
+import { TableToolBar } from './TableToolBar';
 import { TablePagination } from './TablePagination';
 import { TableRowActions } from './TableRowActions';
 import { TableColumnHeader } from './TableColumnHeader';
@@ -59,7 +60,7 @@ export function Table<Data, Value>({ columns, data }: TableProps<Data, Value>) {
 
   return (
     <div className="space-y-4">
-      {/* <DataTableToolbar table={table} /> */}
+      <TableToolBar table={table} />
       <div className="rounded-md border">
         <BaseTable>
           <TableHeader>
