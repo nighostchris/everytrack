@@ -14,6 +14,7 @@ import {
   DeleteAccountModal,
   AddNewProviderModal,
   SavingProviderTable,
+  EditCashBalanceModal,
   EditAccountBalanceModal,
 } from '@features/savings/components';
 import { StatCard } from '@components';
@@ -25,6 +26,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const SavingsPage: React.FC = () => {
   const {
+    openEditCashModal,
     openAddNewCashModal,
     openDeleteCashModal,
     openAddNewAccountModal,
@@ -35,6 +37,7 @@ export const SavingsPage: React.FC = () => {
   } = store(
     useShallow(
       ({
+        openEditCashModal,
         openAddNewCashModal,
         openDeleteCashModal,
         openAddNewAccountModal,
@@ -43,6 +46,7 @@ export const SavingsPage: React.FC = () => {
         openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
       }) => ({
+        openEditCashModal,
         openAddNewCashModal,
         openDeleteCashModal,
         openAddNewAccountModal,
@@ -63,10 +67,12 @@ export const SavingsPage: React.FC = () => {
       <AddNewAccountModal />
       <DeleteAccountModal />
       <AddNewProviderModal />
+      <EditCashBalanceModal />
       <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-8 py-6', {
           'z-0':
+            openEditCashModal ||
             openAddNewCashModal ||
             openAddNewProviderModal ||
             openDeleteAccountModal ||
@@ -74,6 +80,7 @@ export const SavingsPage: React.FC = () => {
             openAddNewAccountModal ||
             openDeleteCashModal,
           'z-10':
+            !openEditCashModal &&
             !openDeleteCashModal &&
             !openAddNewCashModal &&
             !openAddNewProviderModal &&

@@ -45,8 +45,8 @@ export const useMetricsState = () => {
 
   const { snapshotMin, snapshotMax, totalAssetValueSnapshots } = React.useMemo(() => {
     let totalAssetValue = new BigNumber(0);
-    let min: BigNumber = new BigNumber(0);
     let max: BigNumber = new BigNumber(-1);
+    let min: BigNumber = new BigNumber(totalAssetValue);
     const totalAssetValueSnapshots: TotalAssetValueSnapshot[] = [];
     if (cash && bankAccounts && brokerAccounts && stockHoldings && exchangeRates && futurePayments && currencyId) {
       // Add all cash holdings to total asset value
@@ -91,8 +91,6 @@ export const useMetricsState = () => {
           futurePaymentsMap.set(scheduledAt, [newRecord]);
         }
       });
-      // TO FIX: don't use type any
-      const startTotalAssetValue = totalAssetValue;
       const todayInUnix = dayjs().startOf('day').unix();
       const oneYearFromTodayInUnix = dayjs().startOf('day').add(6, 'months').unix();
       for (let date = todayInUnix; date <= oneYearFromTodayInUnix; date = dayjs.unix(date).add(1, 'day').unix()) {
@@ -120,10 +118,8 @@ export const useMetricsState = () => {
           y: Number(totalAssetValue.toFixed(0)),
         });
       }
-      const quarterAreaPortion = startTotalAssetValue.isEqualTo(max)
-        ? max.dividedBy(4).abs()
-        : max.minus(startTotalAssetValue).dividedBy(4).abs();
-      min = startTotalAssetValue.minus(quarterAreaPortion);
+      const quarterAreaPortion = max.minus(min).dividedBy(4).abs();
+      min = min.minus(quarterAreaPortion);
       max = max.plus(quarterAreaPortion);
     }
     return { totalAssetValueSnapshots, snapshotMin: min.toFixed(0), snapshotMax: max.toFixed(0) };

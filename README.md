@@ -18,10 +18,10 @@ Web application that aims to get everything tracked and provide easy-to-understa
 - Broker Account Balance + Stock Holdings Tracking (limited US stocks only)
 - Cash Holdings Tracking
 - Expenses Tracking
+- Future Payments Tracking (rolling and one-off income and subscription)
 
 ### Future Roadmap
 
-- Future Payments Tracking (rolling and one-off income and subscription)
 - Credit Card Balance Tracking
 - Metrics like future total asset value calculation
 

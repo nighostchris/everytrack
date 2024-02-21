@@ -11,12 +11,28 @@ interface CashTableProps {
 }
 
 export const CashTable: React.FC<CashTableProps> = ({ data }) => {
-  const { updateOpenAddNewCashModal, updateOpenDeleteCashModal, populateDeleteCashModalState } = store(
-    useShallow(({ updateOpenAddNewCashModal, updateOpenDeleteCashModal, populateDeleteCashModalState }) => ({
-      updateOpenAddNewCashModal,
-      updateOpenDeleteCashModal,
-      populateDeleteCashModalState,
-    })),
+  const {
+    updateOpenEditCashModal,
+    updateOpenAddNewCashModal,
+    updateOpenDeleteCashModal,
+    populateEditCashModalState,
+    populateDeleteCashModalState,
+  } = store(
+    useShallow(
+      ({
+        updateOpenEditCashModal,
+        updateOpenAddNewCashModal,
+        updateOpenDeleteCashModal,
+        populateEditCashModalState,
+        populateDeleteCashModalState,
+      }) => ({
+        updateOpenEditCashModal,
+        updateOpenAddNewCashModal,
+        updateOpenDeleteCashModal,
+        populateEditCashModalState,
+        populateDeleteCashModalState,
+      }),
+    ),
   );
 
   return (
@@ -46,16 +62,16 @@ export const CashTable: React.FC<CashTableProps> = ({ data }) => {
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(amount).toFormat(2)}`}</td>
             <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
               <div className="flex flex-row justify-end">
-                {/* <a
+                <a
                   onClick={(e) => {
                     e.preventDefault();
-                    // populateEditAccountBalanceModalState({ balance, currencyId, accountTypeId });
-                    // updateOpenEditAccountBalanceModal(true);
+                    populateEditCashModalState({ id, amount, currencyId });
+                    updateOpenEditCashModal(true);
                   }}
                   className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
                 >
                   Edit
-                </a> */}
+                </a>
                 <a
                   onClick={(e) => {
                     e.preventDefault();
