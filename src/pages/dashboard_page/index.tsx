@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 import React from 'react';
+import dayjs from 'dayjs';
+import { ResponsiveLine } from '@nivo/line';
 import { FaSackDollar } from 'react-icons/fa6';
 import { GiReceiveMoney, GiLockedChest, GiPayMoney } from 'react-icons/gi';
 
@@ -27,7 +29,106 @@ export const DashboardPage: React.FC = () => {
     <Root>
       <div className="flex h-full flex-col px-8 py-6">
         <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <div className="mt-4 grid grid-rows-1 gap-x-6 overflow-y-hidden lg:h-full xl:grid-cols-3">
+        {/* Consturuction Site - To be refactored */}
+        <div className="mb-20 mt-4 grid grid-cols-2 gap-x-8">
+          <div className="flex h-72 w-full flex-col rounded-lg border border-gray-300 bg-white p-6">
+            <h4 className="text-sm font-medium text-gray-500">Expense</h4>
+            <h5 className="mb-2 mt-1 text-lg font-semibold">This month vs. Last month</h5>
+            <div className="h-full w-full">
+              <ResponsiveLine
+                data={[
+                  {
+                    id: 'This Month',
+                    data: [
+                      { x: new Date('2024-02-01'), y: 0 },
+                      { x: new Date('2024-02-02'), y: 37.8 },
+                      { x: new Date('2024-02-03'), y: 70 },
+                    ],
+                  },
+                  {
+                    id: 'Last Month',
+                    data: [
+                      { x: new Date('2024-02-01'), y: 0 },
+                      { x: new Date('2024-02-02'), y: 25 },
+                      { x: new Date('2024-02-03'), y: 155.5 },
+                    ],
+                  },
+                ]}
+                colors={['#f87171', '#dc2626']}
+                margin={{ left: 50, bottom: 50, top: 50, right: 50 }}
+                xScale={{ type: 'time', precision: 'day' }}
+                yScale={{
+                  min: 0,
+                  max: 'auto',
+                  type: 'linear',
+                }}
+                useMesh={true}
+                curve="linear"
+                lineWidth={0}
+                enableArea={true}
+                axisTop={null}
+                axisRight={null}
+                axisBottom={{
+                  tickSize: 5,
+                  tickPadding: 5,
+                  tickRotation: 0,
+                  tickValues: 'every 1 day',
+                  legendOffset: -12,
+                  legendPosition: 'middle',
+                  truncateTickAt: 0,
+                  format: (value) => {
+                    return `Day ${dayjs(value).diff(dayjs().startOf('month'), 'days') + 1}`;
+                  },
+                }}
+                axisLeft={{
+                  tickSize: 5,
+                  tickValues: 4,
+                  tickPadding: 5,
+                  tickRotation: 0,
+                  legendOffset: 12,
+                  truncateTickAt: 0,
+                  legendPosition: 'middle',
+                }}
+                enablePoints={false}
+                areaOpacity={0.25}
+                enableGridX={false}
+                enableGridY={false}
+                theme={{
+                  axis: {
+                    domain: {
+                      line: {
+                        stroke: '#64748b',
+                        strokeWidth: 2,
+                      },
+                    },
+                  },
+                }}
+                tooltip={({
+                  point: {
+                    data: { y: value },
+                  },
+                }) => (
+                  <div>
+                    <p className="whitespace-pre-wrap rounded-md bg-gray-700 px-2 py-1 text-xs text-gray-200">{`${symbol} ${value}`}</p>
+                  </div>
+                )}
+                legends={[
+                  {
+                    itemHeight: 20,
+                    itemWidth: 100,
+                    translateY: 50,
+                    itemsSpacing: 20,
+                    direction: 'row',
+                    anchor: 'bottom',
+                  },
+                ]}
+              />
+            </div>
+          </div>
+          <div className="h-80 w-full rounded-lg border border-gray-300 bg-white"></div>
+        </div>
+        {/* Consturuction Site - To be refactored */}
+        <div className="mt-4 grid grid-rows-1 gap-x-6 lg:h-full xl:grid-cols-3">
           <div className="flex h-full flex-col py-6">
             <h2 className="text-4xl font-medium">{`Hello ${username}`}</h2>
             <h3 className="mt-2 text-xl">Let's have a look at your balance</h3>
