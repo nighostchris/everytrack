@@ -24,6 +24,8 @@ Web application that aims to get everything tracked and provide easy-to-understa
 
 - Credit Card Balance Tracking
 - Metrics like future total asset value calculation
+- Friend System
+- Facebook + Google OAuth Integration
 
 ## How to use developing
 

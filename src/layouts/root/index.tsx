@@ -23,7 +23,7 @@ export const Root: React.FC<RootProps> = ({ children }) => {
           <RxHamburgerMenu className="h-6 w-6" />
         </button>
       </div>
-      <div className="h-full w-full overflow-y-auto pt-[54px] md:ml-64 md:w-[calc(100%-256px)] md:pt-0">{children}</div>
+      <div className="h-full w-full overflow-y-auto pt-[54px] md:ml-20 md:w-[calc(100%-80px)] md:pt-0">{children}</div>
     </div>
   );
 };
