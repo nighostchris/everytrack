@@ -3,7 +3,7 @@ import React from 'react';
 import { useDisplayCurrency } from '@hooks';
 import { Cell, Pie, PieChart, Sector, ResponsiveContainer } from 'recharts';
 
-import { AssetDistributionData } from '../../hooks/use_dashboard_state';
+import type { AssetDistributionData } from '../../hooks/use_dashboard_state';
 
 interface AssetDistributionChartProps {
   data: AssetDistributionData[];

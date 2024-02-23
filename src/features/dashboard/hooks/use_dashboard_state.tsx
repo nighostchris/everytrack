@@ -2,21 +2,33 @@ import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 import { Feed } from '@components';
 import { store as globalStore } from '@lib/zustand';
-import { Currency, Stock } from '@api/everytrack_backend';
+import { Currency, Expense, Stock } from '@api/everytrack_backend';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS, EXPENSE_CATEGORY_ICON_COLORS } from '@consts';
 
 dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 export interface AssetDistributionData {
   name: string;
   color: string;
   amount: string;
   percentage: number;
+}
+
+export interface ExpenseSnapshot {
+  x: number;
+  y: number;
+}
+
+export interface RecentTwoMonthsExpenseSnapshot {
+  id: string;
+  data: ExpenseSnapshot[];
 }
 
 export const useDashboardState = () => {
@@ -144,7 +156,61 @@ export const useDashboardState = () => {
     return feeds.sort((a, b) => (dayjs(a.date).isBefore(dayjs(b.date)) ? 1 : -1));
   }, [currencies, expenses]);
 
-  return { error, lockedFund, totalBalance, recentExpenses, spentThisMonth, assetDistribution, instantAccessibleBalance };
+  const recentTwoMonthsExpenses = React.useMemo(() => {
+    const snapshots: RecentTwoMonthsExpenseSnapshot[] = [];
+    if (currencies && expenses && currencyId && exchangeRates) {
+      const expensesMap: Map<number, Expense> = new Map();
+      expenses.forEach((expense) => expensesMap.set(dayjs.unix(expense.executedAt).startOf('day').unix(), expense));
+      const thisMonthExpenseSnapshots: RecentTwoMonthsExpenseSnapshot = { id: 'This Month', data: [{ x: 0, y: 0 }] };
+      const lastMonthExpenseSnapshots: RecentTwoMonthsExpenseSnapshot = { id: 'Last Month', data: [{ x: 0, y: 0 }] };
+      let lastValueCache = new BigNumber(0);
+      // Calculate expense snapshot of current month
+      for (
+        let startDate = dayjs().startOf('month');
+        startDate.isSameOrBefore(dayjs().endOf('month'));
+        startDate = startDate.add(1, 'day')
+      ) {
+        const x = startDate.date();
+        const expense = expensesMap.get(startDate.unix());
+        if (expense) {
+          const { amount, currencyId: expenseCurrencyId } = expense;
+          const expenseValueInDisplayCurrency = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
+          lastValueCache = expenseValueInDisplayCurrency.plus(lastValueCache);
+        }
+        thisMonthExpenseSnapshots.data.push({ x, y: Number(lastValueCache.toFixed(0)) });
+      }
+      snapshots.push(thisMonthExpenseSnapshots);
+      lastValueCache = new BigNumber(0);
+      // Calculate expense snapshot of last month
+      for (
+        let startDate = dayjs().add(-1, 'month').startOf('month');
+        startDate.isSameOrBefore(dayjs().add(-1, 'month').endOf('month'));
+        startDate = startDate.add(1, 'day')
+      ) {
+        const x = startDate.date();
+        const expense = expensesMap.get(startDate.unix());
+        if (expense) {
+          const { amount, currencyId: expenseCurrencyId } = expense;
+          const expenseValueInDisplayCurrency = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
+          lastValueCache = expenseValueInDisplayCurrency.plus(lastValueCache);
+        }
+        lastMonthExpenseSnapshots.data.push({ x, y: Number(lastValueCache.toFixed(0)) });
+      }
+      snapshots.push(lastMonthExpenseSnapshots);
+    }
+    return snapshots;
+  }, [currencies, expenses, currencyId, exchangeRates]);
+
+  return {
+    error,
+    lockedFund,
+    totalBalance,
+    recentExpenses,
+    spentThisMonth,
+    assetDistribution,
+    recentTwoMonthsExpenses,
+    instantAccessibleBalance,
+  };
 };
 
 export default useDashboardState;
