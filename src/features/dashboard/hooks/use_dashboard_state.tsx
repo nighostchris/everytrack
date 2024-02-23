@@ -4,11 +4,9 @@ import BigNumber from 'bignumber.js';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-import { Feed } from '@components';
 import { store as globalStore } from '@lib/zustand';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
-import { Currency, ExchangeRate, Expense, Stock } from '@api/everytrack_backend';
-import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS, EXPENSE_CATEGORY_ICON_COLORS } from '@consts';
+import { Currency, ExchangeRate, Expense, Stock, ExpenseCategory } from '@api/everytrack_backend';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
 
 dayjs.extend(isSameOrAfter);
@@ -29,6 +27,13 @@ export interface ExpenseSnapshot {
 export interface RecentTwoMonthsExpenseSnapshot {
   id: string;
   data: ExpenseSnapshot[];
+}
+
+export interface RecentExpenseRecord {
+  date: number;
+  name: string;
+  amount: string;
+  category: ExpenseCategory;
 }
 
 export const useDashboardState = () => {
@@ -67,12 +72,6 @@ export const useDashboardState = () => {
     (stocks ?? []).forEach((stock) => map.set(stock.id, stock));
     return map;
   }, [stocks]);
-
-  const currenciesMap = React.useMemo(() => {
-    const map: Map<string, Currency> = new Map();
-    (currencies ?? []).forEach((currency) => map.set(currency.id, currency));
-    return map;
-  }, [currencies]);
 
   const { lockedFund, totalBalance, instantAccessibleBalance, assetDistribution } = React.useMemo(() => {
     let lockedFund = new BigNumber(0);
@@ -133,28 +132,19 @@ export const useDashboardState = () => {
   }, [currencyId, expenses, exchangeRates]);
 
   const recentExpenses = React.useMemo(() => {
-    const feeds: Feed[] = [];
-    if (currencies && expenses) {
-      expenses.forEach(({ name, amount, category, currencyId: expenseCurrencyId, executedAt }) => {
-        feeds.push({
-          content: (
-            <p className="text-sm text-gray-500">
-              {`Spent `}
-              <span className="font-medium text-gray-800">{`${currenciesMap.get(expenseCurrencyId)?.symbol}${amount}`}</span>
-              {` on ${name}`}
-            </p>
-          ),
-          date: dayjs.unix(executedAt).format('MMM DD, YYYY'),
-          icon: {
-            svg: EXPENSE_CATEGORY_ICONS[category],
-            background: EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS[category],
-            className: EXPENSE_CATEGORY_ICON_COLORS[category],
-          },
+    const records: RecentExpenseRecord[] = [];
+    if (currencies && expenses && currencyId && exchangeRates) {
+      expenses.forEach(({ name, amount, category, currencyId: expenseCurrencyId, executedAt: date }) => {
+        records.push({
+          name,
+          amount: calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates).toFormat(2),
+          category,
+          date,
         });
       });
     }
-    return feeds.sort((a, b) => (dayjs(a.date).isBefore(dayjs(b.date)) ? 1 : -1));
-  }, [currencies, expenses]);
+    return records.sort((a, b) => (dayjs.unix(a.date).isBefore(dayjs.unix(b.date)) ? 1 : -1)).slice(0, 5);
+  }, [currencies, expenses, currencyId, exchangeRates]);
 
   const calculateExpenseSnapshotsByMonth = (
     id: string,

@@ -13,7 +13,7 @@ interface ThisMonthVersusLastMonthCardProps {
 export const ThisMonthVersusLastMonthCard: React.FC<ThisMonthVersusLastMonthCardProps> = ({ data, className }) => {
   return (
     <Card className={clsx('flex h-72 w-full flex-col !bg-white p-6', className)}>
-      <h4 className="text-sm font-medium text-gray-500">Expense</h4>
+      <h4 className="text-sm font-medium text-gray-500">Expenses</h4>
       <h5 className="mb-2 mt-1 text-lg font-semibold">This month vs. Last month</h5>
       <div className="flex h-full w-full flex-col items-center justify-center">
         {data.length > 0 ? (

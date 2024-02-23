@@ -4,11 +4,11 @@ import { FaSackDollar } from 'react-icons/fa6';
 import { GiReceiveMoney, GiLockedChest, GiPayMoney } from 'react-icons/gi';
 
 import Root from '@layouts/root';
+import { StatCard } from '@components';
 import { useDisplayCurrency } from '@hooks';
-import { StatCard, Timeline } from '@components';
 import { store as globalStore } from '@lib/zustand';
 import { useDashboardState } from '@features/dashboard/hooks/use_dashboard_state';
-import { AssetDistributionChart, ThisMonthVersusLastMonthCard } from '@features/dashboard/components';
+import { AssetDistributionChart, RecentExpensesListCard, ThisMonthVersusLastMonthCard } from '@features/dashboard/components';
 
 export const DashboardPage: React.FC = () => {
   const {
@@ -52,16 +52,16 @@ export const DashboardPage: React.FC = () => {
                 <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${spentThisMonth}`}</p>
               </StatCard>
             </div>
-            <div className="mt-6 flex h-full w-full flex-col space-y-4 overflow-y-hidden pt-4">
+            {/* <div className="mt-6 flex h-full w-full flex-col space-y-4 overflow-y-hidden pt-4">
               <h3 className="text-xl font-semibold text-gray-900">Recent Expenses</h3>
               <Timeline feeds={recentExpenses.slice(0, 7)} className="h-full overflow-y-auto" />
-            </div>
+            </div> */}
           </div>
         </div>
         {/* Consturuction Site - To be refactored */}
         <div className="mt-4 grid grid-cols-2 gap-x-8">
           <ThisMonthVersusLastMonthCard data={recentTwoMonthsExpenses} />
-          {/* <div className="h-72 w-full rounded-lg border border-gray-300 bg-white"></div> */}
+          <RecentExpensesListCard data={recentExpenses} />
         </div>
         {/* Consturuction Site - To be refactored */}
       </div>
