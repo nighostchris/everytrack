@@ -62,6 +62,9 @@ module.exports = {
       zIndex: {
         60: '60',
       },
+      height: {
+        100: '400px',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms')],
