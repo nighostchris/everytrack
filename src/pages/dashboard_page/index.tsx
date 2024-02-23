@@ -59,8 +59,8 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
         {/* Consturuction Site - To be refactored */}
-        <div className="mt-4 grid grid-cols-2 gap-x-8">
-          <ThisMonthVersusLastMonthCard data={recentTwoMonthsExpenses} />
+        <div className="mt-4 grid grid-rows-1 gap-y-6 xl:grid-cols-2 xl:gap-x-8 xl:gap-y-0">
+          <ThisMonthVersusLastMonthCard data={[] ?? recentTwoMonthsExpenses} />
           <RecentExpensesListCard data={recentExpenses} />
         </div>
         {/* Consturuction Site - To be refactored */}
