@@ -6,10 +6,10 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 import { Feed } from '@components';
 import { store as globalStore } from '@lib/zustand';
-import { Currency, Expense, Stock } from '@api/everytrack_backend';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
-import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
+import { Currency, ExchangeRate, Expense, Stock } from '@api/everytrack_backend';
 import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS, EXPENSE_CATEGORY_ICON_COLORS } from '@consts';
+import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -156,47 +156,56 @@ export const useDashboardState = () => {
     return feeds.sort((a, b) => (dayjs(a.date).isBefore(dayjs(b.date)) ? 1 : -1));
   }, [currencies, expenses]);
 
+  const calculateExpenseSnapshotsByMonth = (
+    id: string,
+    start: dayjs.Dayjs,
+    end: dayjs.Dayjs,
+    currencyId: string,
+    expensesMap: Map<number, Expense>,
+    exchangeRates: ExchangeRate[],
+  ) => {
+    let lastValueCache = new BigNumber(0);
+    const snapshots: ExpenseSnapshot[] = [{ x: 0, y: 0 }];
+    for (let startDate = start; startDate.isSameOrBefore(end); startDate = startDate.add(1, 'day')) {
+      const x = startDate.date();
+      const expense = expensesMap.get(startDate.unix());
+      if (expense) {
+        const { amount, currencyId: expenseCurrencyId } = expense;
+        const expenseValueInDisplayCurrency = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
+        lastValueCache = expenseValueInDisplayCurrency.plus(lastValueCache);
+      }
+      snapshots.push({ x, y: Number(lastValueCache.toFixed(0)) });
+    }
+    return { id, data: snapshots };
+  };
+
   const recentTwoMonthsExpenses = React.useMemo(() => {
     const snapshots: RecentTwoMonthsExpenseSnapshot[] = [];
     if (currencies && expenses && currencyId && exchangeRates) {
       const expensesMap: Map<number, Expense> = new Map();
       expenses.forEach((expense) => expensesMap.set(dayjs.unix(expense.executedAt).startOf('day').unix(), expense));
-      const thisMonthExpenseSnapshots: RecentTwoMonthsExpenseSnapshot = { id: 'This Month', data: [{ x: 0, y: 0 }] };
-      const lastMonthExpenseSnapshots: RecentTwoMonthsExpenseSnapshot = { id: 'Last Month', data: [{ x: 0, y: 0 }] };
-      let lastValueCache = new BigNumber(0);
-      // Calculate expense snapshot of current month
-      for (
-        let startDate = dayjs().startOf('month');
-        startDate.isSameOrBefore(dayjs().endOf('month'));
-        startDate = startDate.add(1, 'day')
-      ) {
-        const x = startDate.date();
-        const expense = expensesMap.get(startDate.unix());
-        if (expense) {
-          const { amount, currencyId: expenseCurrencyId } = expense;
-          const expenseValueInDisplayCurrency = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
-          lastValueCache = expenseValueInDisplayCurrency.plus(lastValueCache);
-        }
-        thisMonthExpenseSnapshots.data.push({ x, y: Number(lastValueCache.toFixed(0)) });
-      }
-      snapshots.push(thisMonthExpenseSnapshots);
-      lastValueCache = new BigNumber(0);
-      // Calculate expense snapshot of last month
-      for (
-        let startDate = dayjs().add(-1, 'month').startOf('month');
-        startDate.isSameOrBefore(dayjs().add(-1, 'month').endOf('month'));
-        startDate = startDate.add(1, 'day')
-      ) {
-        const x = startDate.date();
-        const expense = expensesMap.get(startDate.unix());
-        if (expense) {
-          const { amount, currencyId: expenseCurrencyId } = expense;
-          const expenseValueInDisplayCurrency = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
-          lastValueCache = expenseValueInDisplayCurrency.plus(lastValueCache);
-        }
-        lastMonthExpenseSnapshots.data.push({ x, y: Number(lastValueCache.toFixed(0)) });
-      }
-      snapshots.push(lastMonthExpenseSnapshots);
+      // Expense snapshots of current month
+      snapshots.push(
+        calculateExpenseSnapshotsByMonth(
+          'This Month',
+          dayjs().startOf('month'),
+          dayjs().endOf('month'),
+          currencyId,
+          expensesMap,
+          exchangeRates,
+        ),
+      );
+      // Expense snapshots of last month
+      snapshots.push(
+        calculateExpenseSnapshotsByMonth(
+          'Last Month',
+          dayjs().add(-1, 'month').startOf('month'),
+          dayjs().add(-1, 'month').endOf('month'),
+          currencyId,
+          expensesMap,
+          exchangeRates,
+        ),
+      );
     }
     return snapshots;
   }, [currencies, expenses, currencyId, exchangeRates]);
