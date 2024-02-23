@@ -7,8 +7,8 @@ import Root from '@layouts/root';
 import { useDisplayCurrency } from '@hooks';
 import { StatCard, Timeline } from '@components';
 import { store as globalStore } from '@lib/zustand';
-import { AssetDistributionChart } from '@features/dashboard/components';
 import { useDashboardState } from '@features/dashboard/hooks/use_dashboard_state';
+import { AssetDistributionChart, ThisMonthVersusLastMonthCard } from '@features/dashboard/components';
 
 export const DashboardPage: React.FC = () => {
   const {
@@ -17,6 +17,7 @@ export const DashboardPage: React.FC = () => {
     recentExpenses,
     spentThisMonth,
     assetDistribution,
+    recentTwoMonthsExpenses,
     instantAccessibleBalance,
     error: dashboardStateError,
   } = useDashboardState();
@@ -25,9 +26,9 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <Root>
-      <div className="flex h-full flex-col px-8 py-6">
+      <div className="flex h-full flex-col overflow-y-auto px-8 py-6">
         <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <div className="mt-4 grid grid-rows-1 gap-x-6 overflow-y-hidden lg:h-full xl:grid-cols-3">
+        <div className="mt-4 grid grid-rows-1 gap-x-6 lg:h-full xl:grid-cols-3">
           <div className="flex h-full flex-col py-6">
             <h2 className="text-4xl font-medium">{`Hello ${username}`}</h2>
             <h3 className="mt-2 text-xl">Let's have a look at your balance</h3>
@@ -57,6 +58,12 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Consturuction Site - To be refactored */}
+        <div className="mt-4 grid grid-cols-2 gap-x-8">
+          <ThisMonthVersusLastMonthCard data={recentTwoMonthsExpenses} />
+          {/* <div className="h-72 w-full rounded-lg border border-gray-300 bg-white"></div> */}
+        </div>
+        {/* Consturuction Site - To be refactored */}
       </div>
     </Root>
   );

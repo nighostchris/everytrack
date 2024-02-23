@@ -26,6 +26,8 @@ Web application that aims to get everything tracked and provide easy-to-understa
 - Metrics like future total asset value calculation
 - Friend System
 - Facebook + Google OAuth Integration
+- Customize Dashboard
+- Net Worth
 
 ## How to use developing
 
