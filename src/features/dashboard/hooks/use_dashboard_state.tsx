@@ -4,10 +4,19 @@ import BigNumber from 'bignumber.js';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
+import {
+  useCash,
+  useStocks,
+  useExpenses,
+  useCurrencies,
+  useBankAccounts,
+  useStockHoldings,
+  useExchangeRates,
+  useBrokerAccounts,
+} from '@hooks';
 import { store as globalStore } from '@lib/zustand';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
-import { Currency, ExchangeRate, Expense, Stock, ExpenseCategory } from '@api/everytrack_backend';
-import { useBankAccounts, useBrokerAccounts, useCurrencies, useExchangeRates, useExpenses, useStockHoldings, useStocks } from '@hooks';
+import { ExchangeRate, Expense, Stock, ExpenseCategory } from '@api/everytrack_backend';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -39,6 +48,7 @@ export interface RecentExpenseRecord {
 export const useDashboardState = () => {
   const { currencyId } = globalStore();
 
+  const { cash, error: fetchCashError } = useCash();
   const { stocks, error: fetchStocksError } = useStocks();
   const { expenses, error: fetchExpensesError } = useExpenses();
   const { currencies, error: fetchCurrenciesError } = useCurrencies();
@@ -75,8 +85,9 @@ export const useDashboardState = () => {
 
   const { lockedFund, totalBalance, instantAccessibleBalance, assetDistribution } = React.useMemo(() => {
     let lockedFund = new BigNumber(0);
+    let cashHoldings = new BigNumber(0);
     let instantAccessibleBalance = new BigNumber(0);
-    if (bankAccounts && brokerAccounts && exchangeRates && currencyId && stockHoldings && stocks) {
+    if (bankAccounts && brokerAccounts && exchangeRates && currencyId && stockHoldings && stocks && cash) {
       // Calculate instant accessible balance
       bankAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
         instantAccessibleBalance = instantAccessibleBalance.plus(
@@ -88,6 +99,9 @@ export const useDashboardState = () => {
           calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates),
         );
       });
+      cash.forEach(({ amount, currencyId: cashCurrencyId }) => {
+        cashHoldings = cashHoldings.plus(calculateDisplayAmount(amount, currencyId, cashCurrencyId, exchangeRates));
+      });
       // Calculate locked funds
       stockHoldings.forEach(({ holdings }) => {
         holdings.forEach(({ unit, stockId }) => {
@@ -97,14 +111,20 @@ export const useDashboardState = () => {
         });
       });
     }
-    const totalBalance = lockedFund.plus(instantAccessibleBalance);
+    const totalBalance = lockedFund.plus(instantAccessibleBalance).plus(cashHoldings);
     return {
       lockedFund: lockedFund.toFormat(2),
       totalBalance: totalBalance.toFormat(2),
-      instantAccessibleBalance: instantAccessibleBalance.toFormat(2),
+      instantAccessibleBalance: instantAccessibleBalance.plus(cashHoldings).toFormat(2),
       assetDistribution: [
         {
           name: 'Cash',
+          amount: cashHoldings.toFormat(2),
+          percentage: Number(cashHoldings.dividedBy(totalBalance).multipliedBy(100).toFormat(2)),
+          color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', cashHoldings.dividedBy(totalBalance).toNumber()),
+        },
+        {
+          name: 'Bank Savings',
           amount: instantAccessibleBalance.toFormat(2),
           percentage: Number(instantAccessibleBalance.dividedBy(totalBalance).multipliedBy(100).toFormat(2)),
           color: calculateInterpolateColor('#C0DEF7', '#0F2C4A', instantAccessibleBalance.dividedBy(totalBalance).toNumber()),
@@ -117,7 +137,7 @@ export const useDashboardState = () => {
         },
       ] as AssetDistributionData[],
     };
-  }, [stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
+  }, [cash, stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
 
   const recentExpenses = React.useMemo(() => {
     const records: RecentExpenseRecord[] = [];
