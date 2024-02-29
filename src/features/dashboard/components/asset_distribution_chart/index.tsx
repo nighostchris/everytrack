@@ -21,8 +21,8 @@ export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ 
         <PieChart>
           <Pie
             data={data}
-            innerRadius={80}
-            outerRadius={100}
+            innerRadius={70}
+            outerRadius={90}
             dataKey="percentage"
             activeIndex={distributionChartIndex}
             onMouseEnter={(_, index) => setDistributionChartIndex(index)}

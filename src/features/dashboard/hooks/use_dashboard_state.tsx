@@ -119,18 +119,6 @@ export const useDashboardState = () => {
     };
   }, [stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
 
-  // TODO: abstract this function into utils / hooks to reduce code duplication with expenses state
-  const { spentThisMonth } = React.useMemo(() => {
-    let spentThisMonth = new BigNumber(0);
-    if (currencyId && expenses && exchangeRates) {
-      const expensesInThisMonth = expenses.filter(({ executedAt }) => dayjs.unix(executedAt).isSameOrAfter(dayjs().startOf('month')));
-      expensesInThisMonth.forEach(({ amount, currencyId: expenseCurrencyId }) => {
-        spentThisMonth = spentThisMonth.plus(calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates));
-      });
-    }
-    return { spentThisMonth: spentThisMonth.toFormat(2) };
-  }, [currencyId, expenses, exchangeRates]);
-
   const recentExpenses = React.useMemo(() => {
     const records: RecentExpenseRecord[] = [];
     if (currencies && expenses && currencyId && exchangeRates) {
@@ -205,7 +193,6 @@ export const useDashboardState = () => {
     lockedFund,
     totalBalance,
     recentExpenses,
-    spentThisMonth,
     assetDistribution,
     recentTwoMonthsExpenses,
     instantAccessibleBalance,
