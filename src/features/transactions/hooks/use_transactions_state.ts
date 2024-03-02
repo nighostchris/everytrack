@@ -57,7 +57,7 @@ export const useTransactionsState = () => {
         });
       });
     }
-    return result.sort((a, b) => (dayjs(a.spentDate).isBefore(dayjs(b.spentDate)) ? 1 : -1));
+    return result.sort((a, b) => (dayjs(a.executionDate).isBefore(dayjs(b.executionDate)) ? 1 : -1));
   }, [currencies, transactions]);
 
   const { spentThisMonth, spentThisYear } = React.useMemo(() => {

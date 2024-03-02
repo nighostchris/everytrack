@@ -89,7 +89,10 @@ export const TransactionsTable: React.FC<TransactionsTableProps> = ({ data, clas
                   // <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
                   <DropdownMenuItem
                     onClick={() => {
-                      populateDeleteTransactionModalState(row.original.id);
+                      populateDeleteTransactionModalState({
+                        income: row.original.income,
+                        transactionId: row.original.id,
+                      });
                       updateOpenDeleteTransactionModal(true);
                     }}
                   >

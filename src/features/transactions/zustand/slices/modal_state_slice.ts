@@ -8,11 +8,12 @@ export const createModalStateSlice: StateCreator<
   [],
   ModalStateSlice
 > = (set) => ({
+  income: undefined,
   transactionId: undefined,
   openAddNewTransactionModal: false,
   openDeleteTransactionModal: false,
   resetDeleteTransactionModalState: () => set((state) => ({ ...state, transactionId: undefined })),
-  populateDeleteTransactionModalState: (transactionId) => set((state) => ({ ...state, transactionId })),
+  populateDeleteTransactionModalState: ({ income, transactionId }) => set((state) => ({ ...state, income, transactionId })),
   updateOpenAddNewTransactionModal: (newModalState) => set((state) => ({ ...state, openAddNewTransactionModal: newModalState })),
   updateOpenDeleteTransactionModal: (newModalState) => set((state) => ({ ...state, openDeleteTransactionModal: newModalState })),
 });

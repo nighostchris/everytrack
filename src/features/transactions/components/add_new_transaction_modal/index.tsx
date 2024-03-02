@@ -42,7 +42,7 @@ export const AddNewTransactionModal: React.FC = () => {
           }, 'Invalid category'),
         })
         .superRefine((data, ctx) => {
-          const { amount, accountId, currencyId } = data;
+          const { income, amount, accountId, currencyId } = data;
           if (bankAccounts && accountId && currencyId) {
             const account = bankAccounts.filter(({ id }) => id === accountId)[0];
             if (account.currencyId !== currencyId) {
@@ -57,7 +57,7 @@ export const AddNewTransactionModal: React.FC = () => {
                 message: 'Consider using another account with same currency as this expense record',
               });
             }
-            if (new BigNumber(account.balance).isLessThan(amount)) {
+            if (!income && new BigNumber(account.balance).isLessThan(amount)) {
               ctx.addIssue({
                 code: 'custom',
                 path: ['amount'],
@@ -152,11 +152,11 @@ export const AddNewTransactionModal: React.FC = () => {
   }, [isSubmitSuccessful]);
 
   return (
-    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl lg:overflow-visible">
+    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none md:max-w-2xl lg:max-w-4xl lg:overflow-visible">
       <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Transaction</h3>
-        <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
+          <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
           <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
           <Select
             label="Category"
@@ -168,7 +168,7 @@ export const AddNewTransactionModal: React.FC = () => {
             error={errors.category && errors.category.message?.toString()}
           />
         </div>
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Select
             label="Currency"
             formId="currencyId"
@@ -177,6 +177,12 @@ export const AddNewTransactionModal: React.FC = () => {
             options={currencyOptions}
             placeholder="Select currency..."
             error={errors.currencyId && errors.currencyId.message?.toString()}
+          />
+          <Switch
+            formId="income"
+            label="Is it income?"
+            control={control as Control<any, any>}
+            error={errors.income && errors.income.message?.toString()}
           />
           <DatePicker
             label="Execution Date"
@@ -190,7 +196,7 @@ export const AddNewTransactionModal: React.FC = () => {
             className="[&>button]:w-full"
           />
         </div>
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Switch
             label="Use Account"
             formId="useAccount"
@@ -202,7 +208,7 @@ export const AddNewTransactionModal: React.FC = () => {
               label="Related Account"
               formId="accountId"
               control={control as Control<any, any>}
-              className="!max-w-none"
+              className="!max-w-none md:col-span-2"
               options={bankOptions}
               placeholder="Select account..."
               error={errors.accountId && errors.accountId.message?.toString()}

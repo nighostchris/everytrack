@@ -17,15 +17,17 @@ const deleteTransactionFormSchema = z.object({
 export const DeleteTransactionModal: React.FC = () => {
   const { refetch: refetchBankAccounts } = useBankAccounts();
   const { transactions, refetch: refetchTransactions } = useTransactions();
-  const { open, setOpen, transactionId, resetDeleteTransactionModalState } = store(
+  const { open, income, setOpen, transactionId, resetDeleteTransactionModalState } = store(
     useShallow(
       ({
+        income,
         transactionId,
         resetDeleteTransactionModalState,
         openDeleteTransactionModal: open,
         updateOpenDeleteTransactionModal: setOpen,
       }) => ({
         open,
+        income,
         setOpen,
         transactionId,
         resetDeleteTransactionModalState,
@@ -98,7 +100,7 @@ export const DeleteTransactionModal: React.FC = () => {
     <Dialog open={open}>
       <div className="space-y-2 rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Delete Transaction</h3>
-        <p className="!mt-4">{`Time to get back your money! 🤑🤑`}</p>
+        <p className="!mt-4">{income ? `Time to return your money! 😢😢` : `Time to get back your money! 🤑🤑`}</p>
         <p className="mt-2">{`Are you sure to delete the transaction`}</p>
         <p className="mt-2 font-bold">{transactionName}</p>
         {accountId && (
