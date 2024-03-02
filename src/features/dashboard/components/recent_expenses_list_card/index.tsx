@@ -7,7 +7,7 @@ import Card from '@components/card';
 import { Link } from 'react-router-dom';
 import { useDisplayCurrency } from '@hooks';
 import { RecentExpenseRecord } from '../../hooks/use_dashboard_state';
-import { EXPENSE_CATEGORY_ICONS, EXPENSE_CATEGORY_ICON_COLORS } from '@consts';
+import { TRANSACTION_CATEGORY_ICONS, TRANSACTION_CATEGORY_ICON_COLORS } from '@consts';
 
 interface RecentExpensesListCardProps {
   data: RecentExpenseRecord[];
@@ -24,8 +24,8 @@ export const RecentExpensesListCard: React.FC<RecentExpensesListCardProps> = ({ 
       <div className="grid h-full w-full">
         {data.length > 0 ? (
           data.map(({ name, category, amount }, index) => {
-            const Icon = EXPENSE_CATEGORY_ICONS[category];
-            const iconColor = EXPENSE_CATEGORY_ICON_COLORS[category];
+            const Icon = TRANSACTION_CATEGORY_ICONS[category];
+            const iconColor = TRANSACTION_CATEGORY_ICON_COLORS[category];
             return (
               <div className={clsx('grid grid-cols-5', { 'border-t border-gray-100': index !== 0 })}>
                 <div className="col-span-2 flex flex-row items-center text-sm text-gray-700">{name}</div>

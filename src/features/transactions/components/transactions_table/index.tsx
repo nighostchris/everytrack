@@ -1,19 +1,26 @@
 import clsx from 'clsx';
 import React from 'react';
 import dayjs from 'dayjs';
+import { useShallow } from 'zustand/react/shallow';
 
 import { store } from '../../zustand';
-import ExpenseCategoryBadge from '../expense_category_badge';
-import { ExpensesTableRow } from '../../hooks/use_expenses_state';
+import ExpenseCategoryBadge from '../transaction_category_badge';
+import { TransactionsTableRow } from '../../hooks/use_transactions_state';
 import { Button, DropdownMenuItem, Table, TableColumnHeader, TableRowActions } from '@components/index';
 
-interface ExpensesTableProps {
-  data: ExpensesTableRow[];
+interface TransactionsTableProps {
+  data: TransactionsTableRow[];
   className?: string;
 }
 
-export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className }) => {
-  const { populateDeleteExpenseModalState, updateOpenAddNewExpenseModal, updateOpenDeleteExpenseModal } = store();
+export const TransactionsTable: React.FC<TransactionsTableProps> = ({ data, className }) => {
+  const { populateDeleteTransactionModalState, updateOpenAddNewTransactionModal, updateOpenDeleteTransactionModal } = store(
+    useShallow(({ populateDeleteTransactionModalState, updateOpenAddNewTransactionModal, updateOpenDeleteTransactionModal }) => ({
+      populateDeleteTransactionModalState,
+      updateOpenAddNewTransactionModal,
+      updateOpenDeleteTransactionModal,
+    })),
+  );
 
   return (
     <>
@@ -23,10 +30,10 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
           variant="contained"
           className="h-8 text-xs"
           onClick={() => {
-            updateOpenAddNewExpenseModal(true);
+            updateOpenAddNewTransactionModal(true);
           }}
         >
-          Add New Expense
+          Add New Transaction
         </Button>
       </div>
       <Table
@@ -55,14 +62,14 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
             enableSorting: false,
           },
           {
-            accessorKey: 'spentDate',
-            header: ({ column }) => <TableColumnHeader column={column} title="Spent Date" />,
+            accessorKey: 'executionDate',
+            header: ({ column }) => <TableColumnHeader column={column} title="Execution Date" />,
             cell: ({ row }) => {
-              return <div className="w-[120px]">{row.getValue('spentDate')}</div>;
+              return <div className="w-[120px]">{row.getValue('executionDate')}</div>;
             },
             sortingFn: (rowA, rowB) => {
-              const rowADate = dayjs(rowA.getValue('spentDate'));
-              const rowBDate = dayjs(rowB.getValue('spentDate'));
+              const rowADate = dayjs(rowA.getValue('executionDate'));
+              const rowBDate = dayjs(rowB.getValue('executionDate'));
               return rowADate.isAfter(rowBDate) ? 1 : rowADate.isSame(rowBDate) ? 0 : -1;
             },
           },
@@ -82,8 +89,8 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
                   // <DropdownMenuItem onClick={() => {}}>Edit</DropdownMenuItem>,
                   <DropdownMenuItem
                     onClick={() => {
-                      populateDeleteExpenseModalState(row.original.id);
-                      updateOpenDeleteExpenseModal(true);
+                      populateDeleteTransactionModalState(row.original.id);
+                      updateOpenDeleteTransactionModal(true);
                     }}
                   >
                     Delete
@@ -99,4 +106,4 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({ data, className })
   );
 };
 
-export default ExpensesTable;
+export default TransactionsTable;

@@ -13,7 +13,7 @@ import { HiOutlineReceiptTax } from 'react-icons/hi';
 import { GiBowlingStrike, GiMedicines } from 'react-icons/gi';
 import { MdDining, MdLocalGroceryStore } from 'react-icons/md';
 
-export const EXPENSE_CATEGORIES = [
+export const TRANSACTION_CATEGORIES = [
   'tax',
   'gift',
   'kids',
@@ -30,7 +30,7 @@ export const EXPENSE_CATEGORIES = [
   'transportation',
 ] as const;
 
-export const EXPENSE_CATEGORY_ICON_COLORS = {
+export const TRANSACTION_CATEGORY_ICON_COLORS = {
   tax: 'text-orange-700',
   gift: 'text-finlandia-700',
   kids: 'text-crail-700',
@@ -47,7 +47,7 @@ export const EXPENSE_CATEGORY_ICON_COLORS = {
   transportation: 'text-indigo-700',
 } as const;
 
-export const EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS = {
+export const TRANSACTION_CATEGORY_ICON_BACKGROUND_COLORS = {
   tax: 'bg-orange-100',
   gift: 'bg-finlandia-100',
   kids: 'bg-crail-100',
@@ -64,7 +64,7 @@ export const EXPENSE_CATEGORY_ICON_BACKGROUND_COLORS = {
   transportation: 'bg-indigo-100',
 } as const;
 
-export const EXPENSE_CATEGORY_ICONS = {
+export const TRANSACTION_CATEGORY_ICONS = {
   tax: HiOutlineReceiptTax,
   gift: FaGift,
   kids: FaChild,

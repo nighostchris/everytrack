@@ -1,4 +1,4 @@
-import { EXPENSE_CATEGORIES } from '@consts';
+import { TRANSACTION_CATEGORIES } from '@consts';
 
 interface BaseResponse {
   success: boolean;
@@ -90,31 +90,6 @@ export interface GetAllCountriesResponse extends BaseResponse {
 export interface GetAllCurrenciesResponse extends BaseResponse {
   data: Currency[];
 }
-
-// ============================================================
-// /v1/expenses endpoints
-// ============================================================
-// GET /v1/expenses
-export interface GetAllExpensesResponse extends BaseResponse {
-  data: Expense[];
-}
-// POST /v1/expenses
-export interface CreateNewExpenseRequest {
-  name: string;
-  amount: string;
-  category: string;
-  executedAt: number;
-  currencyId: string;
-  remarks?: string;
-  accountId?: string;
-}
-export interface CreateNewExpenseResponse extends BaseResponse {}
-// DELETE /v1/expenses
-export interface DeleteExpenseRequest {
-  expenseId: string;
-  revertBalance: boolean;
-}
-export interface DeleteExpenseResponse extends BaseResponse {}
 
 // ============================================================
 // /v1/fpayments endpoints
@@ -220,6 +195,32 @@ export interface DeleteStockHoldingRequest {
 export interface DeleteStockHoldingResponse extends BaseResponse {}
 
 // ============================================================
+// /v1/transactions endpoints
+// ============================================================
+// GET /v1/transactions
+export interface GetAllTransactionsResponse extends BaseResponse {
+  data: Transaction[];
+}
+// POST /v1/transactions
+export interface CreateNewTransactionRequest {
+  name: string;
+  amount: string;
+  income: string; // boolean in string
+  category: string;
+  executedAt: number;
+  currencyId: string;
+  remarks?: string;
+  accountId?: string;
+}
+export interface CreateNewTransactionResponse extends BaseResponse {}
+// DELETE /v1/transactions
+export interface DeleteTransactionRequest {
+  transactionId: string;
+  revertBalance: boolean;
+}
+export interface DeleteTransactionResponse extends BaseResponse {}
+
+// ============================================================
 // Helper Types
 // ============================================================
 export interface Account {
@@ -261,18 +262,19 @@ export interface ExchangeRate {
   targetCurrencyId: string;
 }
 
-export interface Expense {
+export interface Transaction {
   id: string;
   name: string;
   amount: string;
+  income: boolean;
   remarks: string;
   executedAt: number;
   currencyId: string;
   accountId: string | null;
-  category: ExpenseCategory;
+  category: TransactionCategory;
 }
 
-export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
+export type TransactionCategory = (typeof TRANSACTION_CATEGORIES)[number];
 
 export interface Provider {
   id: string;
