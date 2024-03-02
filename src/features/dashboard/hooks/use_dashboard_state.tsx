@@ -38,10 +38,11 @@ export interface RecentTwoMonthsExpenseSnapshot {
   data: ExpenseSnapshot[];
 }
 
-export interface RecentExpenseRecord {
+export interface RecentTransactionRecord {
   date: number;
   name: string;
   amount: string;
+  income: boolean;
   category: TransactionCategory;
 }
 
@@ -141,15 +142,16 @@ export const useDashboardState = () => {
     };
   }, [cash, stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
 
-  const recentExpenses = React.useMemo(() => {
-    const records: RecentExpenseRecord[] = [];
+  const recentTransactions = React.useMemo(() => {
+    const records: RecentTransactionRecord[] = [];
     if (currencies && transactions && currencyId && exchangeRates) {
-      transactions.forEach(({ name, amount, category, currencyId: expenseCurrencyId, executedAt: date }) => {
+      transactions.forEach(({ name, amount, income, category, currencyId: expenseCurrencyId, executedAt: date }) => {
         records.push({
           name,
-          amount: calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates).toFormat(2),
-          category,
           date,
+          income,
+          category,
+          amount: calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates).toFormat(2),
         });
       });
     }
@@ -218,8 +220,8 @@ export const useDashboardState = () => {
     error,
     lockedFund,
     totalBalance,
-    recentExpenses,
     assetDistribution,
+    recentTransactions,
     recentTwoMonthsExpenses,
     instantAccessibleBalance,
   };
