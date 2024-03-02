@@ -8,24 +8,25 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { EXPENSE_CATEGORIES } from '@consts';
-import { useBankAccounts, useCurrencies, useExpenses } from '@hooks';
-import { Currency, ExpenseCategory, createNewExpense } from '@api/everytrack_backend';
+import { TRANSACTION_CATEGORIES } from '@consts';
+import { useBankAccounts, useCurrencies, useTransactions } from '@hooks';
+import { Currency, TransactionCategory, createNewTransaction } from '@api/everytrack_backend';
 import { Button, DatePicker, Dialog, Input, Select, SelectOption, Switch } from '@components';
 
-export const AddNewExpenseModal: React.FC = () => {
+export const AddNewTransactionModal: React.FC = () => {
   const { currencies } = useCurrencies();
   const { bankAccounts } = useBankAccounts();
-  const { refetch: refetchExpenses } = useExpenses();
+  const { refetch: refetchTransactions } = useTransactions();
   const { refetch: refetchBankAccounts } = useBankAccounts();
-  const { openAddNewExpenseModal: open, updateOpenAddNewExpenseModal: setOpen } = store();
+  const { openAddNewTransactionModal: open, updateOpenAddNewTransactionModal: setOpen } = store();
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const addNewExpenseFormSchema = React.useMemo(
+  const addNewTransactionFormSchema = React.useMemo(
     () =>
       z
         .object({
+          income: z.boolean(),
           executedAt: z.number(),
           useAccount: z.boolean(),
           remarks: z.string().optional(),
@@ -36,12 +37,12 @@ export const AddNewExpenseModal: React.FC = () => {
             .number()
             .positive('Amount must be greater than 0')
             .transform((input) => String(input)),
-          category: z.custom<ExpenseCategory>((input: unknown) => {
-            return typeof input === 'string' && (EXPENSE_CATEGORIES as unknown as string[]).includes(input);
+          category: z.custom<TransactionCategory>((input: unknown) => {
+            return typeof input === 'string' && (TRANSACTION_CATEGORIES as unknown as string[]).includes(input);
           }, 'Invalid category'),
         })
         .superRefine((data, ctx) => {
-          const { amount, accountId, currencyId } = data;
+          const { income, amount, accountId, currencyId } = data;
           if (bankAccounts && accountId && currencyId) {
             const account = bankAccounts.filter(({ id }) => id === accountId)[0];
             if (account.currencyId !== currencyId) {
@@ -56,7 +57,7 @@ export const AddNewExpenseModal: React.FC = () => {
                 message: 'Consider using another account with same currency as this expense record',
               });
             }
-            if (new BigNumber(account.balance).isLessThan(amount)) {
+            if (!income && new BigNumber(account.balance).isLessThan(amount)) {
               ctx.addIssue({
                 code: 'custom',
                 path: ['amount'],
@@ -76,8 +77,9 @@ export const AddNewExpenseModal: React.FC = () => {
     setValue,
     handleSubmit,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<z.infer<typeof addNewExpenseFormSchema>>({
+  } = useForm<z.infer<typeof addNewTransactionFormSchema>>({
     defaultValues: {
+      income: false,
       name: undefined,
       useAccount: false,
       amount: undefined,
@@ -87,7 +89,7 @@ export const AddNewExpenseModal: React.FC = () => {
       currencyId: undefined,
       executedAt: dayjs().startOf('day').unix(),
     },
-    resolver: zodResolver(addNewExpenseFormSchema),
+    resolver: zodResolver(addNewTransactionFormSchema),
   });
   const watchSelectedExecutedAt = watch('executedAt');
   const watchSelectedUseAccount = watch('useAccount');
@@ -96,7 +98,7 @@ export const AddNewExpenseModal: React.FC = () => {
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
     [currencies],
   );
-  const categoryOptions: SelectOption[] = EXPENSE_CATEGORIES.map((category) => ({
+  const categoryOptions: SelectOption[] = TRANSACTION_CATEGORIES.map((category) => ({
     value: category,
     display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
   })).sort((a, b) => (a.value > b.value ? 1 : -1));
@@ -112,16 +114,27 @@ export const AddNewExpenseModal: React.FC = () => {
     return [];
   }, [bankAccounts]);
 
-  const spentDate = React.useMemo(() => dayjs.unix(watchSelectedExecutedAt).toDate(), [watchSelectedExecutedAt]);
+  const executionDate = React.useMemo(() => dayjs.unix(watchSelectedExecutedAt).toDate(), [watchSelectedExecutedAt]);
 
-  const onSubmitAddNewExpenseForm = async (data: any) => {
+  const onSubmitAddNewTransactionForm = async (data: any) => {
     setIsLoading(true);
-    const { name, amount, remarks, category, accountId, currencyId, executedAt } = data as z.infer<typeof addNewExpenseFormSchema>;
+    const { name, amount, income, remarks, category, accountId, currencyId, executedAt } = data as z.infer<
+      typeof addNewTransactionFormSchema
+    >;
     try {
-      const { success } = await createNewExpense({ name, amount, remarks, category, accountId, currencyId, executedAt });
+      const { success } = await createNewTransaction({
+        name,
+        amount,
+        remarks,
+        category,
+        accountId,
+        currencyId,
+        executedAt,
+        income: income.toString(),
+      });
       if (success) {
         setOpen(false);
-        refetchExpenses();
+        refetchTransactions();
         refetchBankAccounts();
       }
       setIsLoading(false);
@@ -139,11 +152,11 @@ export const AddNewExpenseModal: React.FC = () => {
   }, [isSubmitSuccessful]);
 
   return (
-    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none lg:max-w-xl lg:overflow-visible">
+    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none md:max-w-2xl lg:max-w-4xl lg:overflow-visible">
       <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900">Add New Expense</h3>
-        <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <h3 className="text-lg font-medium text-gray-900">Add New Transaction</h3>
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
+          <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
           <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
           <Select
             label="Category"
@@ -155,7 +168,7 @@ export const AddNewExpenseModal: React.FC = () => {
             error={errors.category && errors.category.message?.toString()}
           />
         </div>
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Select
             label="Currency"
             formId="currencyId"
@@ -165,9 +178,15 @@ export const AddNewExpenseModal: React.FC = () => {
             placeholder="Select currency..."
             error={errors.currencyId && errors.currencyId.message?.toString()}
           />
+          <Switch
+            formId="income"
+            label="Is it income?"
+            control={control as Control<any, any>}
+            error={errors.income && errors.income.message?.toString()}
+          />
           <DatePicker
-            label="Spent Date"
-            date={spentDate}
+            label="Execution Date"
+            date={executionDate}
             toDate={new Date()}
             setDate={(newDate) => {
               if (newDate) {
@@ -177,7 +196,7 @@ export const AddNewExpenseModal: React.FC = () => {
             className="[&>button]:w-full"
           />
         </div>
-        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Switch
             label="Use Account"
             formId="useAccount"
@@ -186,10 +205,10 @@ export const AddNewExpenseModal: React.FC = () => {
           />
           {watchSelectedUseAccount && (
             <Select
-              label="Spent From"
+              label="Related Account"
               formId="accountId"
               control={control as Control<any, any>}
-              className="!max-w-none"
+              className="!max-w-none md:col-span-2"
               options={bankOptions}
               placeholder="Select account..."
               error={errors.accountId && errors.accountId.message?.toString()}
@@ -203,7 +222,7 @@ export const AddNewExpenseModal: React.FC = () => {
           type="button"
           variant="contained"
           isLoading={isLoading}
-          onClick={handleSubmit(onSubmitAddNewExpenseForm)}
+          onClick={handleSubmit(onSubmitAddNewTransactionForm)}
           className="w-full sm:ml-2 sm:w-fit"
         >
           Add
@@ -221,4 +240,4 @@ export const AddNewExpenseModal: React.FC = () => {
   );
 };
 
-export default AddNewExpenseModal;
+export default AddNewTransactionModal;

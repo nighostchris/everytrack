@@ -7,8 +7,8 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import {
   useCash,
   useStocks,
-  useExpenses,
   useCurrencies,
+  useTransactions,
   useBankAccounts,
   useStockHoldings,
   useExchangeRates,
@@ -16,7 +16,7 @@ import {
 } from '@hooks';
 import { store as globalStore } from '@lib/zustand';
 import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
-import { ExchangeRate, Expense, Stock, ExpenseCategory } from '@api/everytrack_backend';
+import { ExchangeRate, Transaction, Stock, TransactionCategory } from '@api/everytrack_backend';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -38,11 +38,12 @@ export interface RecentTwoMonthsExpenseSnapshot {
   data: ExpenseSnapshot[];
 }
 
-export interface RecentExpenseRecord {
+export interface RecentTransactionRecord {
   date: number;
   name: string;
   amount: string;
-  category: ExpenseCategory;
+  income: boolean;
+  category: TransactionCategory;
 }
 
 export const useDashboardState = () => {
@@ -50,8 +51,8 @@ export const useDashboardState = () => {
 
   const { cash, error: fetchCashError } = useCash();
   const { stocks, error: fetchStocksError } = useStocks();
-  const { expenses, error: fetchExpensesError } = useExpenses();
   const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { transactions, error: fetchTransactionsError } = useTransactions();
   const { bankAccounts, error: fetchBankAccountsError } = useBankAccounts();
   const { stockHoldings, error: fetchStockHoldingsError } = useStockHoldings();
   const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
@@ -59,17 +60,19 @@ export const useDashboardState = () => {
 
   const error = React.useMemo(
     () =>
+      fetchCashError?.message ??
       fetchStocksError?.message ??
-      fetchExpensesError?.message ??
       fetchCurrenciesError?.message ??
       fetchBankAccountsError?.message ??
+      fetchTransactionsError?.message ??
       fetchStockHoldingsError?.message ??
       fetchExchangeRatesError?.message ??
       fetchBrokerAccountsError?.message,
     [
+      fetchCashError,
       fetchStocksError,
-      fetchExpensesError,
       fetchCurrenciesError,
+      fetchTransactionsError,
       fetchBankAccountsError,
       fetchStockHoldingsError,
       fetchExchangeRatesError,
@@ -139,27 +142,28 @@ export const useDashboardState = () => {
     };
   }, [cash, stocks, stockHoldings, currencyId, bankAccounts, brokerAccounts, exchangeRates]);
 
-  const recentExpenses = React.useMemo(() => {
-    const records: RecentExpenseRecord[] = [];
-    if (currencies && expenses && currencyId && exchangeRates) {
-      expenses.forEach(({ name, amount, category, currencyId: expenseCurrencyId, executedAt: date }) => {
+  const recentTransactions = React.useMemo(() => {
+    const records: RecentTransactionRecord[] = [];
+    if (currencies && transactions && currencyId && exchangeRates) {
+      transactions.forEach(({ name, amount, income, category, currencyId: expenseCurrencyId, executedAt: date }) => {
         records.push({
           name,
-          amount: calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates).toFormat(2),
-          category,
           date,
+          income,
+          category,
+          amount: calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates).toFormat(2),
         });
       });
     }
     return records.sort((a, b) => (dayjs.unix(a.date).isBefore(dayjs.unix(b.date)) ? 1 : -1)).slice(0, 5);
-  }, [currencies, expenses, currencyId, exchangeRates]);
+  }, [currencies, transactions, currencyId, exchangeRates]);
 
   const calculateExpenseSnapshotsByMonth = (
     id: string,
     start: dayjs.Dayjs,
     end: dayjs.Dayjs,
     currencyId: string,
-    expensesMap: Map<number, Expense>,
+    expensesMap: Map<number, Transaction>,
     exchangeRates: ExchangeRate[],
   ) => {
     let lastValueCache = new BigNumber(0);
@@ -179,9 +183,13 @@ export const useDashboardState = () => {
 
   const recentTwoMonthsExpenses = React.useMemo(() => {
     const snapshots: RecentTwoMonthsExpenseSnapshot[] = [];
-    if (currencies && expenses && currencyId && exchangeRates) {
-      const expensesMap: Map<number, Expense> = new Map();
-      expenses.forEach((expense) => expensesMap.set(dayjs.unix(expense.executedAt).startOf('day').unix(), expense));
+    if (currencies && transactions && currencyId && exchangeRates) {
+      const expensesMap: Map<number, Transaction> = new Map();
+      transactions.forEach((transaction) => {
+        if (!transaction.income) {
+          expensesMap.set(dayjs.unix(transaction.executedAt).startOf('day').unix(), transaction);
+        }
+      });
       // Expense snapshots of current month
       snapshots.push(
         calculateExpenseSnapshotsByMonth(
@@ -206,14 +214,14 @@ export const useDashboardState = () => {
       );
     }
     return snapshots;
-  }, [currencies, expenses, currencyId, exchangeRates]);
+  }, [currencies, transactions, currencyId, exchangeRates]);
 
   return {
     error,
     lockedFund,
     totalBalance,
-    recentExpenses,
     assetDistribution,
+    recentTransactions,
     recentTwoMonthsExpenses,
     instantAccessibleBalance,
   };

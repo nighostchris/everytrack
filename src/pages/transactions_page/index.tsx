@@ -12,8 +12,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Root } from '@layouts/root';
 import { useDisplayCurrency } from '@hooks';
 import { StatCard, Tabs, TabsContent, TabsList, TabsTrigger } from '@components';
-import { ExpenseBarChartData, useExpensesState } from '@features/expenses/hooks/use_expenses_state';
-import { AddNewExpenseModal, DeleteExpenseModal, ExpensesTable } from '@features/expenses/components';
+import { ExpenseBarChartData, useTransactionsState } from '@features/transactions/hooks/use_transactions_state';
+import { AddNewTransactionModal, DeleteTransactionModal, TransactionsTable } from '@features/transactions/components';
 
 const extractExistingCategories = (chartData: ExpenseBarChartData[]) => {
   const map = new Map<string, boolean>();
@@ -21,17 +21,23 @@ const extractExistingCategories = (chartData: ExpenseBarChartData[]) => {
   return Array.from(map.keys());
 };
 
-export const ExpensesPage: React.FC = () => {
+export const TransactionsPage: React.FC = () => {
+  const {
+    spentThisYear,
+    spentThisMonth,
+    transactionsTableRows,
+    monthlyExpenseChartData,
+    error: expensesStateError,
+  } = useTransactionsState();
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
-  const { error: expensesStateError, expensesTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData } = useExpensesState();
 
   return (
     <Root>
-      <AddNewExpenseModal />
-      <DeleteExpenseModal />
+      <AddNewTransactionModal />
+      <DeleteTransactionModal />
       <div className={clsx('relative flex h-full flex-col overflow-y-auto px-8 py-6')}>
-        <h1 className="text-xl font-semibold text-gray-900">Expenses</h1>
-        <p className="mt-2 text-sm text-gray-700">Stay alert of where you spent your money</p>
+        <h1 className="text-xl font-semibold text-gray-900">Transactions</h1>
+        <p className="mt-2 text-sm text-gray-700">Easily organize and search all your income payments and expenses</p>
         <div className="mt-8 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
             <StatCard title="Spent This Month" icon={GiPayMoney}>
@@ -112,11 +118,11 @@ export const ExpensesPage: React.FC = () => {
             </Tabs>
           </div>
         </div>
-        <ExpensesTable data={expensesTableRows} className="!mt-10" />
+        <TransactionsTable data={transactionsTableRows} className="!mt-10" />
       </div>
       <ToastContainer />
     </Root>
   );
 };
 
-export default ExpensesPage;
+export default TransactionsPage;

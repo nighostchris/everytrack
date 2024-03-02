@@ -4,14 +4,14 @@ import React from 'react';
 import Root from '@layouts/root';
 import { store as globalStore } from '@lib/zustand';
 import { useDashboardState } from '@features/dashboard/hooks/use_dashboard_state';
-import { RecentExpensesListCard, ThisMonthVersusLastMonthCard, TotalBalanceOverviewCard } from '@features/dashboard/components';
+import { RecentTransactionsListCard, ThisMonthVersusLastMonthCard, TotalBalanceOverviewCard } from '@features/dashboard/components';
 
 export const DashboardPage: React.FC = () => {
   const {
     lockedFund,
     totalBalance,
-    recentExpenses,
     assetDistribution,
+    recentTransactions,
     recentTwoMonthsExpenses,
     instantAccessibleBalance,
     error: dashboardStateError,
@@ -37,7 +37,7 @@ export const DashboardPage: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 gap-y-6">
             <ThisMonthVersusLastMonthCard data={recentTwoMonthsExpenses} />
-            <RecentExpensesListCard data={recentExpenses} />
+            <RecentTransactionsListCard data={recentTransactions} />
           </div>
         </div>
         {/* Consturuction Site - To be refactored */}
