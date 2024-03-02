@@ -5,6 +5,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
+import { calculateMonthlyIOChartData } from '../utils';
 import { Currency, TransactionCategory } from '@api/everytrack_backend';
 import { useCurrencies, useExchangeRates, useTransactions } from '@hooks';
 
@@ -23,6 +24,12 @@ export interface TransactionsTableRow {
 export interface ExpenseBarChartData {
   spentDate: number;
   [category: string]: number;
+}
+
+export interface MonthlyIOChartData {
+  month: string;
+  income?: number;
+  expense?: number;
 }
 
 export const useTransactionsState = () => {
@@ -80,49 +87,27 @@ export const useTransactionsState = () => {
     return { spentThisMonth: spentThisMonth.toFormat(2), spentThisYear: spentThisYear.toFormat(2) };
   }, [currencyId, transactions, exchangeRates]);
 
-  const { monthlyExpenseChartData } = React.useMemo(() => {
-    let monthlyExpenseChartData: ExpenseBarChartData[] = [];
+  const { monthlyIOChartData } = React.useMemo(() => {
     if (currencyId && transactions && exchangeRates) {
-      // Construct a monthly expense map
-      const lastSixMonths: number[] = Array(6)
-        .fill(true)
-        .reduce(
-          (acc, _, index) =>
-            index === 0
-              ? [dayjs().startOf('month').unix()]
-              : [
-                  ...acc,
-                  dayjs
-                    .unix(acc[index - 1])
-                    .subtract(1, 'month')
-                    .startOf('month')
-                    .unix(),
-                ],
-          [],
-        );
-      const lastSixMonthMap = new Map<number, { [category: string]: number }>();
-      lastSixMonths.forEach((unix) => lastSixMonthMap.set(unix, {}));
-      // Populate the monthly expense map by traversing transactions array
-      transactions.forEach(({ amount, income, category, currencyId: expenseCurrencyId, executedAt }) => {
-        const spentDateInMonth = dayjs.unix(executedAt).startOf('month').unix();
-        const monthExpenseRecords = lastSixMonthMap.get(spentDateInMonth);
-        const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
-        if (monthExpenseRecords && !income) {
-          const originalExpense = monthExpenseRecords[capitalizedCategory];
-          const expense = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
-          const accumulatedExpense = originalExpense ? expense.plus(originalExpense) : expense;
-          lastSixMonthMap.set(spentDateInMonth, {
-            ...monthExpenseRecords,
-            [capitalizedCategory]: accumulatedExpense.decimalPlaces(2).toNumber(),
-          });
-        }
-      });
-      monthlyExpenseChartData = Array.from(lastSixMonthMap.entries()).map(([key, value]) => ({ spentDate: key, ...value }));
+      const rawMonthlyIOChartData = calculateMonthlyIOChartData(currencyId, transactions, exchangeRates);
+      const monthlyIOChartData: MonthlyIOChartData[] = rawMonthlyIOChartData
+        .sort((a, b) => (a.month > b.month ? 1 : -1))
+        .map((record) => {
+          const processedRecord: MonthlyIOChartData = { month: dayjs.unix(record.month).format('MMM YY') };
+          if (record.income) {
+            processedRecord.income = record.income;
+          }
+          if (record.expense) {
+            processedRecord.expense = record.expense;
+          }
+          return processedRecord;
+        });
+      return { monthlyIOChartData };
     }
-    return { monthlyExpenseChartData: monthlyExpenseChartData.sort((a, b) => (a.spentDate > b.spentDate ? 1 : -1)) };
+    return { monthlyIOChartData: [] };
   }, [currencyId, transactions, exchangeRates]);
 
-  return { error, transactionsTableRows, spentThisMonth, spentThisYear, monthlyExpenseChartData };
+  return { error, transactionsTableRows, spentThisMonth, spentThisYear, monthlyIOChartData };
 };
 
 export default useTransactionsState;
