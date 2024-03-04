@@ -39,7 +39,7 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
       valueFormat={(v) => Math.abs(v).toString()}
       axisTop={{ tickSize: 0, tickPadding: 12 }}
       minValue={minValue === 0 && maxValue === 0 ? 'auto' : minValue > maxValue ? -minValue : -maxValue}
-      maxValue={maxValue === 0 && maxValue === 0 ? 'auto' : maxValue > minValue ? maxValue : minValue}
+      maxValue={maxValue === 0 && minValue === 0 ? 'auto' : maxValue > minValue ? maxValue : minValue}
       axisLeft={null}
       axisBottom={null}
       enableGridX={true}
