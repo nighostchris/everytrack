@@ -5,7 +5,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
-import { calculateMonthlyIOChartData } from '../utils';
+import { calculateMonthlyIOChartData, calculateWeeklyIOChartData } from '../utils';
 import { Currency, TransactionCategory } from '@api/everytrack_backend';
 import { useCurrencies, useExchangeRates, useTransactions } from '@hooks';
 
@@ -24,6 +24,12 @@ export interface TransactionsTableRow {
 export interface ExpenseBarChartData {
   spentDate: number;
   [category: string]: number;
+}
+
+export interface WeeklyIOChartData {
+  week: string;
+  income?: number;
+  expense?: number;
 }
 
 export interface MonthlyIOChartData {
@@ -87,8 +93,9 @@ export const useTransactionsState = () => {
     return { spentThisMonth: spentThisMonth.toFormat(2), spentThisYear: spentThisYear.toFormat(2) };
   }, [currencyId, transactions, exchangeRates]);
 
-  const { monthlyIOChartData } = React.useMemo(() => {
+  const { weeklyIOChartData, monthlyIOChartData } = React.useMemo(() => {
     if (currencyId && transactions && exchangeRates) {
+      const weeklyIOChartData = calculateWeeklyIOChartData(currencyId, transactions, exchangeRates);
       const rawMonthlyIOChartData = calculateMonthlyIOChartData(currencyId, transactions, exchangeRates);
       const monthlyIOChartData: MonthlyIOChartData[] = rawMonthlyIOChartData
         .sort((a, b) => (a.month > b.month ? 1 : -1))
@@ -102,12 +109,12 @@ export const useTransactionsState = () => {
           }
           return processedRecord;
         });
-      return { monthlyIOChartData };
+      return { weeklyIOChartData, monthlyIOChartData };
     }
-    return { monthlyIOChartData: [] };
+    return { weeklyIOChartData: [], monthlyIOChartData: [] };
   }, [currencyId, transactions, exchangeRates]);
 
-  return { error, transactionsTableRows, spentThisMonth, spentThisYear, monthlyIOChartData };
+  return { error, transactionsTableRows, spentThisMonth, spentThisYear, weeklyIOChartData, monthlyIOChartData };
 };
 
 export default useTransactionsState;
