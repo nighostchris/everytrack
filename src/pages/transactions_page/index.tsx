@@ -6,11 +6,23 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Root } from '@layouts/root';
+import {
+  TransactionIOCard,
+  TransactionsTable,
+  AddNewTransactionModal,
+  DeleteTransactionModal,
+  MonthlyExpenseDistributionCard,
+} from '@features/transactions/components';
 import { useTransactionsState } from '@features/transactions/hooks/use_transactions_state';
-import { TransactionIOCard, AddNewTransactionModal, DeleteTransactionModal, TransactionsTable } from '@features/transactions/components';
 
 export const TransactionsPage: React.FC = () => {
-  const { weeklyIOChartData, monthlyIOChartData, transactionsTableRows, error: expensesStateError } = useTransactionsState();
+  const {
+    weeklyIOChartData,
+    monthlyIOChartData,
+    transactionsTableRows,
+    monthlyExpenseDistributions,
+    error: expensesStateError,
+  } = useTransactionsState();
 
   return (
     <Root>
@@ -23,7 +35,9 @@ export const TransactionsPage: React.FC = () => {
           <div className="grid grid-cols-1 gap-y-6">
             <TransactionIOCard weeklyData={weeklyIOChartData} monthlyData={monthlyIOChartData} />
           </div>
-          <div className="grid grid-cols-1 gap-y-6"></div>
+          <div className="grid grid-cols-1 gap-y-6">
+            <MonthlyExpenseDistributionCard data={monthlyExpenseDistributions} />
+          </div>
         </div>
         <TransactionsTable data={transactionsTableRows} className="!mt-10" />
       </div>

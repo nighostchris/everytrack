@@ -27,8 +27,6 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
     }
   }, [data]);
 
-  console.log({ minValue, maxValue });
-
   return (
     <ResponsiveBar
       // @ts-ignore

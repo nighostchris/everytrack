@@ -35,12 +35,15 @@ export function calculateMonthlyIOChartData(currencyId: string, transactions: Tr
       const originalCategorySum = transactionRecords[capitalizedCategory];
       const amountToAdd = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
       const newCategorySum = originalCategorySum ? amountToAdd.plus(originalCategorySum) : amountToAdd;
-      lastSixMonthTransactionsMap.set(executionDateInMonth, {
+      const newRecord: any = {
         ...transactionRecords,
         income: income ? amountToAdd.plus(totalIncome).decimalPlaces(2).toNumber() : totalIncome,
         expense: !income ? amountToAdd.plus(totalExpense).decimalPlaces(2).toNumber() : totalExpense,
-        [capitalizedCategory]: newCategorySum.decimalPlaces(2).toNumber(),
-      });
+      };
+      if (!income) {
+        newRecord[capitalizedCategory] = newCategorySum.decimalPlaces(2).toNumber();
+      }
+      lastSixMonthTransactionsMap.set(executionDateInMonth, newRecord);
     }
   });
 
