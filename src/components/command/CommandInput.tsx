@@ -6,7 +6,7 @@ import { LuSearch } from 'react-icons/lu';
 
 export const CommandInput = React.forwardRef<React.ElementRef<typeof Command.Input>, React.ComponentPropsWithoutRef<typeof Command.Input>>(
   ({ className, ...props }, ref) => (
-    <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+    <div className="flex items-center border-b border-b-gray-300 px-3" cmdk-input-wrapper="">
       <LuSearch className="mr-2 h-4 w-4 shrink-0 opacity-50" />
       <Command.Input
         ref={ref}

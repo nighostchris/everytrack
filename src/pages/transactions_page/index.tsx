@@ -102,10 +102,21 @@ export const TransactionsPage: React.FC = () => {
                 label="Categories"
                 values={selectedCategories}
                 setValues={setSelectedCategories}
-                options={[
-                  { value: 'tax', display: 'Tax' },
-                  { value: 'transport', display: 'Transport ' },
-                ]}
+                placeholder="Select categories..."
+                groups={{
+                  Accomodation: [
+                    { value: 'tax', display: 'Tax' },
+                    { value: 'transport', display: 'Transport ' },
+                  ],
+                  Income: [
+                    { value: 'tax', display: 'Tax' },
+                    { value: 'transport', display: 'Transport ' },
+                  ],
+                  Testing: [
+                    { value: 'tax', display: 'Tax' },
+                    { value: 'transport', display: 'Transport ' },
+                  ],
+                }}
               />
               {/* <p>Amount</p> */}
               {/* <p>Date Range</p> */}

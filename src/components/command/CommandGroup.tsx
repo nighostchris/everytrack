@@ -8,7 +8,7 @@ export const CommandGroup = React.forwardRef<React.ElementRef<typeof Command.Gro
     <Command.Group
       ref={ref}
       className={clsx(
-        '[&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+        '[&_[cmdk-group-heading]]:bg-gray-200 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-600',
         className,
       )}
       {...props}
