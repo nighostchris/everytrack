@@ -7,7 +7,6 @@ import { Control, useForm } from 'react-hook-form';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Input, Select } from '@components';
 import { Root } from '@layouts/root';
 import {
   TransactionIOCard,
@@ -16,6 +15,7 @@ import {
   DeleteTransactionModal,
   MonthlyExpenseDistributionCard,
 } from '@features/transactions/components';
+import { Combobox, Input, Select } from '@components';
 import { useTransactionsState } from '@features/transactions/hooks/use_transactions_state';
 
 export const TransactionsPage: React.FC = () => {
@@ -40,6 +40,8 @@ export const TransactionsPage: React.FC = () => {
       sorting: 'date-latest-first',
     },
   });
+
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
 
   return (
     <Root>
@@ -67,20 +69,20 @@ export const TransactionsPage: React.FC = () => {
           </div>
           <div className="sticky top-0 col-span-1 h-fit rounded-lg bg-white text-gray-800">
             <h2 className="border border-x-0 border-t-0 border-b-gray-200 px-6 py-4 font-medium">Advanced Search</h2>
-            <div className="flex flex-col space-y-6 p-6">
-              <Input label="Search" formId="search" register={register} className="!max-w-none" />
+            <div className="flex flex-col p-6">
+              <Input label="Search" formId="search" register={register} className="mb-6 !max-w-none" />
               <Select
                 label="Sort By"
                 formId="sorting"
                 placeholder=""
                 control={control as Control<any, any>}
-                className="!max-w-none"
+                className="mb-6 !max-w-none"
                 options={[
                   { value: 'date-latest-first', display: 'Date (latest first)' },
                   { value: 'date-oldest-first', display: 'Date (oldest first)' },
                 ]}
               />
-              <Select
+              {/* <Select
                 label="Accounts"
                 formId="accounts"
                 placeholder=""
@@ -95,9 +97,18 @@ export const TransactionsPage: React.FC = () => {
                 control={control as Control<any, any>}
                 className="!max-w-none"
                 options={[]}
+              /> */}
+              <Combobox
+                label="Categories"
+                values={selectedCategories}
+                setValues={setSelectedCategories}
+                options={[
+                  { value: 'tax', display: 'Tax' },
+                  { value: 'transport', display: 'Transport ' },
+                ]}
               />
-              <p>Amount</p>
-              <p>Date Range</p>
+              {/* <p>Amount</p> */}
+              {/* <p>Date Range</p> */}
             </div>
           </div>
         </div>
