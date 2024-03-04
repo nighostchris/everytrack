@@ -2,20 +2,20 @@ import React from 'react';
 import { useDisplayCurrency } from '@hooks';
 import { Cell, Pie, PieChart, Sector, ResponsiveContainer } from 'recharts';
 
-import type { AssetDistributionData } from '../../hooks/use_dashboard_state';
+import { MonthlyExpenseDistributionData } from '../../hooks/use_transactions_state';
 
-interface AssetDistributionChartProps {
-  data: AssetDistributionData[];
+interface MonthlyExpenseDistributionChartProps {
+  data: MonthlyExpenseDistributionData[];
   className?: string;
 }
 
-export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ data, className }) => {
+export const MonthlyExpenseDistributionChart: React.FC<MonthlyExpenseDistributionChartProps> = ({ data }) => {
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const [distributionChartIndex, setDistributionChartIndex] = React.useState<number>(0);
 
   return (
     // TODO: mobile screen
-    <ResponsiveContainer width={210} aspect={0.85}>
+    <ResponsiveContainer width={180} aspect={0.8} className="absolute">
       <PieChart>
         <Pie
           data={data}
@@ -69,4 +69,4 @@ export const AssetDistributionChart: React.FC<AssetDistributionChartProps> = ({ 
   );
 };
 
-export default AssetDistributionChart;
+export default MonthlyExpenseDistributionChart;

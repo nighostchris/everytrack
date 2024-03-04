@@ -21,10 +21,11 @@ interface SelectProps extends React.ComponentPropsWithoutRef<typeof Root> {
   error?: string;
   formId?: string;
   className?: string;
+  triggerClassName?: string;
 }
 
 export const Select = React.forwardRef<React.ElementRef<typeof Root>, SelectProps>(
-  ({ label, placeholder, options, control, error, formId = camelCase(label), className }, ref) => {
+  ({ label, placeholder, options, control, error, formId = camelCase(label), className, triggerClassName }, ref) => {
     return (
       <div className={clsx(className, 'flex w-full max-w-sm flex-col')}>
         {/* dark:text-gray-200 */}
@@ -34,7 +35,7 @@ export const Select = React.forwardRef<React.ElementRef<typeof Root>, SelectProp
           control={control}
           render={({ field: { ref, value: selectedValue, onChange, ...props } }) => (
             <Root value={selectedValue} onValueChange={onChange} {...props}>
-              <SelectTrigger error={error} ref={ref}>
+              <SelectTrigger error={error} ref={ref} className={triggerClassName}>
                 <Value placeholder={placeholder} />
               </SelectTrigger>
               <SelectContent>
