@@ -81,9 +81,13 @@ export const MonthlyExpenseDistributionCard: React.FC<MonthlyExpenseDistribution
         />
       </div>
       <div className="relative flex h-full w-full flex-col items-center justify-center">
-        <div className="absolute h-full w-full">
+        {selectedMonthlyDistribution.length > 0 ? (
           <MonthlyExpenseDistributionChart data={selectedMonthlyDistribution} />
-        </div>
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center">
+            <p className="my-auto text-lg leading-7">Seems like you didn't spend a single buck! 💪🏻💪🏻💪🏻</p>
+          </div>
+        )}
       </div>
     </Card>
   );

@@ -3,10 +3,11 @@ import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
+import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
+import { TRANSACTION_CATEGORY_CHART_COLORS } from '@consts';
 import { Currency, TransactionCategory } from '@api/everytrack_backend';
 import { useCurrencies, useExchangeRates, useTransactions } from '@hooks';
-import { calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { calculateMonthlyIOChartData, calculateWeeklyIOChartData } from '../utils';
 
 dayjs.extend(isSameOrAfter);
@@ -131,13 +132,7 @@ export const useTransactionsState = () => {
               if (!['month', 'income', 'expense'].includes(key)) {
                 data.push({
                   name: key,
-                  color: calculateInterpolateColor(
-                    '#C0DEF7',
-                    '#0F2C4A',
-                    BigNumber(value as number)
-                      .dividedBy(record.expense)
-                      .toNumber(),
-                  ),
+                  color: TRANSACTION_CATEGORY_CHART_COLORS[key.toLowerCase()],
                   amount: BigNumber(value as number).toFormat(2),
                   percentage: Number(
                     BigNumber(value as number)

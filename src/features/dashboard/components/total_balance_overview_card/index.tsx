@@ -62,9 +62,9 @@ export const TotalBalanceOverviewCard: React.FC<TotalBalanceOverviewCardProps> =
     <Card className={clsx('flex flex-col !bg-white p-6 lg:h-136', className)}>
       <h4 className="text-sm font-medium text-gray-500">Overview</h4>
       <h5 className="my-1 text-lg font-semibold">Total Balance</h5>
-      <div className="flex h-full flex-col">
+      <div className="flex h-full w-full flex-col">
         <p className="mb-3 overflow-hidden text-ellipsis whitespace-nowrap text-5xl font-semibold">{`${symbol} ${totalBalance}`}</p>
-        <div className="mb-1 h-[248px] w-full">
+        <div className="relative mb-6 flex h-[220px] w-full flex-col items-center justify-center">
           <AssetDistributionChart data={assetDistribution} />
         </div>
         <div className="grid grid-rows-1 gap-y-4 border-t border-gray-200 lg:grid-cols-3 lg:gap-x-4">

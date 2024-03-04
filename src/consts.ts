@@ -80,3 +80,21 @@ export const TRANSACTION_CATEGORY_ICONS = {
   entertainment: GiBowlingStrike,
   transportation: FaTrainTram,
 } as const;
+
+// TO REDESIGN: come up with better color scheme
+export const TRANSACTION_CATEGORY_CHART_COLORS: { [category: string]: string } = {
+  tax: '#c2410c',
+  gift: '#364639',
+  kids: '#974537',
+  bills: '#0e7490',
+  others: '#334155',
+  health: '#c90721',
+  travel: '#0369a1',
+  dining: '#fae8ff',
+  shopping: '#7e22ce',
+  education: '#1d4ed8',
+  groceries: '#be123c',
+  accomodation: '#15803d',
+  entertainment: '#b91c1c',
+  transportation: '#4338ca',
+};
