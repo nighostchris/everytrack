@@ -27,6 +27,8 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
     }
   }, [data]);
 
+  console.log({ minValue, maxValue });
+
   return (
     <ResponsiveBar
       // @ts-ignore
@@ -38,8 +40,8 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
       margin={{ left: 0, bottom: 20, top: 50, right: 0 }}
       valueFormat={(v) => Math.abs(v).toString()}
       axisTop={{ tickSize: 0, tickPadding: 12 }}
-      minValue={minValue === 0 ? 'auto' : minValue > maxValue ? -minValue : -maxValue}
-      maxValue={maxValue === 0 ? 'auto' : maxValue > minValue ? maxValue : minValue}
+      minValue={minValue === 0 && maxValue === 0 ? 'auto' : minValue > maxValue ? -minValue : -maxValue}
+      maxValue={maxValue === 0 && maxValue === 0 ? 'auto' : maxValue > minValue ? maxValue : minValue}
       axisLeft={null}
       axisBottom={null}
       enableGridX={true}
@@ -52,7 +54,7 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
           legendPosition: 'top-left',
           legendOrientation: 'vertical',
           lineStyle: { strokeOpacity: 0 },
-          textStyle: { fontSize: '14', fill: '#97E3D5' },
+          textStyle: { fontSize: '12', fill: '#97E3D5' },
         },
         {
           axis: 'y',
@@ -60,7 +62,7 @@ export const TransactionIOChart: <T>(props: TransactionIOChartProps<T>) => React
           legend: 'Expense',
           legendPosition: 'bottom-left',
           legendOrientation: 'vertical',
-          textStyle: { fontSize: '14', fill: '#F47560' },
+          textStyle: { fontSize: '12', fill: '#F47560' },
           lineStyle: { stroke: '#6B7280', strokeWidth: 1 },
         },
       ]}

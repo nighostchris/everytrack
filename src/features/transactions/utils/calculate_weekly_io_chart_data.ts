@@ -6,35 +6,24 @@ import { ExchangeRate, Transaction } from '@api/everytrack_backend';
 
 export function calculateWeeklyIOChartData(currencyId: string, transactions: Transaction[], exchangeRates: ExchangeRate[]) {
   // Construct a daily transactions map for current month
-  const allDaysInCurrentMonth: number[] = Array(dayjs().daysInMonth())
-    .fill(true)
-    .reduce(
-      (acc, _, index) =>
-        index === 0
-          ? [dayjs().startOf('month').unix()]
-          : [
-              ...acc,
-              dayjs
-                .unix(acc[index - 1])
-                .add(1, 'day')
-                .unix(),
-            ],
-      [],
-    );
   const currentMonthTransactionsMap = new Map<number, { income: number; expense: number }>();
-  allDaysInCurrentMonth.forEach((unix) => currentMonthTransactionsMap.set(unix, { income: 0, expense: 0 }));
 
   // Populate the daily transactions map by traversing transactions array
   transactions.forEach(({ amount, income, currencyId: expenseCurrencyId, executedAt }) => {
     const executionDateInDay = dayjs.unix(executedAt).startOf('day').unix();
     const transactionRecord = currentMonthTransactionsMap.get(executionDateInDay);
+    const amountToAdd = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
     if (transactionRecord) {
       const { income: totalIncome, expense: totalExpense } = transactionRecord;
-      const amountToAdd = calculateDisplayAmount(amount, currencyId, expenseCurrencyId, exchangeRates);
       currentMonthTransactionsMap.set(executionDateInDay, {
         ...transactionRecord,
         income: income ? amountToAdd.plus(totalIncome).decimalPlaces(2).toNumber() : totalIncome,
         expense: !income ? amountToAdd.plus(totalExpense).decimalPlaces(2).toNumber() : totalExpense,
+      });
+    } else {
+      currentMonthTransactionsMap.set(executionDateInDay, {
+        income: income ? amountToAdd.decimalPlaces(2).toNumber() : 0,
+        expense: !income ? amountToAdd.decimalPlaces(2).toNumber() : 0,
       });
     }
   });
@@ -69,12 +58,13 @@ export function calculateWeeklyIOChartData(currencyId: string, transactions: Tra
 
   return weeklyIOChartData.map((data) => {
     const processedData: any = data;
-    if (processedData.income === 0) {
+    if (typeof processedData.income !== 'undefined' && processedData.income === 0) {
       delete processedData.income;
     }
-    if (processedData.expense == 0) {
+    if (typeof processedData.expense !== 'undefined' && processedData.expense === 0) {
       delete processedData.expense;
-    } else {
+    }
+    if (typeof processedData.expense !== 'undefined' && processedData.expense > 0) {
       processedData.expense = -processedData.expense;
     }
     return processedData;
