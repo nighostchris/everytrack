@@ -1,10 +1,13 @@
 /* eslint-disable max-len */
+import { z } from 'zod';
 import clsx from 'clsx';
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Control, useForm } from 'react-hook-form';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { Input, Select } from '@components';
 import { Root } from '@layouts/root';
 import {
   TransactionIOCard,
@@ -24,6 +27,20 @@ export const TransactionsPage: React.FC = () => {
     error: expensesStateError,
   } = useTransactionsState();
 
+  const {
+    reset,
+    watch,
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<z.infer<any>>({
+    defaultValues: {
+      search: undefined,
+      sorting: 'date-latest-first',
+    },
+  });
+
   return (
     <Root>
       <AddNewTransactionModal />
@@ -39,6 +56,52 @@ export const TransactionsPage: React.FC = () => {
             <MonthlyExpenseDistributionCard data={monthlyExpenseDistributions} />
           </div>
         </div>
+        {/* Construction ongoing */}
+        <div className="relative mt-6 grid grid-cols-3 gap-x-6">
+          <div className="col-span-2 w-full space-y-2">
+            {Array(30)
+              .fill('Hello World')
+              .map((data) => (
+                <div className="w-full rounded-md bg-blue-100 py-4">{data}</div>
+              ))}
+          </div>
+          <div className="sticky top-0 col-span-1 h-fit rounded-lg bg-white text-gray-800">
+            <h2 className="border border-x-0 border-t-0 border-b-gray-200 px-6 py-4 font-medium">Advanced Search</h2>
+            <div className="flex flex-col space-y-6 p-6">
+              <Input label="Search" formId="search" register={register} className="!max-w-none" />
+              <Select
+                label="Sort By"
+                formId="sorting"
+                placeholder=""
+                control={control as Control<any, any>}
+                className="!max-w-none"
+                options={[
+                  { value: 'date-latest-first', display: 'Date (latest first)' },
+                  { value: 'date-oldest-first', display: 'Date (oldest first)' },
+                ]}
+              />
+              <Select
+                label="Accounts"
+                formId="accounts"
+                placeholder=""
+                control={control as Control<any, any>}
+                className="!max-w-none"
+                options={[]}
+              />
+              <Select
+                label="Categories"
+                formId="categories"
+                placeholder=""
+                control={control as Control<any, any>}
+                className="!max-w-none"
+                options={[]}
+              />
+              <p>Amount</p>
+              <p>Date Range</p>
+            </div>
+          </div>
+        </div>
+        {/* Construction ongoing */}
         <TransactionsTable data={transactionsTableRows} className="!mt-10" />
       </div>
       <ToastContainer />
