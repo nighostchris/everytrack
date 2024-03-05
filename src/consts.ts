@@ -98,3 +98,5 @@ export const TRANSACTION_CATEGORY_CHART_COLORS: { [category: string]: string } =
   entertainment: '#b91c1c',
   transportation: '#4338ca',
 };
+
+export const ADVANCED_SEARCH_SORTING_OPTIONS = ['date-latest-first', 'date-oldest-first'] as const;

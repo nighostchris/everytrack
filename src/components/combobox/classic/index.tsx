@@ -22,7 +22,7 @@ interface ComboboxGroupOption {
   display: string;
 }
 
-interface ComboboxGroups {
+export interface ComboboxGroups {
   [heading: string]: ComboboxGroupOption[];
 }
 
