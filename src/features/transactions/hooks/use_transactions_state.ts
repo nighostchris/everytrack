@@ -90,7 +90,7 @@ export const useTransactionsState = () => {
 
   const transactionHistory = React.useMemo(() => {
     if (currencies && transactions) {
-      return filterAndSortTransactions(transactions, currencies, { search: search ?? '', sorting });
+      return filterAndSortTransactions(transactions, currencies, { search: search ?? '', sorting, categories });
     }
     return [];
   }, [search, sorting, categories, currencies, transactions]);

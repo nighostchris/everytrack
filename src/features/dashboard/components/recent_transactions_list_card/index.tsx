@@ -2,12 +2,14 @@
 import clsx from 'clsx';
 import React from 'react';
 import { capitalize } from 'lodash';
+import { FaQuestion } from 'react-icons/fa6';
 
 import Card from '@components/card';
 import { Link } from 'react-router-dom';
 import { useDisplayCurrency } from '@hooks';
+import { TRANSACTION_GROUP_COLORS } from '@consts';
+import { getTransactionGroupByCategory } from '@utils';
 import { RecentTransactionRecord } from '../../hooks/use_dashboard_state';
-import { TRANSACTION_CATEGORY_ICONS, TRANSACTION_CATEGORY_ICON_COLORS } from '@consts';
 
 interface RecentTransactionsListCardProps {
   data: RecentTransactionRecord[];
@@ -24,8 +26,9 @@ export const RecentTransactionsListCard: React.FC<RecentTransactionsListCardProp
       <div className="grid h-full w-full">
         {data.length > 0 ? (
           data.map(({ name, category, amount, income }, index) => {
-            const Icon = TRANSACTION_CATEGORY_ICONS[category];
-            const iconColor = TRANSACTION_CATEGORY_ICON_COLORS[category];
+            // To be fixed
+            const Icon = FaQuestion;
+            const iconColor = TRANSACTION_GROUP_COLORS[getTransactionGroupByCategory(category)];
             return (
               <div className={clsx('grid grid-cols-5', { 'border-t border-gray-100': index !== 0 })}>
                 <div className="col-span-2 flex flex-row items-center text-sm text-gray-700">{name}</div>
