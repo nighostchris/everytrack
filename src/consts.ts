@@ -1,35 +1,3 @@
-import {
-  FaGift,
-  FaChild,
-  FaSchool,
-  FaQuestion,
-  FaTrainTram,
-  FaBagShopping,
-  FaPlaneArrival,
-  FaHouseChimney,
-  FaMoneyBillWave,
-} from 'react-icons/fa6';
-import { HiOutlineReceiptTax } from 'react-icons/hi';
-import { GiBowlingStrike, GiMedicines } from 'react-icons/gi';
-import { MdDining, MdLocalGroceryStore } from 'react-icons/md';
-
-export const TRANSACTION_CATEGORY_ICONS = {
-  tax: HiOutlineReceiptTax,
-  gift: FaGift,
-  kids: FaChild,
-  bills: FaMoneyBillWave,
-  others: FaQuestion,
-  health: GiMedicines,
-  travel: FaPlaneArrival,
-  dining: MdDining,
-  shopping: FaBagShopping,
-  education: FaSchool,
-  groceries: MdLocalGroceryStore,
-  accomodation: FaHouseChimney,
-  entertainment: GiBowlingStrike,
-  transportation: FaTrainTram,
-} as const;
-
 // TO REDESIGN: come up with better color scheme
 export const TRANSACTION_CATEGORY_CHART_COLORS: { [category: string]: string } = {
   income: '#c2410c',
@@ -86,9 +54,52 @@ export const TRANSACTION_CATEGORIES = [
   'fitness',
   'medical',
   'dental',
+  'education',
   'uncategorized',
   'bank-transfer',
 ] as const;
+
+export const TRANSACTION_CATEGORY_ICONS = {
+  paychecks: '🤑',
+  interest: '🪙',
+  'business-income': '💰',
+  'other-income': '💰',
+  charity: '💖',
+  gifts: '🎁',
+  gas: '⛽',
+  'car-maintenance': '⚒️',
+  parking: '🅿️',
+  'public-transit': '🚊',
+  mortgage: '🏡',
+  rent: '🏠',
+  'home-improvement': '🔨',
+  water: '💧',
+  electricity: '⚡',
+  broadband: '🛜',
+  phone: '📱',
+  tax: '🧾',
+  insurance: '☔',
+  'credit-card-payment': '💳',
+  groceries: '🥕',
+  restaurants: '🍕',
+  bars: '🍺',
+  travel: '✈️',
+  education: '💡',
+  entertainment: '🍿',
+  shopping: '🛍️',
+  clothings: '👕',
+  furnitures: '🪑',
+  electronics: '📺',
+  'child-care': '🧸',
+  'child-activities': '⚽',
+  'tuition-fee': '📚',
+  'student-loans': '🎓',
+  fitness: '🏋🏻',
+  medical: '💊',
+  dental: '🦷',
+  uncategorized: '🤔',
+  'bank-transfer': '🔁',
+} as const;
 
 export const TRANSACTION_GROUP_KEYS = [
   'income',
@@ -149,7 +160,7 @@ export const TRANSACTION_GROUPS: {
   {
     key: 'education',
     display: 'Education',
-    categories: ['tuition-fee', 'student-loans'],
+    categories: ['tuition-fee', 'student-loans', 'education'],
   },
   {
     key: 'health',

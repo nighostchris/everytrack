@@ -1,10 +1,12 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
+import { capitalize } from 'lodash';
 import { useShallow } from 'zustand/react/shallow';
 import { IoIosRemoveCircle } from 'react-icons/io';
 
 import { Button } from '@components';
+import { TRANSACTION_CATEGORY_ICONS } from '@consts';
 import { store } from '@features/transactions/zustand';
 import type { TransactionHistoryDailyData } from '@features/transactions/hooks/use_transactions_state';
 
@@ -76,10 +78,13 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
             >
               <div className="col-span-2 flex flex-row items-center text-sm text-gray-700">{name}</div>
               <div className="col-span-2 flex flex-row items-center">
-                {/* <span className={clsx('flex h-8 w-8 items-center justify-center rounded-full')}>
-                    <Icon className={clsx('h-5 w-5', { 'text-gray-900': !iconColor }, iconColor)} />
-                  </span> */}
-                <p className="ml-1 text-sm text-gray-700">{category}</p>
+                <p className="text-xl">{TRANSACTION_CATEGORY_ICONS[category]}</p>
+                <p className="ml-2 text-sm text-gray-700">
+                  {category
+                    .split('-')
+                    .map((v) => capitalize(v))
+                    .join(' ')}
+                </p>
               </div>
               <div className={clsx('flex flex-row items-center justify-end', {})}>
                 <p

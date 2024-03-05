@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { capitalize } from 'lodash';
 import BigNumber from 'bignumber.js';
 import { useShallow } from 'zustand/react/shallow';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -83,6 +84,9 @@ export const useTransactionsState = () => {
   const { transactions, error: fetchTransactionsError } = useTransactions();
   const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
 
+  // TO REMOVE
+  const getRandomColor = () => 'hsl(' + Math.random() * 360 + ', 100%, 75%)';
+
   const error = React.useMemo(
     () => fetchTransactionsError?.message ?? fetchCurrenciesError?.message ?? fetchExchangeRatesError?.message,
     [fetchTransactionsError, fetchCurrenciesError, fetchExchangeRatesError],
@@ -162,8 +166,12 @@ export const useTransactionsState = () => {
             Object.entries(record).forEach(([key, value]) => {
               if (!['month', 'income', 'expense'].includes(key)) {
                 data.push({
-                  name: key,
-                  color: TRANSACTION_CATEGORY_CHART_COLORS[key.toLowerCase()],
+                  name: key
+                    .split('-')
+                    .map((v) => capitalize(v))
+                    .join(' '),
+                  // TO FIX: To fine tune color later on
+                  color: getRandomColor(),
                   amount: BigNumber(value as number).toFormat(2),
                   percentage: Number(
                     BigNumber(value as number)
