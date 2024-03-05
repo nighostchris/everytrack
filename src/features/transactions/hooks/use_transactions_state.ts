@@ -1,14 +1,16 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
+import { useShallow } from 'zustand/react/shallow';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
+import { store } from '@features/transactions/zustand';
 import { TRANSACTION_CATEGORY_CHART_COLORS } from '@consts';
 import { Currency, TransactionCategory } from '@api/everytrack_backend';
 import { useCurrencies, useExchangeRates, useTransactions } from '@hooks';
-import { calculateMonthlyIOChartData, calculateWeeklyIOChartData } from '../utils';
+import { calculateMonthlyIOChartData, calculateWeeklyIOChartData, filterAndSortTransactions } from '../utils';
 
 dayjs.extend(isSameOrAfter);
 
@@ -20,6 +22,20 @@ export interface TransactionsTableRow {
   remarks: string;
   executionDate: string;
   category: TransactionCategory;
+}
+
+export interface TransactionHistoryDailyRecord {
+  name: string;
+  symbol: string;
+  amount: string;
+  income: boolean;
+  remarks: string;
+  category: TransactionCategory;
+}
+
+export interface TransactionHistoryDailyData {
+  date: number;
+  records: TransactionHistoryDailyRecord[];
 }
 
 export interface ExpenseBarChartData {
@@ -54,6 +70,13 @@ export interface MonthlyExpenseDistribution {
 
 export const useTransactionsState = () => {
   const { currencyId } = globalStore();
+  const { search, sorting, categories } = store(
+    useShallow(({ search, sorting, categories }) => ({
+      search,
+      sorting,
+      categories,
+    })),
+  );
 
   const { currencies, error: fetchCurrenciesError } = useCurrencies();
   const { transactions, error: fetchTransactionsError } = useTransactions();
@@ -63,6 +86,13 @@ export const useTransactionsState = () => {
     () => fetchTransactionsError?.message ?? fetchCurrenciesError?.message ?? fetchExchangeRatesError?.message,
     [fetchTransactionsError, fetchCurrenciesError, fetchExchangeRatesError],
   );
+
+  const transactionHistory = React.useMemo(() => {
+    if (currencies && transactions) {
+      return filterAndSortTransactions(transactions, currencies, { search: search ?? '', sorting });
+    }
+    return [];
+  }, [search, sorting, categories, currencies, transactions]);
 
   const transactionsTableRows = React.useMemo(() => {
     const result: TransactionsTableRow[] = [];
@@ -157,6 +187,7 @@ export const useTransactionsState = () => {
     spentThisMonth,
     weeklyIOChartData,
     monthlyIOChartData,
+    transactionHistory,
     transactionsTableRows,
     monthlyExpenseDistributions,
   };

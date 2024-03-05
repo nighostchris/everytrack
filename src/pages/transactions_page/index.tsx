@@ -4,7 +4,6 @@ import React from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import { Root } from '@layouts/root';
-import { useTransactions } from '@hooks';
 import {
   TransactionIOCard,
   TransactionsTable,
@@ -19,10 +18,10 @@ import { useTransactionsState } from '@features/transactions/hooks/use_transacti
 import 'react-toastify/dist/ReactToastify.css';
 
 export const TransactionsPage: React.FC = () => {
-  const { transactions } = useTransactions();
   const {
     weeklyIOChartData,
     monthlyIOChartData,
+    transactionHistory,
     transactionsTableRows,
     monthlyExpenseDistributions,
     error: expensesStateError,
@@ -45,7 +44,8 @@ export const TransactionsPage: React.FC = () => {
         </div>
         {/* Construction ongoing */}
         <div className="relative mt-6 grid grid-cols-3 gap-x-6">
-          <TransactionHistoryList transactions={transactions ?? []} />
+          {/* To fix rounded-lg missing issue */}
+          <TransactionHistoryList transactionHistory={transactionHistory} />
           <AdvancedSearchToolbox />
         </div>
         {/* Construction ongoing */}
