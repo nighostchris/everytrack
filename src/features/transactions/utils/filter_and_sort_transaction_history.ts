@@ -17,7 +17,7 @@ export function filterAndSortTransactions(transactions: Transaction[], currencie
   // Generate transaction history
   const transactionHistory = Array.from(
     transactions.reduce<Map<number, TransactionHistoryDailyRecord[]>>(
-      (acc, { name, amount, currencyId, category, income, remarks, executedAt }) => {
+      (acc, { id, name, amount, currencyId, category, income, remarks, executedAt }) => {
         const existingData = acc.get(executedAt);
         // Just return original accumulated records if the transaction does not match search string
         const searchString = search.toLowerCase();
@@ -25,6 +25,7 @@ export function filterAndSortTransactions(transactions: Transaction[], currencie
           return acc;
         }
         const newRecord: TransactionHistoryDailyRecord = {
+          id,
           name,
           amount,
           income,

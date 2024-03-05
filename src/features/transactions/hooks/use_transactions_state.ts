@@ -25,6 +25,7 @@ export interface TransactionsTableRow {
 }
 
 export interface TransactionHistoryDailyRecord {
+  id: string;
   name: string;
   symbol: string;
   amount: string;

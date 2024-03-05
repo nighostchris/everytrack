@@ -15,10 +15,11 @@ const searchCriteriasSchema = z.object({
 });
 
 interface AdvancedSearchToolboxProps {
+  clickedApplyAdvancedSearch: (newState: boolean) => void;
   className?: string;
 }
 
-export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ className }) => {
+export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ clickedApplyAdvancedSearch, className }) => {
   const { updateAdvancedSearchToolboxState } = store(
     useShallow(({ updateAdvancedSearchToolboxState }) => ({ updateAdvancedSearchToolboxState })),
   );
@@ -53,11 +54,12 @@ export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ cl
     setIsLoading(true);
     const { search, sorting, categories } = data as z.infer<typeof searchCriteriasSchema>;
     updateAdvancedSearchToolboxState({ search, sorting, categories });
+    clickedApplyAdvancedSearch(true);
     setIsLoading(false);
   };
 
   return (
-    <div className={clsx('sticky top-0 col-span-1 h-fit rounded-lg bg-white text-gray-800', className)}>
+    <div className={clsx('sticky top-0 col-span-1 h-fit rounded-lg bg-white text-gray-800 shadow-lg', className)}>
       <div className="flex flex-row items-center justify-between border border-x-0 border-t-0 border-b-gray-200 px-6 py-4">
         <h2 className="font-medium text-gray-900">Advanced Search</h2>
         {enableResetButton && (
