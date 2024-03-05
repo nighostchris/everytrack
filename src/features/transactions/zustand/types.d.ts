@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ADVANCED_SEARCH_SORTING_OPTIONS } from '@consts';
+import { TransactionCategory } from '@api/everytrack_backend';
 
 export type ModalStateSlice = {
   income?: boolean;
@@ -16,9 +17,8 @@ type AdvancedSearchSorting = (typeof ADVANCED_SEARCH_SORTING_OPTIONS)[number];
 
 export type AdvancedSearchToolboxStateSlice = {
   search?: string;
-  // TODO: Enhance types later
-  categories: string[];
   sorting: AdvancedSearchSorting;
+  categories: TransactionCategory[];
   updateAdvancedSearchToolboxState: ({
     search,
     sorting,

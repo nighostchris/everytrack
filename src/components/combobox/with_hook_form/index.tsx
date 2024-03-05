@@ -97,14 +97,17 @@ export const HookedCombobox: React.FC<HookedComboboxProps> = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent asChild className="!p-0" style={{ width: 'var(--radix-popper-anchor-width)' }}>
-              <Command>
+              <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
                 <CommandInput />
-                <CommandEmpty>No framework found.</CommandEmpty>
+                <CommandEmpty>No category found</CommandEmpty>
                 <div className="flex max-h-64 w-full flex-col overflow-y-auto">
                   {Object.entries(groups).map(([heading, options]) => (
                     <CommandGroup heading={heading}>
-                      {options.map(({ value, display }, optionIndex) => (
+                      {options.map(({ value, display }) => (
                         <CommandItem
+                          key={value}
+                          value={display}
+                          className="hover:bg-gray-100"
                           onSelect={() => {
                             if ((selectedValues as string[]).includes(value)) {
                               onChange((selectedValues as string[]).filter((v) => v !== value));
@@ -114,12 +117,7 @@ export const HookedCombobox: React.FC<HookedComboboxProps> = ({
                             setOpen(false);
                           }}
                         >
-                          <div
-                            className={clsx('mx-3 mb-1 flex w-full flex-row items-center rounded-sm px-3 py-2 hover:bg-gray-100', {
-                              'mt-2': optionIndex === 0,
-                              '!mb-2': optionIndex === options.length - 1,
-                            })}
-                          >
+                          <div className={clsx('mx-3 flex w-full flex-row items-center rounded-sm px-3 py-2')}>
                             <FaCheck className={clsx('mr-2 h-4 w-4', selectedValues.includes(value) ? 'opacity-100' : 'opacity-0')} />
                             {display}
                           </div>

@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import clsx from 'clsx';
 import React from 'react';
+import { capitalize } from 'lodash';
 import { useShallow } from 'zustand/react/shallow';
 import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { TRANSACTION_GROUPS } from '@consts';
 import { store } from '@features/transactions/zustand';
-import { Button, HookedCombobox, Input, Select } from '@components';
+import { Button, type ComboboxGroups, HookedCombobox, Input, Select } from '@components';
 
 const searchCriteriasSchema = z.object({
   search: z.string(),
@@ -50,6 +52,22 @@ export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ cl
     [watchSearch, watchSorting, watchCategories],
   );
 
+  const transactionGroups = TRANSACTION_GROUPS.reduce<ComboboxGroups>(
+    (acc, { display, categories }) => ({
+      ...acc,
+      [display]: categories
+        .map((category) => ({
+          value: category,
+          display: category
+            .split('-')
+            .map((v) => capitalize(v))
+            .join(' '),
+        }))
+        .sort((a, b) => (a.display > b.display ? 1 : -1)),
+    }),
+    {},
+  );
+
   const handleOnClickApplySearchCriteriasButton = async (data: any) => {
     setIsLoading(true);
     const { search, sorting, categories } = data as z.infer<typeof searchCriteriasSchema>;
@@ -87,20 +105,7 @@ export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ cl
           formId="categories"
           placeholder="Select categories..."
           control={control as Control<any, any>}
-          groups={{
-            Accomodation: [
-              { value: 'tax', display: 'Tax' },
-              { value: 'transport', display: 'Transport ' },
-            ],
-            Income: [
-              { value: 'tax', display: 'Tax' },
-              { value: 'transport', display: 'Transport ' },
-            ],
-            Testing: [
-              { value: 'tax', display: 'Tax' },
-              { value: 'transport', display: 'Transport ' },
-            ],
-          }}
+          groups={transactionGroups}
           className="mb-10 !max-w-none"
           error={errors.categories && errors.categories.message?.toString()}
         />
