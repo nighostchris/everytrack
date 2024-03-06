@@ -1,4 +1,3 @@
-export * from './transactions_table';
 export * from './transaction_io_card';
 export * from './advanced_search_toolbox';
 export * from './delete_transaction_modal';

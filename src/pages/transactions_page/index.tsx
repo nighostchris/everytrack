@@ -21,7 +21,6 @@ export const TransactionsPage: React.FC = () => {
     weeklyIOChartData,
     monthlyIOChartData,
     transactionHistory,
-    transactionsTableRows,
     monthlyExpenseDistributions,
     error: expensesStateError,
   } = useTransactionsState();
@@ -52,14 +51,14 @@ export const TransactionsPage: React.FC = () => {
             <MonthlyExpenseDistributionCard data={monthlyExpenseDistributions} />
           </div>
         </div>
-        {/* Construction ongoing */}
-        <div ref={historySectionRef} className="relative mt-6 grid grid-cols-3 gap-x-6">
-          {/* To fix rounded-lg missing issue */}
+        <div className="mt-6 grid grid-rows-1 gap-y-6 lg:hidden">
+          <AdvancedSearchToolbox clickedApplyAdvancedSearch={setClickedApplyAdvancedSearch} />
+          <TransactionHistoryList transactionHistory={transactionHistory} />
+        </div>
+        <div ref={historySectionRef} className="relative mt-6 hidden grid-cols-3 gap-x-6 lg:grid">
           <TransactionHistoryList transactionHistory={transactionHistory} />
           <AdvancedSearchToolbox clickedApplyAdvancedSearch={setClickedApplyAdvancedSearch} />
         </div>
-        {/* Construction ongoing */}
-        {/* <TransactionsTable data={transactionsTableRows} className="!mt-10" /> */}
       </div>
       <ToastContainer />
     </Root>

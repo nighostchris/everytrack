@@ -41,9 +41,11 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
   );
 
   return (
-    <div className={clsx('relative col-span-2 h-fit w-full rounded-lg shadow-lg', className)}>
+    <div
+      className={clsx('h-fit w-full rounded-lg border border-gray-300 lg:relative lg:col-span-2 lg:border-none lg:shadow-lg', className)}
+    >
       <div
-        className={clsx('sticky top-0 flex w-full flex-row items-center justify-between rounded-t-lg bg-white px-6 py-4', {
+        className={clsx('flex w-full flex-row items-center justify-between rounded-t-lg bg-white px-6 py-4 lg:sticky lg:top-0', {
           'z-20': !openAddNewTransactionModal && !openDeleteTransactionModal,
         })}
       >
@@ -59,10 +61,10 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
         </Button>
       </div>
       {transactionHistory.map(({ date, records }, historyIndex) => (
-        <div className="relative grid w-full grid-rows-1">
+        <div className="grid w-full grid-rows-1 lg:relative">
           <div
-            className={clsx('sticky top-14 w-full bg-gray-200 px-6 py-2', {
-              'z-10': !openAddNewTransactionModal || !openDeleteTransactionModal,
+            className={clsx('w-full bg-gray-200 px-6 py-2 lg:sticky lg:top-14', {
+              'z-10': !openAddNewTransactionModal && !openDeleteTransactionModal,
               '-z-10': openAddNewTransactionModal || openDeleteTransactionModal,
             })}
           >
@@ -76,8 +78,20 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
                 'rounded-b-lg': historyIndex === transactionHistory.length - 1 && recordIndex === records.length - 1,
               })}
             >
-              <div className="col-span-2 flex flex-row items-center text-sm text-gray-700">{name}</div>
-              <div className="col-span-2 flex flex-row items-center">
+              <div className="col-span-3 flex flex-col space-y-1 lg:hidden">
+                <p className="text-sm">{name}</p>
+                <div className="flex flex-row items-center">
+                  <p className="text-sm">{TRANSACTION_CATEGORY_ICONS[category]}</p>
+                  <p className="ml-1 text-xs text-gray-700">
+                    {category
+                      .split('-')
+                      .map((v) => capitalize(v))
+                      .join(' ')}
+                  </p>
+                </div>
+              </div>
+              <div className="col-span-2 hidden flex-row items-center text-sm text-gray-700 lg:flex">{name}</div>
+              <div className="col-span-2 hidden flex-row items-center lg:flex">
                 <p className="text-xl">{TRANSACTION_CATEGORY_ICONS[category]}</p>
                 <p className="ml-2 text-sm text-gray-700">
                   {category
@@ -86,15 +100,17 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
                     .join(' ')}
                 </p>
               </div>
-              <div className={clsx('flex flex-row items-center justify-end', {})}>
+              <div className={clsx('col-span-2 flex flex-row items-center justify-end lg:col-span-1', {})}>
                 <p
-                  className={clsx('mr-3 text-sm', {
+                  className={clsx('mr-3 overflow-hidden text-ellipsis whitespace-nowrap text-sm', {
                     'text-green-700': income,
                     'text-red-700': !income,
                   })}
-                >{`${income ? '+' : '-'}${symbol}${amount}`}</p>
+                >
+                  {`${income ? '+' : '-'}${symbol}${amount}`}
+                </p>
                 <IoIosRemoveCircle
-                  className="h-5 w-5 text-gray-600 hover:cursor-pointer"
+                  className="h-5 min-h-5 w-5 min-w-5 text-gray-600 hover:cursor-pointer"
                   onClick={() => {
                     populateDeleteTransactionModalState({ income, transactionId });
                     updateOpenDeleteTransactionModal(true);

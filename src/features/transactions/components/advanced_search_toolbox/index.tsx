@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { z } from 'zod';
 import clsx from 'clsx';
 import React from 'react';
@@ -77,7 +78,12 @@ export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ cl
   };
 
   return (
-    <div className={clsx('sticky top-0 col-span-1 h-fit rounded-lg bg-white text-gray-800 shadow-lg', className)}>
+    <div
+      className={clsx(
+        'h-fit w-full rounded-lg border border-gray-300 bg-white text-gray-800 lg:sticky lg:top-0 lg:col-span-1 lg:border-none lg:shadow-lg',
+        className,
+      )}
+    >
       <div className="flex flex-row items-center justify-between border border-x-0 border-t-0 border-b-gray-200 px-6 py-4">
         <h2 className="font-medium text-gray-900">Advanced Search</h2>
         {enableResetButton && (

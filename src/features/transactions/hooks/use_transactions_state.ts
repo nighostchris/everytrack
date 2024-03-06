@@ -8,22 +8,12 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { calculateDisplayAmount } from '@utils';
 import { store as globalStore } from '@lib/zustand';
 import { store } from '@features/transactions/zustand';
-import { TRANSACTION_CATEGORY_CHART_COLORS } from '@consts';
-import { Currency, TransactionCategory } from '@api/everytrack_backend';
+// import { TRANSACTION_CATEGORY_CHART_COLORS } from '@consts';
+import { TransactionCategory } from '@api/everytrack_backend';
 import { useCurrencies, useExchangeRates, useTransactions } from '@hooks';
 import { calculateMonthlyIOChartData, calculateWeeklyIOChartData, filterAndSortTransactions } from '../utils';
 
 dayjs.extend(isSameOrAfter);
-
-export interface TransactionsTableRow {
-  id: string;
-  name: string;
-  amount: string;
-  income: boolean;
-  remarks: string;
-  executionDate: string;
-  category: TransactionCategory;
-}
 
 export interface TransactionHistoryDailyRecord {
   id: string;
@@ -98,29 +88,6 @@ export const useTransactionsState = () => {
     }
     return [];
   }, [search, sorting, categories, currencies, transactions]);
-
-  const transactionsTableRows = React.useMemo(() => {
-    const result: TransactionsTableRow[] = [];
-    const currenciesMap = new Map<string, Currency>();
-    if (transactions && currencies) {
-      // Generate a currency map
-      currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
-      // Populate result
-      transactions.forEach(({ id, name, amount, income, accountId, currencyId, executedAt, remarks, category }) => {
-        const currency = (currenciesMap.get(currencyId) as Currency).symbol;
-        result.push({
-          id,
-          name,
-          income,
-          remarks,
-          category,
-          amount: `${currency} ${new BigNumber(amount).toFormat(2)}`,
-          executionDate: dayjs.unix(executedAt).format('MMM DD, YYYY'),
-        });
-      });
-    }
-    return result.sort((a, b) => (dayjs(a.executionDate).isBefore(dayjs(b.executionDate)) ? 1 : -1));
-  }, [currencies, transactions]);
 
   const { spentThisMonth, spentThisYear } = React.useMemo(() => {
     let spentThisYear = new BigNumber(0);
@@ -197,7 +164,6 @@ export const useTransactionsState = () => {
     weeklyIOChartData,
     monthlyIOChartData,
     transactionHistory,
-    transactionsTableRows,
     monthlyExpenseDistributions,
   };
 };
