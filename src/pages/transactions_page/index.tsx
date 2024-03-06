@@ -6,7 +6,6 @@ import { ToastContainer } from 'react-toastify';
 import { Root } from '@layouts/root';
 import {
   TransactionIOCard,
-  TransactionsTable,
   AdvancedSearchToolbox,
   AddNewTransactionModal,
   DeleteTransactionModal,

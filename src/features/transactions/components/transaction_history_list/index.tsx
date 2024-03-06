@@ -105,6 +105,11 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
           ))}
         </div>
       ))}
+      {transactionHistory.length === 0 && (
+        <div className="flex w-full flex-col items-center justify-center rounded-b-lg bg-white px-6 py-12">
+          <p className="text-sm leading-7 text-gray-600">Seems like you didn't have any transactions! 🤔🤔🤔</p>
+        </div>
+      )}
     </div>
   );
 };

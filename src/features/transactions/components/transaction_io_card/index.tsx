@@ -48,9 +48,16 @@ export const TransactionIOCard: React.FC<TransactionIOCardProps> = ({ weeklyData
       </div>
       <div className="relative flex h-full w-full flex-col items-center justify-center">
         <div className="absolute h-full w-full">
-          {watchIOChartOption === 'weekly' ? (
+          {((watchIOChartOption === 'weekly' && weeklyData.length === 0) ||
+            (watchIOChartOption === 'monthly' && monthlyData.length === 0)) && (
+            <div className="flex h-full w-full flex-col items-center justify-center">
+              <p className="text-sm leading-7 text-gray-600">No transactions for analysis! 🤔🤔🤔</p>
+            </div>
+          )}
+          {watchIOChartOption === 'weekly' && weeklyData.length > 0 && (
             <TransactionIOChart<WeeklyIOChartData> data={weeklyData} indexKey="week" />
-          ) : (
+          )}
+          {watchIOChartOption === 'monthly' && monthlyData.length > 0 && (
             <TransactionIOChart<MonthlyIOChartData> data={monthlyData} indexKey="month" />
           )}
         </div>
