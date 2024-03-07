@@ -7,10 +7,15 @@ import { useShallow } from 'zustand/react/shallow';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Root } from '@layouts/root';
-// import { useDisplayCurrency } from '@hooks';
+import {
+  PaymentsTable,
+  PaymentsCalendar,
+  EditFuturePaymentModal,
+  AddNewFuturePaymentModal,
+  DeleteFuturePaymentModal,
+} from '@features/payments/components';
 import { store } from '@features/payments/zustand';
 import { usePaymentsState } from '@features/payments/hooks/use_payments_state';
-import { PaymentsTable, AddNewFuturePaymentModal, DeleteFuturePaymentModal, EditFuturePaymentModal } from '@features/payments/components';
 
 export const PaymentsPage: React.FC = () => {
   const { openAddNewFuturePaymentModal, openEditFuturePaymentModal, openDeleteFuturePaymentModal } = store(
@@ -21,7 +26,7 @@ export const PaymentsPage: React.FC = () => {
     })),
   );
   // const { symbol, error: displayCurrencyError } = useDisplayCurrency();
-  const { error: paymentsStateError, paymentsTableRows } = usePaymentsState();
+  const { paymentCalendarEvents, paymentsTableRows, error: paymentsStateError } = usePaymentsState();
 
   return (
     <Root>
@@ -36,6 +41,7 @@ export const PaymentsPage: React.FC = () => {
       >
         <h1 className="text-xl font-semibold text-gray-900">Payments</h1>
         <p className="mt-2 text-sm text-gray-700">Monitor your rolling incomes and subscriptions</p>
+        <PaymentsCalendar events={paymentCalendarEvents} className="mt-8" />
         <PaymentsTable data={paymentsTableRows} className="!mt-10" />
       </div>
       <ToastContainer />
