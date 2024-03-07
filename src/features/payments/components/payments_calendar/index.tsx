@@ -8,10 +8,10 @@ import { PiRepeatFill, PiNumberCircleOneFill } from 'react-icons/pi';
 import { Calendar, Event, dayjsLocalizer } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 
-import { useFuturePayments } from '@hooks';
 import { store } from '@features/payments/zustand';
 import PaymentsCalendarToolbar from '../payments_calendar_toolbar';
 import { Popover, PopoverContent, PopoverTrigger } from '@components/index';
+import { PaymentsCalendarEvent } from '@features/payments/hooks/use_payments_state';
 
 dayjs.extend(duration);
 
@@ -19,10 +19,11 @@ const localizer = dayjsLocalizer(dayjs);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 interface PaymentsCalendarProps {
+  events: PaymentsCalendarEvent[];
   className?: string;
 }
 
-export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ className }) => {
+export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ events, className }) => {
   const { updateOpenDeleteFuturePaymentModal, populateDeleteFuturePaymentModalState } = store(
     useShallow(({ updateOpenDeleteFuturePaymentModal, populateDeleteFuturePaymentModalState }) => ({
       updateOpenDeleteFuturePaymentModal,
@@ -30,40 +31,14 @@ export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ className })
     })),
   );
 
-  const { futurePayments } = useFuturePayments();
-
   const [targetMonth, setTargetMonth] = React.useState(dayjs().month() + 1);
 
-  const events: Event[] = React.useMemo(() => {
-    if (!futurePayments) {
-      return [];
-    }
-    return futurePayments
-      .filter(({ scheduledAt }) => dayjs.unix(scheduledAt).month() + 1 === targetMonth)
-      .map(({ id, name: title, income, amount, currencyId, rolling, frequency, scheduledAt }) => ({
-        id,
-        title,
-        amount,
-        income,
-        rolling,
-        // TO FIX: hard coded symbol here
-        symbol: '$',
-        frequency: `Every ${dayjs.duration({ seconds: frequency }).humanize().replaceAll('1 ', '').replaceAll('a ', '')}`,
-        start: dayjs.unix(scheduledAt).toDate(),
-        end: dayjs.unix(scheduledAt).toDate(),
-        allDay: true,
-      }));
-  }, [targetMonth, futurePayments]);
-
-  document.addEventListener(
-    'click',
-    function (e) {
-      e = e || window.event;
-      var target = e.target || e.srcElement;
-      console.log(target);
-    },
-    false,
+  const targetMonthEvents: Event[] = React.useMemo(
+    () => events.filter(({ start }) => dayjs(start).month() + 1 === targetMonth),
+    [events, targetMonth],
   );
+
+  console.log({ events, targetMonth });
 
   return (
     <div className={clsx('min-h-[632px] w-full rounded-lg bg-white pb-8', className)}>
@@ -159,7 +134,7 @@ export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ className })
             );
           },
         }}
-        events={events}
+        events={targetMonthEvents}
       />
     </div>
   );

@@ -26,7 +26,7 @@ export const PaymentsPage: React.FC = () => {
     })),
   );
   // const { symbol, error: displayCurrencyError } = useDisplayCurrency();
-  const { error: paymentsStateError, paymentsTableRows } = usePaymentsState();
+  const { paymentCalendarEvents, paymentsTableRows, error: paymentsStateError } = usePaymentsState();
 
   return (
     <Root>
@@ -41,9 +41,7 @@ export const PaymentsPage: React.FC = () => {
       >
         <h1 className="text-xl font-semibold text-gray-900">Payments</h1>
         <p className="mt-2 text-sm text-gray-700">Monitor your rolling incomes and subscriptions</p>
-        {/* Constructions on going */}
-        <PaymentsCalendar className="mt-8" />
-        {/* Constructions on going */}
+        <PaymentsCalendar events={paymentCalendarEvents} className="mt-8" />
         <PaymentsTable data={paymentsTableRows} className="!mt-10" />
       </div>
       <ToastContainer />

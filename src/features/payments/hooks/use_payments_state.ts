@@ -1,8 +1,10 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
+import { Event } from 'react-big-calendar';
 
 import type { Currency } from '@api/everytrack_backend';
+import { generatePaymentsCalendarEvents } from '../utils';
 import { useCurrencies, useFuturePayments } from '@hooks';
 
 export interface PaymentsTableRow {
@@ -17,6 +19,15 @@ export interface PaymentsTableRow {
   currencyId: string;
   scheduledDate: string;
   displayAmount: string;
+}
+
+export interface PaymentsCalendarEvent extends Event {
+  id: string;
+  symbol: string;
+  amount: string;
+  income: boolean;
+  rolling: boolean;
+  frequency: string;
 }
 
 export const usePaymentsState = () => {
@@ -54,7 +65,12 @@ export const usePaymentsState = () => {
     return result.sort((a, b) => (dayjs(a.scheduledDate).isAfter(dayjs(b.scheduledDate)) ? 1 : -1));
   }, [futurePayments, currencies]);
 
-  return { error, paymentsTableRows };
+  const paymentCalendarEvents = React.useMemo(
+    () => generatePaymentsCalendarEvents(futurePayments || [], currencies || []),
+    [currencies, futurePayments],
+  );
+
+  return { error, paymentsTableRows, paymentCalendarEvents };
 };
 
 export default usePaymentsState;
