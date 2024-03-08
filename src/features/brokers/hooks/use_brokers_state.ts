@@ -1,13 +1,12 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { generateBrokerDetails } from '../utils';
 import { store as globalStore } from '@lib/zustand';
 import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
 import { canAddNewProvider, calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { useStocks, useCurrencies, useExchangeRates, useBrokerDetails, useStockHoldings, useBrokerAccounts } from '@hooks';
-import { generateBrokerDetails } from '../utils';
 
-// New
 export interface BrokerAccountHolding {
   id: string;
   unit: string;
@@ -36,40 +35,6 @@ export interface Broker {
   name: string;
   icon: string;
   accounts: BrokerAccount[];
-}
-// New
-
-export interface BrokerAccountTableHolding {
-  id: string;
-  unit: string;
-  cost: string;
-  name: string;
-  ticker: string;
-  stockId: string;
-  currency: {
-    id: string;
-    symbol: string;
-  };
-  currentPrice: string;
-}
-
-export interface BrokerAccountDetails {
-  id: string;
-  name: string;
-  balance: string;
-  currency: {
-    id: string;
-    symbol: string;
-  };
-  accountTypeId: string;
-  holdings: BrokerAccountTableHolding[];
-}
-
-export interface BrokerAccountTableRow {
-  id: string;
-  name: string;
-  icon: string;
-  accounts: BrokerAccountDetails[];
 }
 
 export interface StockHoldingDistributionData {
@@ -189,50 +154,6 @@ export const useBrokersState = () => {
     return { totalBalance: totalBalance.toFormat(2), winLoseAmount: winLoseAmount.toFormat(2) };
   }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
 
-  const brokerAccountTableRows = React.useMemo(() => {
-    const result: BrokerAccountTableRow[] = [];
-    if (brokerDetails && brokerAccounts && currencies && stocks && stockHoldings) {
-      const stockHoldingsMap = new Map<string, StockHolding[]>();
-      const brokerDetailsMap = new Map<string, BrokerAccountTableRow>();
-      // Generate a account stock holding map
-      stockHoldings.forEach(({ accountId, holdings }) => {
-        stockHoldingsMap.set(accountId, holdings);
-      });
-      // Generate a broker detail map
-      brokerDetails.forEach(({ id, name, icon }) => brokerDetailsMap.set(id, { id, name, icon, accounts: [] }));
-      brokerAccounts.forEach(({ id: accountId, name, balance, currencyId: accountCurrencyId, assetProviderId, accountTypeId }) => {
-        const brokerAccountTableRow = brokerDetailsMap.get(assetProviderId) as BrokerAccountTableRow;
-        const account: BrokerAccountDetails = {
-          name,
-          balance,
-          holdings: [],
-          accountTypeId,
-          id: accountId,
-          currency: { id: accountCurrencyId, symbol: String(currenciesMap.get(accountCurrencyId)?.symbol) },
-        };
-        const holdings = stockHoldingsMap.get(accountId) ?? [];
-        holdings.forEach(({ id: holdingId, unit, cost, stockId }) => {
-          const { name, ticker, currentPrice, currencyId } = stocksMap.get(stockId) as Stock;
-          const { id, symbol } = currenciesMap.get(currencyId) as Currency;
-          const row = { id: holdingId, unit, cost, name, ticker, stockId, currentPrice, currency: { id, symbol } };
-          account.holdings.push(row);
-        });
-        account.holdings = account.holdings.sort((a, b) => (a.name > b.name ? 1 : -1));
-        brokerDetailsMap.set(assetProviderId, {
-          ...brokerAccountTableRow,
-          accounts: [...brokerAccountTableRow.accounts, account],
-        });
-      });
-      // Extract all entries in brokerDetailsMap into result array
-      Array.from(brokerDetailsMap.values()).forEach((brokerAccountTableRow) => {
-        if (brokerAccountTableRow.accounts.length > 0) {
-          result.push(brokerAccountTableRow);
-        }
-      });
-    }
-    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
-  }, [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings]);
-
   const enableAddNewProvider = React.useMemo(
     () => canAddNewProvider(brokerDetails ?? [], brokerAccounts ?? []),
     [brokerDetails, brokerAccounts],
@@ -246,7 +167,7 @@ export const useBrokersState = () => {
     [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings],
   );
 
-  return { error, brokers, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
+  return { error, brokers, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution };
 };
 
 export default useBrokersState;

@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Root } from '@layouts/root';
 import {
   AddNewBrokerModal,
-  BrokerAccountTable,
   AddNewAccountModal,
   DeleteAccountModal,
   EditCashHoldingModal,
@@ -23,23 +22,16 @@ import {
 } from '@features/brokers/components';
 import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/brokers/zustand';
+import { StatCard, Button, Select, type SelectOption } from '@components';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
-import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button, Select, type SelectOption } from '@components';
 
 export const BrokersPage: React.FC = () => {
-  const {
-    brokers,
-    totalBalance,
-    winLoseAmount,
-    assetDistribution,
-    enableAddNewProvider,
-    brokerAccountTableRows,
-    error: brokersStateError,
-  } = useBrokersState();
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
+  const { brokers, totalBalance, winLoseAmount, assetDistribution, enableAddNewProvider, error: brokersStateError } = useBrokersState();
 
   const [currentBrokerId, setCurrentBrokerId] = React.useState<string>();
+
   const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [brokers, currentBrokerId]);
   const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
   console.log({ brokers, currentBroker });
@@ -136,44 +128,6 @@ export const BrokersPage: React.FC = () => {
             </Button>
           </div>
         )}
-        <div className="mt-10 flex flex-col">
-          <h2 className="text-lg font-medium text-gray-900">Stocks</h2>
-          {brokerAccountTableRows.length > 0 && (
-            <Tabs defaultValue={brokerAccountTableRows[0].id} className="mt-2 space-y-4">
-              <TabsList>
-                {brokerAccountTableRows.map(({ id, name }) => (
-                  <TabsTrigger value={id}>{name}</TabsTrigger>
-                ))}
-              </TabsList>
-              {brokerAccountTableRows.map(({ id: providerId, accounts }) => (
-                <TabsContent value={providerId}>
-                  {accounts.map((account, accountIndex) => (
-                    <BrokerAccountTable data={account} className={accountIndex !== 0 ? 'mt-6' : undefined} />
-                  ))}
-                  <Button
-                    variant="contained"
-                    className="mt-6 h-10 w-full text-xs"
-                    onClick={() => {
-                      populateAddNewAccountModalState(providerId);
-                      updateOpenAddNewAccountModal(true);
-                    }}
-                  >
-                    Add New Account
-                  </Button>
-                </TabsContent>
-              ))}
-            </Tabs>
-          )}
-          {brokerAccountTableRows.length === 0 && (
-            <div className="flex w-full flex-col items-center py-6">
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Oops! 😢</h1>
-              <p className="mt-6 text-lg leading-7 text-gray-600">You don't seems to own any stocks 💸💸💸</p>
-              <p className="mt-2 text-base leading-7 text-gray-600">
-                Just click the button in top right corner to add your stock accounts!
-              </p>
-            </div>
-          )}
-        </div>
       </div>
       <ToastContainer />
     </Root>
