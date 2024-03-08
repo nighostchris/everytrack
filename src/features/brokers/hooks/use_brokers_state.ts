@@ -6,6 +6,24 @@ import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
 import { canAddNewProvider, calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { useStocks, useCurrencies, useExchangeRates, useBrokerDetails, useStockHoldings, useBrokerAccounts } from '@hooks';
 
+export interface BrokerAccountHolding {
+  id: string;
+  unit: string;
+  name: string;
+  cost: string;
+  ticker: string;
+  currency: {
+    id: string;
+    symbol: string;
+  };
+  currentPrice: string;
+}
+
+export interface BrokerAccount {
+  id: string;
+  holdings: BrokerAccountHolding[];
+}
+
 export interface BrokerAccountTableHolding {
   id: string;
   unit: string;

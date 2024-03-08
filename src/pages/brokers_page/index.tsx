@@ -64,6 +64,9 @@ export const BrokersPage: React.FC = () => {
             </div>
           )}
         </div>
+        {/* Construction in progress */}
+
+        {/* Construction in progress */}
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
             <StatCard title="Total Balance" icon={FaSackDollar}>
