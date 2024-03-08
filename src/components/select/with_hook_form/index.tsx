@@ -4,16 +4,12 @@ import { camelCase } from 'lodash';
 import { Root, Value } from '@radix-ui/react-select';
 import { Control, Controller, FieldValues } from 'react-hook-form';
 
-import { SelectItem } from './SelectItem';
-import { SelectTrigger } from './SelectTrigger';
-import { SelectContent } from './SelectContent';
+import { SelectOption } from '../classic';
+import { SelectItem } from '../classic/SelectItem';
+import { SelectTrigger } from '../classic/SelectTrigger';
+import { SelectContent } from '../classic/SelectContent';
 
-export interface SelectOption {
-  value: string;
-  display: string;
-}
-
-interface SelectProps extends React.ComponentPropsWithoutRef<typeof Root> {
+interface HookedSelectProps extends React.ComponentPropsWithoutRef<typeof Root> {
   label: string;
   placeholder: string;
   options: Array<SelectOption>;
@@ -24,7 +20,7 @@ interface SelectProps extends React.ComponentPropsWithoutRef<typeof Root> {
   triggerClassName?: string;
 }
 
-export const Select = React.forwardRef<React.ElementRef<typeof Root>, SelectProps>(
+export const HookedSelect = React.forwardRef<React.ElementRef<typeof Root>, HookedSelectProps>(
   ({ label, placeholder, options, control, error, formId = camelCase(label), className, triggerClassName }, ref) => {
     return (
       <div className={clsx(className, 'flex w-full max-w-sm flex-col')}>
@@ -54,6 +50,6 @@ export const Select = React.forwardRef<React.ElementRef<typeof Root>, SelectProp
   },
 );
 
-Select.displayName = 'Select';
+HookedSelect.displayName = 'Select';
 
-export default Select;
+export default HookedSelect;

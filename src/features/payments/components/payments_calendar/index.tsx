@@ -38,10 +38,8 @@ export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ events, clas
     [events, targetMonth],
   );
 
-  console.log({ events, targetMonth });
-
   return (
-    <div className={clsx('min-h-[632px] w-full rounded-lg bg-white pb-8', className)}>
+    <div className={clsx('min-h-[632px] w-full rounded-lg bg-white pb-8 shadow-md', className)}>
       <DragAndDropCalendar
         views={['month']}
         defaultView="month"

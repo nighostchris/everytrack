@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '../../zustand';
 import { updateAccount } from '@api/everytrack_backend';
 import { useBrokerAccounts, useCurrencies } from '@hooks';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 
 const editCashHoldingFormSchema = z.object({
   accountTypeId: z.string(),
@@ -93,7 +93,7 @@ export const EditCashHoldingModal: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900">Edit Cash Holding</h3>
         <p className="mt-1 text-sm">{`You are editing cash holding for ${brokerAccountName}`}</p>
         <Input label="Cash" formId="balance" register={register} error={errors['balance']?.message} className="mt-4 !max-w-none" />
-        <Select
+        <HookedSelect
           label="Currency"
           formId="currencyId"
           control={control as Control<any, any>}

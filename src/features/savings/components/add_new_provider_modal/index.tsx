@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
 import { createNewAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 import { useCountries, useCurrencies, useBankAccounts, useBankDetails } from '@hooks';
 
 const addNewProviderFormSchema = z.object({
@@ -93,7 +93,7 @@ export const AddNewProviderModal: React.FC = () => {
     <Dialog open={open}>
       <div className="rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Provider</h3>
-        <Select
+        <HookedSelect
           label="Country"
           formId="countryId"
           control={control as Control<any, any>}
@@ -103,7 +103,7 @@ export const AddNewProviderModal: React.FC = () => {
           error={errors.countryId && errors.countryId.message?.toString()}
         />
         {watchSelectedCountry && (
-          <Select
+          <HookedSelect
             label="Bank"
             formId="assetProviderId"
             control={control as Control<any, any>}
@@ -114,7 +114,7 @@ export const AddNewProviderModal: React.FC = () => {
           />
         )}
         {watchSelectedBank && (
-          <Select
+          <HookedSelect
             label="Currency"
             formId="currencyId"
             control={control as Control<any, any>}

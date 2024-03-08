@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '@features/savings/zustand';
 import { useBankAccounts, useCurrencies } from '@hooks';
 import { updateAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 
 const editAccountBalanceFormSchema = z.object({
   balance: z.string(),
@@ -90,7 +90,7 @@ export const EditAccountBalanceModal: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900">Edit Account Balance</h3>
         <p className="mt-1 text-sm">{`You are editing balance for ${bankAccountName}`}</p>
         <Input label="Balance" formId="balance" register={register} error={errors['balance']?.message} className="mt-4 !max-w-none" />
-        <Select
+        <HookedSelect
           label="Currency"
           formId="currencyId"
           control={control as Control<any, any>}

@@ -4,8 +4,7 @@ import React from 'react';
 import { capitalize } from 'lodash';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import Card from '@components/card';
-import { Select } from '@components';
+import { Card, HookedSelect } from '@components';
 import { Control, useForm } from 'react-hook-form';
 import { TransactionIOChart } from '../transaction_io_chart';
 import { MonthlyIOChartData, WeeklyIOChartData } from '@features/transactions/hooks/use_transactions_state';
@@ -33,7 +32,7 @@ export const TransactionIOCard: React.FC<TransactionIOCardProps> = ({ weeklyData
     <Card className={clsx('flex h-72 flex-col space-y-2 !bg-white p-6', className)}>
       <div className="flex flex-row items-center justify-between">
         <h5 className="text-sm font-semibold">{`${capitalize(watchIOChartOption)} I/O`}</h5>
-        <Select
+        <HookedSelect
           label=""
           placeholder=""
           formId="ioChartOption"

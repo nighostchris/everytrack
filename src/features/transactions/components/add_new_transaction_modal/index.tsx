@@ -11,7 +11,7 @@ import { store } from '../../zustand';
 import { TRANSACTION_CATEGORIES } from '@consts';
 import { useBankAccounts, useCurrencies, useTransactions } from '@hooks';
 import { Currency, TransactionCategory, createNewTransaction } from '@api/everytrack_backend';
-import { Button, DatePicker, Dialog, Input, Select, SelectOption, Switch } from '@components';
+import { Button, DatePicker, Dialog, Input, HookedSelect, SelectOption, Switch } from '@components';
 
 export const AddNewTransactionModal: React.FC = () => {
   const { currencies } = useCurrencies();
@@ -158,7 +158,7 @@ export const AddNewTransactionModal: React.FC = () => {
         <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
           <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
-          <Select
+          <HookedSelect
             label="Category"
             formId="category"
             control={control as Control<any, any>}
@@ -169,7 +169,7 @@ export const AddNewTransactionModal: React.FC = () => {
           />
         </div>
         <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <Select
+          <HookedSelect
             label="Currency"
             formId="currencyId"
             control={control as Control<any, any>}
@@ -204,7 +204,7 @@ export const AddNewTransactionModal: React.FC = () => {
             error={errors.useAccount && errors.useAccount.message?.toString()}
           />
           {watchSelectedUseAccount && (
-            <Select
+            <HookedSelect
               label="Related Account"
               formId="accountId"
               control={control as Control<any, any>}
