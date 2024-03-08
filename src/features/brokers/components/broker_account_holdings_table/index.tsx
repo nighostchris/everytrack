@@ -72,12 +72,12 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
           </tr>
         </thead>
         <tbody>
-          {holdings.map(({ id: stockId, name, unit, cost, ticker, currency: { symbol }, currentPrice }) => (
+          {holdings.map(({ id, name, unit, cost, stockId, ticker, currency: { symbol }, currentPrice }) => (
             <tr className="grid grid-cols-8 px-8 py-4">
               <td className="col-span-3">
                 <div className="flex flex-col">
-                  <h3 className="font-medium text-gray-900">VOO</h3>
-                  <h4 className="text-xs text-gray-500">Vanguard S&P 500 ETF</h4>
+                  <h3 className="font-medium text-gray-900">{ticker}</h3>
+                  <h4 className="text-xs text-gray-500">{name}</h4>
                 </div>
               </td>
               <td className="col-span-1 flex flex-col items-end justify-center">

@@ -5,13 +5,16 @@ import { store as globalStore } from '@lib/zustand';
 import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
 import { canAddNewProvider, calculateDisplayAmount, calculateInterpolateColor } from '@utils';
 import { useStocks, useCurrencies, useExchangeRates, useBrokerDetails, useStockHoldings, useBrokerAccounts } from '@hooks';
+import { generateBrokerDetails } from '../utils';
 
+// New
 export interface BrokerAccountHolding {
   id: string;
   unit: string;
   name: string;
   cost: string;
   ticker: string;
+  stockId: string;
   currency: {
     id: string;
     symbol: string;
@@ -21,8 +24,23 @@ export interface BrokerAccountHolding {
 
 export interface BrokerAccount {
   id: string;
+  name: string;
+  balance: string;
+  currency: {
+    id: string;
+    symbol: string;
+  };
+  accountTypeId: string;
   holdings: BrokerAccountHolding[];
 }
+
+export interface Broker {
+  id: string;
+  name: string;
+  icon: string;
+  accounts: BrokerAccount[];
+}
+// New
 
 export interface BrokerAccountTableHolding {
   id: string;
@@ -223,7 +241,15 @@ export const useBrokersState = () => {
     [brokerDetails, brokerAccounts],
   );
 
-  return { error, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
+  const brokers = React.useMemo(
+    () =>
+      stocks && currencies && brokerDetails && brokerAccounts && stockHoldings
+        ? generateBrokerDetails(brokerDetails, brokerAccounts, stockHoldings, stocksMap, currenciesMap)
+        : [],
+    [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings],
+  );
+
+  return { error, brokers, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution, brokerAccountTableRows };
 };
 
 export default useBrokersState;

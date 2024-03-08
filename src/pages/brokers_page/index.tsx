@@ -19,6 +19,7 @@ import {
   DeleteStockHoldingModal,
   EditStockHoldingCostModal,
   StockHoldingDistributionChart,
+  BrokerAccountHoldingsTable,
 } from '@features/brokers/components';
 import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/brokers/zustand';
@@ -27,6 +28,7 @@ import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@com
 
 export const BrokersPage: React.FC = () => {
   const {
+    brokers,
     totalBalance,
     winLoseAmount,
     assetDistribution,
@@ -36,6 +38,8 @@ export const BrokersPage: React.FC = () => {
   } = useBrokersState();
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
+
+  console.log({ brokers });
 
   return (
     <Root>
@@ -65,7 +69,7 @@ export const BrokersPage: React.FC = () => {
           )}
         </div>
         {/* Construction in progress */}
-
+        {brokers.length > 0 && <BrokerAccountHoldingsTable data={brokers[0].accounts[0]} />}
         {/* Construction in progress */}
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
