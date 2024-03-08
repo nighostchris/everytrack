@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { createNewAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
 import { useBrokerAccounts, useBrokerDetails, useCurrencies } from '@hooks';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 
 const addNewAccountFormSchema = z.object({
   name: z.string(),
@@ -82,7 +82,7 @@ export const AddNewAccountModal: React.FC = () => {
       <div className=" rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
         <p className="mt-1 text-sm">{`You are adding account for ${brokerName}`}</p>
-        <Select
+        <HookedSelect
           label="Currency"
           formId="currencyId"
           control={control as Control<any, any>}

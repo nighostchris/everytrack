@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '../../zustand';
 import { Currency, createNewFuturePayment } from '@api/everytrack_backend';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useFuturePayments } from '@hooks';
-import { Button, DatePicker, Dialog, Input, RadioGroup, Select, SelectOption, Switch } from '@components';
+import { Button, DatePicker, Dialog, Input, RadioGroup, HookedSelect, SelectOption, Switch } from '@components';
 
 export const AddNewFuturePaymentModal: React.FC = () => {
   const { currencies } = useCurrencies();
@@ -150,7 +150,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
         <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
           <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
           <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
-          <Select
+          <HookedSelect
             label="Currency"
             formId="currencyId"
             control={control as Control<any, any>}
@@ -161,7 +161,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
           />
         </div>
         <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <Select
+          <HookedSelect
             label="Account"
             formId="accountId"
             control={control as Control<any, any>}

@@ -5,7 +5,7 @@ import React from 'react';
 import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Card, Select } from '@components';
+import { Card, HookedSelect } from '@components';
 import { MonthlyExpenseDistributionChart } from '../monthly_expense_distribution_chart';
 import { MonthlyExpenseDistribution, MonthlyExpenseDistributionData } from '../../hooks/use_transactions_state';
 
@@ -70,7 +70,7 @@ export const MonthlyExpenseDistributionCard: React.FC<MonthlyExpenseDistribution
     <Card className={clsx('flex h-72 flex-col space-y-2 !bg-white p-6', className)}>
       <div className="flex flex-row items-center justify-between">
         <h5 className="text-sm font-semibold">{`${dayjs.unix(Number(watchSelectedMonth)).format('MMM YY')} Expense Distribution`}</h5>
-        <Select
+        <HookedSelect
           label=""
           placeholder=""
           formId="selectedMonth"

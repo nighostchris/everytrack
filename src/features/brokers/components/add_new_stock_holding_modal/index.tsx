@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '../../zustand';
 import { createNewStockHolding } from '@api/everytrack_backend';
 import { useStocks, useStockHoldings, useBrokerAccounts } from '@hooks';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 
 const addNewStockHoldingFormSchema = z.object({
   unit: z.string(),
@@ -102,7 +102,7 @@ export const AddNewStockHoldingModal: React.FC = () => {
       <div className=" rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Stock Holding</h3>
         <p className="mt-1 text-sm">{`You are adding stock holding for ${accountName}`}</p>
-        <Select
+        <HookedSelect
           label="Stock"
           formId="stockId"
           control={control as Control<any, any>}

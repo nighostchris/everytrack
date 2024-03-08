@@ -18,13 +18,13 @@ import {
   AddNewStockHoldingModal,
   DeleteStockHoldingModal,
   EditStockHoldingCostModal,
-  StockHoldingDistributionChart,
   BrokerAccountHoldingsTable,
+  StockHoldingDistributionChart,
 } from '@features/brokers/components';
 import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/brokers/zustand';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
-import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button } from '@components';
+import { Tabs, StatCard, TabsList, TabsTrigger, TabsContent, Button, Select, type SelectOption } from '@components';
 
 export const BrokersPage: React.FC = () => {
   const {
@@ -39,7 +39,16 @@ export const BrokersPage: React.FC = () => {
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
 
-  console.log({ brokers });
+  const [currentBrokerId, setCurrentBrokerId] = React.useState<string>();
+  const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [currentBrokerId]);
+  const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
+  console.log({ brokers, currentBroker });
+
+  React.useEffect(() => {
+    if (brokers.length > 0) {
+      setCurrentBrokerId(brokers[0].id);
+    }
+  }, [brokers]);
 
   return (
     <Root>
@@ -56,8 +65,18 @@ export const BrokersPage: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">Broker Assets</h1>
             <p className="mt-2 text-sm text-gray-700">Balance of all your broker accounts</p>
           </div>
+          {currentBrokerId && (
+            <Select
+              label=""
+              placeholder=""
+              value={currentBrokerId}
+              setValue={setCurrentBrokerId}
+              options={brokerOptions}
+              className="max-w-64"
+            />
+          )}
           {enableAddNewProvider && (
-            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div className="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
               <button
                 type="button"
                 onClick={() => updateOpenAddNewBrokerModal(true)}
@@ -69,7 +88,7 @@ export const BrokersPage: React.FC = () => {
           )}
         </div>
         {/* Construction in progress */}
-        {brokers.length > 0 && <BrokerAccountHoldingsTable data={brokers[0].accounts[0]} />}
+        {currentBroker && <BrokerAccountHoldingsTable data={currentBroker.accounts[0]} />}
         {/* Construction in progress */}
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">

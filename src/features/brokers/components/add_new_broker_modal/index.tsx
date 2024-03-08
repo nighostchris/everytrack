@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { createNewAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, Select, SelectOption } from '@components';
+import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
 import { useBrokerAccounts, useBrokerDetails, useCountries, useCurrencies } from '@hooks';
 
 const addNewBrokerFormSchema = z.object({
@@ -93,7 +93,7 @@ export const AddNewBrokerModal: React.FC = () => {
     <Dialog open={open}>
       <div className=" rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Broker</h3>
-        <Select
+        <HookedSelect
           label="Country"
           formId="countryId"
           control={control as Control<any, any>}
@@ -103,7 +103,7 @@ export const AddNewBrokerModal: React.FC = () => {
           error={errors.countryId && errors.countryId.message?.toString()}
         />
         {watchSelectedCountry && (
-          <Select
+          <HookedSelect
             label="Broker"
             formId="assetProviderId"
             control={control as Control<any, any>}
@@ -114,7 +114,7 @@ export const AddNewBrokerModal: React.FC = () => {
           />
         )}
         {watchSelectedBroker && (
-          <Select
+          <HookedSelect
             label="Currency"
             formId="currencyId"
             control={control as Control<any, any>}
