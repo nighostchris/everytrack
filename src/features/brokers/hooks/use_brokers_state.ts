@@ -26,10 +26,7 @@ export interface BrokerAccount {
   id: string;
   name: string;
   balance: string;
-  currency: {
-    id: string;
-    symbol: string;
-  };
+  currency: Currency;
   accountTypeId: string;
   holdings: BrokerAccountHolding[];
 }

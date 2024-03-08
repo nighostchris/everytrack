@@ -30,13 +30,14 @@ export function generateBrokerDetails(
     });
 
     // Construct the account
+    const accountBalanceCurrency = currenciesMap.get(accountCurrencyId)!;
     const brokerAccount: BrokerAccount = {
       name,
       balance,
       id: accountId,
       accountTypeId,
+      currency: accountBalanceCurrency,
       holdings: brokerAccountHoldings.sort((a, b) => (a.name > b.name ? 1 : -1)),
-      currency: { id: accountCurrencyId, symbol: currenciesMap.get(accountCurrencyId)!.symbol },
     };
 
     // Update broker by adding the new account detected under specific asset provider

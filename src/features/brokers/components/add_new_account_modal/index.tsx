@@ -41,6 +41,8 @@ export const AddNewAccountModal: React.FC = () => {
   });
   const watchSelectedCurrency = watch('currencyId');
 
+  console.log({ brokerDetails, assetProviderId });
+
   const brokerName = React.useMemo(
     () => (brokerDetails && assetProviderId ? brokerDetails.filter(({ id }) => id === assetProviderId)[0].name : ''),
     [assetProviderId, brokerDetails],

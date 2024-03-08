@@ -17,28 +17,40 @@ interface BrokerAccountHoldingsTableProps {
 }
 
 export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProps> = ({ data, className }) => {
-  const { id: accountId, holdings } = data;
+  const { id: accountId, name, balance, currency, holdings, accountTypeId } = data;
   const {
+    updateOpenDeleteAccountModal,
+    populateDeleteAccountModalState,
     updateOpenEditStockHoldingModal,
     updateOpenAddNewStockHoldingModal,
     updateOpenDeleteStockHoldingModal,
+    populateEditCashHoldingModalState,
     populateEditStockHoldingModalState,
+    updateOpenEditCashHoldingModalState,
     populateAddNewStockHoldingModalState,
     populateDeleteStockHoldingModalState,
   } = store(
     useShallow(
       ({
+        updateOpenDeleteAccountModal,
+        populateDeleteAccountModalState,
         updateOpenEditStockHoldingModal,
         updateOpenAddNewStockHoldingModal,
         updateOpenDeleteStockHoldingModal,
+        populateEditCashHoldingModalState,
         populateEditStockHoldingModalState,
+        updateOpenEditCashHoldingModalState,
         populateAddNewStockHoldingModalState,
         populateDeleteStockHoldingModalState,
       }) => ({
+        updateOpenDeleteAccountModal,
+        populateDeleteAccountModalState,
         updateOpenEditStockHoldingModal,
         updateOpenAddNewStockHoldingModal,
         updateOpenDeleteStockHoldingModal,
+        populateEditCashHoldingModalState,
         populateEditStockHoldingModalState,
+        updateOpenEditCashHoldingModalState,
         populateAddNewStockHoldingModalState,
         populateDeleteStockHoldingModalState,
       }),
@@ -46,10 +58,10 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
   );
 
   return (
-    <div className={clsx('mt-8 flex flex-col rounded-lg bg-white', className)}>
+    <div className={clsx('flex flex-col rounded-lg bg-white shadow-sm', className)}>
       <div className="flex flex-row justify-between px-8 pt-4">
         <div className="flex flex-row items-center space-x-1">
-          <h1 className="text-lg font-semibold text-gray-900">Holdings</h1>
+          <h1 className="text-lg font-semibold text-gray-900">{`Holdings - ${name}`}</h1>
           <span className="group relative">
             <IoInformationCircleOutline className="h-4 w-4" />
             <div className="absolute -left-4 bottom-5 hidden w-44 rounded-md bg-gray-700 px-3 py-2 group-hover:block">
@@ -59,15 +71,26 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
             </div>
           </span>
         </div>
-        <span
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm shadow-sm hover:cursor-pointer"
-          onClick={() => {
-            populateAddNewStockHoldingModalState(accountId);
-            updateOpenAddNewStockHoldingModal(true);
-          }}
-        >
-          Add New Holding
-        </span>
+        <div className="flex flex-row space-x-4">
+          <span
+            className="rounded-lg border border-gray-200 px-3 py-2 text-xs shadow-sm hover:cursor-pointer"
+            onClick={() => {
+              populateAddNewStockHoldingModalState(accountId);
+              updateOpenAddNewStockHoldingModal(true);
+            }}
+          >
+            Add New Holding
+          </span>
+          <span
+            className="rounded-lg border border-gray-200 px-3 py-2 text-xs shadow-sm hover:cursor-pointer"
+            onClick={() => {
+              populateDeleteAccountModalState(accountId);
+              updateOpenDeleteAccountModal(true);
+            }}
+          >
+            Delete Account
+          </span>
+        </div>
       </div>
       <table>
         <thead>
@@ -81,11 +104,35 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
           </tr>
         </thead>
         <tbody>
-          {holdings.length > 0 && (
-            <span className="flex w-full flex-row bg-gray-200 px-8 py-2">
-              <h3 className="text-xs font-medium text-gray-500">Stocks</h3>
-            </span>
-          )}
+          <span className="flex w-full flex-row bg-gray-200 px-8 py-2">
+            <h3 className="text-xs font-medium text-gray-500">Cash</h3>
+          </span>
+          <tr className="grid grid-cols-8 px-8 py-4">
+            <td className="col-span-3 flex flex-row items-center">
+              <h3 className="font-medium text-gray-900">{currency.ticker}</h3>
+            </td>
+            <td className="col-span-1" />
+            <td className="col-span-1" />
+            <td className="col-span-1" />
+            <td className="col-span-1 flex flex-col items-end justify-center">
+              <p className="text-gray-800">{`${currency.symbol}${balance}`}</p>
+            </td>
+            <td className="col-span-1 flex flex-row items-center justify-end space-x-3">
+              <VscEdit
+                className="h-4 w-4 hover:cursor-pointer"
+                onClick={() => {
+                  populateEditCashHoldingModalState({ balance, currencyId: currency.id, accountTypeId });
+                  updateOpenEditCashHoldingModalState(true);
+                }}
+              />
+              <span className="flex h-8 w-8 flex-row items-center justify-center rounded-full hover:cursor-pointer hover:border hover:border-gray-300">
+                <RxCaretRight className="h-6 w-6" />
+              </span>
+            </td>
+          </tr>
+          <span className="flex w-full flex-row bg-gray-200 px-8 py-2">
+            <h3 className="text-xs font-medium text-gray-500">Stocks</h3>
+          </span>
           {holdings.length === 0 && (
             <div className="flex w-full flex-col items-center py-12">
               <h1 className="text-xl leading-7 text-gray-600">Oops! 😢😢</h1>

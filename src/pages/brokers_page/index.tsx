@@ -40,7 +40,7 @@ export const BrokersPage: React.FC = () => {
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
 
   const [currentBrokerId, setCurrentBrokerId] = React.useState<string>();
-  const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [currentBrokerId]);
+  const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [brokers, currentBrokerId]);
   const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
   console.log({ brokers, currentBroker });
 
@@ -87,9 +87,6 @@ export const BrokersPage: React.FC = () => {
             </div>
           )}
         </div>
-        {/* Construction in progress */}
-        {currentBroker && <BrokerAccountHoldingsTable data={currentBroker.accounts[0]} />}
-        {/* Construction in progress */}
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">
             <StatCard title="Total Balance" icon={FaSackDollar}>
@@ -120,6 +117,25 @@ export const BrokersPage: React.FC = () => {
             <StockHoldingDistributionChart data={assetDistribution} />
           </div>
         </div>
+        {currentBroker && (
+          <div className="mt-8 flex flex-col">
+            <div className="flex flex-col space-y-8">
+              {currentBroker.accounts.map((account) => (
+                <BrokerAccountHoldingsTable data={account} />
+              ))}
+            </div>
+            <Button
+              variant="outlined"
+              className="mt-6 h-10 w-full !border-none text-xs hover:shadow-md"
+              onClick={() => {
+                populateAddNewAccountModalState(currentBroker.id);
+                updateOpenAddNewAccountModal(true);
+              }}
+            >
+              Add New Account
+            </Button>
+          </div>
+        )}
         <div className="mt-10 flex flex-col">
           <h2 className="text-lg font-medium text-gray-900">Stocks</h2>
           {brokerAccountTableRows.length > 0 && (
