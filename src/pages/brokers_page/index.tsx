@@ -52,32 +52,32 @@ export const BrokersPage: React.FC = () => {
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />
       <div className={clsx('relative h-full overflow-y-auto px-8 py-6')}>
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
+        <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <div className="flex flex-col space-y-1 md:space-y-2">
             <h1 className="text-xl font-semibold text-gray-900">Broker Assets</h1>
-            <p className="mt-2 text-sm text-gray-700">Balance of all your broker accounts</p>
+            <p className="text-sm text-gray-700">Balance of all your broker accounts</p>
           </div>
-          {currentBrokerId && (
-            <Select
-              label=""
-              placeholder=""
-              value={currentBrokerId}
-              setValue={setCurrentBrokerId}
-              options={brokerOptions}
-              className="max-w-64"
-            />
-          )}
-          {enableAddNewProvider && (
-            <div className="mt-4 sm:ml-4 sm:mt-0 sm:flex-none">
+          <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+            {currentBrokerId && (
+              <Select
+                label=""
+                placeholder=""
+                value={currentBrokerId}
+                setValue={setCurrentBrokerId}
+                options={brokerOptions}
+                className="md:w-64 md:max-w-64"
+              />
+            )}
+            {enableAddNewProvider && (
               <button
                 type="button"
                 onClick={() => updateOpenAddNewBrokerModal(true)}
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 md:w-auto"
               >
                 Add New Broker
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="flex flex-col space-y-5">

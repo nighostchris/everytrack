@@ -59,7 +59,7 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
 
   return (
     <div className={clsx('flex flex-col rounded-lg bg-white shadow-sm', className)}>
-      <div className="flex flex-row justify-between px-8 pt-4">
+      <div className="flex flex-col space-y-2 px-6 pt-4 md:flex-row md:justify-between md:space-y-0 md:px-8">
         <div className="flex flex-row items-center space-x-1">
           <h1 className="text-lg font-semibold text-gray-900">{`Holdings - ${name}`}</h1>
           <span className="group relative">
@@ -71,9 +71,9 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
             </div>
           </span>
         </div>
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
           <span
-            className="rounded-lg border border-gray-200 px-3 py-2 text-xs shadow-sm hover:cursor-pointer"
+            className="rounded-lg border border-gray-200 px-3 py-2 text-center text-xs shadow-sm hover:cursor-pointer md:text-left"
             onClick={() => {
               populateAddNewStockHoldingModalState(accountId);
               updateOpenAddNewStockHoldingModal(true);
@@ -82,7 +82,7 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
             Add New Holding
           </span>
           <span
-            className="rounded-lg border border-gray-200 px-3 py-2 text-xs shadow-sm hover:cursor-pointer"
+            className="rounded-lg border border-gray-200 px-3 py-2 text-center text-xs shadow-sm hover:cursor-pointer md:text-left"
             onClick={() => {
               populateDeleteAccountModalState(accountId);
               updateOpenDeleteAccountModal(true);
@@ -92,9 +92,9 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
           </span>
         </div>
       </div>
-      <table>
+      <table className="mt-6 md:mt-0">
         <thead>
-          <tr className="grid grid-cols-8 px-8 pb-2 pt-6 text-sm">
+          <tr className="hidden grid-cols-8 px-8 pb-2 pt-6 text-sm md:grid">
             <th className="col-span-3 text-left font-medium">Name</th>
             <th className="col-span-1 text-right font-medium">Price</th>
             <th className="col-span-1 text-right font-medium">Unit</th>
@@ -104,20 +104,20 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
           </tr>
         </thead>
         <tbody>
-          <span className="flex w-full flex-row bg-gray-200 px-8 py-2">
+          <span className="flex w-full flex-row bg-gray-200 px-6 py-2 md:px-8">
             <h3 className="text-xs font-medium text-gray-500">Cash</h3>
           </span>
-          <tr className="grid grid-cols-8 px-8 py-4">
+          <tr className="grid grid-cols-8 px-6 py-4 md:px-8">
             <td className="col-span-3 flex flex-row items-center">
               <h3 className="font-medium text-gray-900">{currency.ticker}</h3>
             </td>
-            <td className="col-span-1" />
-            <td className="col-span-1" />
-            <td className="col-span-1" />
-            <td className="col-span-1 flex flex-col items-end justify-center">
-              <p className="text-gray-800">{`${currency.symbol}${balance}`}</p>
+            <td className="hidden md:col-span-1 md:table-cell" />
+            <td className="hidden md:col-span-1 md:table-cell" />
+            <td className="hidden md:col-span-1 md:table-cell" />
+            <td className="col-span-3 flex flex-col items-end justify-center md:col-span-1">
+              <p className="text-sm text-gray-800 md:text-base">{`${currency.symbol}${balance}`}</p>
             </td>
-            <td className="col-span-1 flex flex-row items-center justify-end space-x-3">
+            <td className="col-span-2 flex flex-row items-center justify-end space-x-2 md:col-span-1 md:space-x-3">
               <VscEdit
                 className="h-4 w-4 hover:cursor-pointer"
                 onClick={() => {
@@ -125,42 +125,44 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
                   updateOpenEditCashHoldingModalState(true);
                 }}
               />
-              <span className="flex h-8 w-8 flex-row items-center justify-center rounded-full hover:cursor-pointer hover:border hover:border-gray-300">
-                <RxCaretRight className="h-6 w-6" />
+              <span className="flex h-5 w-5 flex-row items-center justify-center rounded-full hover:cursor-pointer md:h-8 md:w-8 md:hover:border md:hover:border-gray-300">
+                <RxCaretRight className="h-5 w-5 md:h-6 md:w-6" />
               </span>
             </td>
           </tr>
-          <span className="flex w-full flex-row bg-gray-200 px-8 py-2">
+          <span className="flex w-full flex-row bg-gray-200 px-6 py-2 md:px-8">
             <h3 className="text-xs font-medium text-gray-500">Stocks</h3>
           </span>
           {holdings.length === 0 && (
-            <div className="flex w-full flex-col items-center py-12">
+            <div className="flex w-full flex-col items-center px-8 py-12 text-center md:text-left">
               <h1 className="text-xl leading-7 text-gray-600">Oops! 😢😢</h1>
               <p className="mt-6 text-sm leading-7 text-gray-600">You don't seems to own any stocks 💸💸💸</p>
               <p className="text-sm leading-7 text-gray-600">Just click the button in top right corner to add your holdings!</p>
             </div>
           )}
           {holdings.map(({ id, name, unit, cost, stockId, ticker, currency: { symbol }, currentPrice }) => (
-            <tr className="grid grid-cols-8 px-8 py-4">
+            <tr className="grid grid-cols-8 px-6 py-4 md:px-8">
               <td className="col-span-3">
                 <div className="flex flex-col">
                   <h3 className="font-medium text-gray-900">{ticker}</h3>
                   <h4 className="text-xs text-gray-500">{name}</h4>
+                  <h4 className="text-xs leading-relaxed text-gray-400 md:hidden">{`${unit} x ${symbol}${cost}`}</h4>
+                  <h4 className="text-xs text-gray-400 md:hidden">{`${symbol}${currentPrice}`}</h4>
                 </div>
               </td>
-              <td className="col-span-1 flex flex-col items-end justify-center">
+              <td className="hidden flex-col items-end justify-center md:col-span-1 md:flex">
                 <p className="text-gray-800">{`${symbol}${currentPrice}`}</p>
               </td>
-              <td className="col-span-1 flex flex-col items-end justify-center">
+              <td className="hidden flex-col items-end justify-center md:col-span-1 md:flex">
                 <p className="text-gray-800">{unit}</p>
               </td>
-              <td className="col-span-1 flex flex-col items-end justify-center">
+              <td className="hidden flex-col items-end justify-center md:col-span-1 md:flex">
                 <p className="text-gray-800">{`${symbol}${cost}`}</p>
               </td>
-              <td className="col-span-1 flex flex-col items-end justify-center">
-                <p className="text-gray-800">{`${symbol}${new BigNumber(currentPrice).multipliedBy(unit).toFormat(2)}`}</p>
+              <td className="col-span-3 flex flex-col items-end justify-center md:col-span-1">
+                <p className="text-sm text-gray-800 md:text-base">{`${symbol}${new BigNumber(currentPrice).multipliedBy(unit).toFormat(2)}`}</p>
               </td>
-              <td className="col-span-1 flex flex-row items-center justify-end space-x-3">
+              <td className="col-span-2 flex flex-row items-center justify-end space-x-2 md:col-span-1 md:space-x-3">
                 <VscEdit
                   className="h-4 w-4 hover:cursor-pointer"
                   onClick={() => {
@@ -175,8 +177,8 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
                     updateOpenDeleteStockHoldingModal(true);
                   }}
                 />
-                <span className="flex h-8 w-8 flex-row items-center justify-center rounded-full hover:cursor-pointer hover:border hover:border-gray-300">
-                  <RxCaretRight className="h-6 w-6" />
+                <span className="flex h-5 w-5 flex-row items-center justify-center rounded-full hover:cursor-pointer md:h-8 md:w-8 md:hover:border md:hover:border-gray-300">
+                  <RxCaretRight className="h-5 w-5 md:h-6 md:w-6" />
                 </span>
               </td>
             </tr>
