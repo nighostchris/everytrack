@@ -27,12 +27,11 @@ export const PrivateRouteGuardian: React.FC = () => {
     const verifyAccessToken = async () => {
       try {
         const { success } = await verify();
+        // Navigate user to HomePage for log in since his auth token is invalid
         if (!success) {
-          // Navigate user to DashboardPage since his auth token is valid
           navigate('/');
         }
       } catch (error: any) {
-        console.log(error);
         navigate('/');
       }
       setIsLoading(false);

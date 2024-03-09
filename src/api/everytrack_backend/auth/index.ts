@@ -1,11 +1,16 @@
 import { AxiosError } from 'axios';
 
 import { client } from '../client';
-import { LoginRequest, LoginResponse, VerifyResponse } from '../types';
+import { LoginRequest, LoginResponse, RefreshResponse, VerifyResponse } from '../types';
 
 export async function verify() {
   const { data } = await client.post('/v1/auth/verify');
   return data as VerifyResponse;
+}
+
+export async function refresh() {
+  const { data } = await client.post('/v1/auth/refresh');
+  return data as RefreshResponse;
 }
 
 export async function login(params: LoginRequest) {

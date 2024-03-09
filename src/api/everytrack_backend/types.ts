@@ -46,8 +46,11 @@ export interface LoginRequest {
 export interface LoginResponse extends BaseResponse {
   data: {
     token: string;
+    refresh: string;
   };
 }
+// POST /v1/auth/refresh
+export interface RefreshResponse extends LoginResponse {}
 
 // ============================================================
 // /v1/cash endpoints

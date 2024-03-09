@@ -51,12 +51,13 @@ export const HomePage: React.FC = () => {
     try {
       const {
         success,
-        data: { token },
+        data: { token, refresh },
       } = await login({ email, password });
       if (success) {
         setLoginError(undefined);
         setIsLoading(false);
         localStorage.setItem('token', token);
+        localStorage.setItem('refresh', refresh);
         navigate('/dashboard');
       }
     } catch (error: any) {
