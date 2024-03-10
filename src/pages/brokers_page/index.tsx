@@ -2,9 +2,9 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { FaSackDollar } from 'react-icons/fa6';
+import { AiOutlineStock } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
-import { FaSackDollar, FaQuestion } from 'react-icons/fa6';
-import { AiOutlineRise, AiOutlineStock } from 'react-icons/ai';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,19 +22,29 @@ import {
 } from '@features/brokers/components';
 import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/brokers/zustand';
-import { StatCard, Button, Select, type SelectOption } from '@components';
+import { Button, Select, type SelectOption, Card } from '@components';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
 
 export const BrokersPage: React.FC = () => {
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
-  const { brokers, totalBalance, winLoseAmount, assetDistribution, enableAddNewProvider, error: brokersStateError } = useBrokersState();
+  const { brokers, brokerAccountMetrics, assetDistribution, enableAddNewProvider, error: brokersStateError } = useBrokersState();
 
   const [currentBrokerId, setCurrentBrokerId] = React.useState<string>();
 
+  const currentBrokerMetrics = React.useMemo(() => {
+    let metrics: { totalBalance: string | undefined; totalReturns: string | undefined } = {
+      totalBalance: undefined,
+      totalReturns: undefined,
+    };
+    if (currentBrokerId) {
+      const accountMetrics = brokerAccountMetrics.get(currentBrokerId);
+      metrics = accountMetrics ?? metrics;
+    }
+    return metrics;
+  }, [currentBrokerId, brokerAccountMetrics]);
   const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [brokers, currentBrokerId]);
   const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
-  console.log({ brokers, currentBroker });
 
   React.useEffect(() => {
     if (brokers.length > 0) {
@@ -80,29 +90,19 @@ export const BrokersPage: React.FC = () => {
           </div>
         </div>
         <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
-          <div className="flex flex-col space-y-5">
-            <StatCard title="Total Balance" icon={FaSackDollar}>
-              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
-            </StatCard>
-            <StatCard title="W / L" icon={AiOutlineStock}>
-              <div className="mt-1 flex flex-row items-center">
-                <AiOutlineRise
-                  className={clsx('h-6 w-6 font-bold', {
-                    'text-green-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isPositive(),
-                    'text-red-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isNegative(),
-                  })}
-                />
-                <p
-                  className={clsx('ml-2 overflow-hidden text-ellipsis whitespace-nowrap text-2xl', {
-                    'text-green-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isPositive(),
-                    'text-red-600': new BigNumber(winLoseAmount.replaceAll(',', '')).isNegative(),
-                  })}
-                >{`${symbol} ${winLoseAmount}`}</p>
-              </div>
-            </StatCard>
-            <StatCard title="Other Metrics" icon={FaQuestion}>
-              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold">To Be Constructed Later</p>
-            </StatCard>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { icon: FaSackDollar, title: "All Accounts' Balance", value: currentBrokerMetrics.totalBalance },
+              { icon: AiOutlineStock, title: "All Accounts' Returns", value: currentBrokerMetrics.totalReturns },
+            ].map(({ icon: Icon, title, value }) => (
+              <Card className="flex flex-col space-y-2 !bg-white p-6">
+                <span className="flex w-fit flex-row items-center justify-center rounded-full bg-gray-200 p-3">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <p className="text-xs">{title}</p>
+                <p className="text-xl">{`${symbol}${new BigNumber(value ?? 0).toFormat(2)}`}</p>
+              </Card>
+            ))}
           </div>
           <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
             <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
