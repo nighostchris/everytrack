@@ -1,10 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { generateBrokerDetails } from '../utils';
 import { store as globalStore } from '@lib/zustand';
+import { canAddNewProvider, calculateInterpolateColor } from '@utils';
 import { Stock, Currency, StockHolding } from '@api/everytrack_backend';
-import { canAddNewProvider, calculateDisplayAmount, calculateInterpolateColor } from '@utils';
+import { calculateBrokerAccountMetrics, generateBrokerDetails } from '../utils';
 import { useStocks, useCurrencies, useExchangeRates, useBrokerDetails, useStockHoldings, useBrokerAccounts } from '@hooks';
 
 export interface BrokerAccountHolding {
@@ -42,6 +42,11 @@ export interface StockHoldingDistributionData {
   color: string;
   balance: string;
   percentage: number;
+}
+
+export interface BrokerAccountMetrics {
+  totalBalance: string;
+  totalReturns: string;
 }
 
 export const useBrokersState = () => {
@@ -125,35 +130,6 @@ export const useBrokersState = () => {
     return [];
   }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
 
-  const { totalBalance, winLoseAmount } = React.useMemo(() => {
-    let totalBalance = new BigNumber(0);
-    let winLoseAmount = new BigNumber(0);
-    if (stockHoldings && brokerAccounts && exchangeRates && currencyId && stocks) {
-      // Calculate broker account balance
-      brokerAccounts.forEach(({ balance, currencyId: accountCurrencyId }) => {
-        totalBalance = totalBalance.plus(calculateDisplayAmount(balance, currencyId, accountCurrencyId, exchangeRates));
-      });
-      // Calculate stock holdings balance
-      stockHoldings.forEach(({ holdings }) => {
-        holdings.forEach(({ unit, cost, stockId }) => {
-          const { currentPrice, currencyId: stockCurrencyId } = stocksMap.get(stockId) as Stock;
-          totalBalance = totalBalance.plus(
-            calculateDisplayAmount(currentPrice, currencyId, stockCurrencyId, exchangeRates).multipliedBy(unit),
-          );
-          winLoseAmount = winLoseAmount.plus(
-            calculateDisplayAmount(
-              new BigNumber(currentPrice).minus(cost).toString(),
-              currencyId,
-              stockCurrencyId,
-              exchangeRates,
-            ).multipliedBy(unit),
-          );
-        });
-      });
-    }
-    return { totalBalance: totalBalance.toFormat(2), winLoseAmount: winLoseAmount.toFormat(2) };
-  }, [stocks, currencyId, exchangeRates, brokerAccounts, stockHoldings]);
-
   const enableAddNewProvider = React.useMemo(
     () => canAddNewProvider(brokerDetails ?? [], brokerAccounts ?? []),
     [brokerDetails, brokerAccounts],
@@ -167,7 +143,15 @@ export const useBrokersState = () => {
     [stocks, currencies, brokerDetails, brokerAccounts, stockHoldings],
   );
 
-  return { error, brokers, enableAddNewProvider, totalBalance, winLoseAmount, assetDistribution };
+  const brokerAccountMetrics = React.useMemo(
+    () =>
+      stocks && currencyId && brokerAccounts && exchangeRates && stockHoldings
+        ? calculateBrokerAccountMetrics(currencyId, brokerAccounts, exchangeRates, stockHoldings, stocksMap)
+        : new Map<string, BrokerAccountMetrics>(),
+    [stocks, currencyId, brokerAccounts, exchangeRates, stockHoldings],
+  );
+
+  return { error, brokers, enableAddNewProvider, assetDistribution, brokerAccountMetrics };
 };
 
 export default useBrokersState;
