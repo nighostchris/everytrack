@@ -2,9 +2,10 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { FaSackDollar } from 'react-icons/fa6';
+import { GiMoneyStack } from 'react-icons/gi';
 import { AiOutlineStock } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
+import { FaSackDollar, FaMoneyBillTrendUp } from 'react-icons/fa6';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -43,6 +44,15 @@ export const BrokersPage: React.FC = () => {
     }
     return metrics;
   }, [currentBrokerId, brokerAccountMetrics]);
+  const totalBrokerMetrics = React.useMemo(() => {
+    let totalBrokerBalance = new BigNumber(0);
+    let totalBrokerReturns = new BigNumber(0);
+    brokerAccountMetrics.forEach(({ totalBalance, totalReturns }) => {
+      totalBrokerBalance = totalBrokerBalance.plus(totalBalance);
+      totalBrokerReturns = totalBrokerReturns.plus(totalReturns);
+    });
+    return { totalBalance: totalBrokerBalance, totalReturns: totalBrokerReturns };
+  }, [brokerAccountMetrics]);
   const currentBroker = React.useMemo(() => brokers.filter(({ id }) => id === currentBrokerId)[0], [brokers, currentBrokerId]);
   const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
 
@@ -89,18 +99,37 @@ export const BrokersPage: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="mt-6 grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
+        <div className="mt-6 grid grid-cols-1 gap-y-6 lg:grid-cols-3 lg:gap-x-4 lg:gap-y-0">
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: FaSackDollar, title: "All Accounts' Balance", value: currentBrokerMetrics.totalBalance },
-              { icon: AiOutlineStock, title: "All Accounts' Returns", value: currentBrokerMetrics.totalReturns },
-            ].map(({ icon: Icon, title, value }) => (
-              <Card className="flex flex-col space-y-2 !bg-white p-6">
-                <span className="flex w-fit flex-row items-center justify-center rounded-full bg-gray-200 p-3">
-                  <Icon className="h-5 w-5" />
+              { icon: FaSackDollar, title: 'Total Broker Balance', value: totalBrokerMetrics.totalBalance },
+              { icon: FaMoneyBillTrendUp, title: 'Total Broker Returns', value: totalBrokerMetrics.totalReturns },
+              { icon: GiMoneyStack, title: 'Total Account Balance', value: currentBrokerMetrics.totalBalance },
+              { icon: AiOutlineStock, title: 'Total Account Returns', value: currentBrokerMetrics.totalReturns },
+            ].map(({ icon: Icon, title, value }, index) => (
+              <Card className="flex flex-col space-y-2 !bg-white px-6 py-4">
+                <span
+                  className={clsx('flex w-fit flex-row items-center justify-center rounded-full p-3', {
+                    'bg-yellow-200': index % 2 === 0,
+                    'bg-green-200': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
+                    'bg-red-200': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
+                  })}
+                >
+                  <Icon
+                    className={clsx('h-5 w-5', {
+                      'text-yellow-800': index % 2 === 0,
+                      'text-green-800': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
+                      'text-red-800': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
+                    })}
+                  />
                 </span>
                 <p className="text-xs">{title}</p>
-                <p className="text-xl">{`${symbol}${new BigNumber(value ?? 0).toFormat(2)}`}</p>
+                <p
+                  className={clsx('text-xl font-medium', {
+                    'text-green-800': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
+                    'text-red-800': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
+                  })}
+                >{`${symbol}${new BigNumber(value ?? 0).toFormat(2)}`}</p>
               </Card>
             ))}
           </div>
@@ -110,7 +139,7 @@ export const BrokersPage: React.FC = () => {
           </div>
         </div>
         {currentBroker && (
-          <div className="mt-8 flex flex-col">
+          <div className="mt-6 flex flex-col">
             <div className="flex flex-col space-y-8">
               {currentBroker.accounts.map((account) => (
                 <BrokerAccountHoldingsTable data={account} />
