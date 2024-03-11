@@ -135,7 +135,9 @@ export const BrokersPage: React.FC = () => {
           </div>
           <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
             <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
-            <StockHoldingDistributionChart data={assetDistribution} />
+            <div className="relative flex h-[220px] w-full flex-col items-center justify-center">
+              <StockHoldingDistributionChart data={assetDistribution} />
+            </div>
           </div>
         </div>
         {currentBroker && (
