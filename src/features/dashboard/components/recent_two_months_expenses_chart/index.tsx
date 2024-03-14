@@ -6,9 +6,10 @@ import type { RecentTwoMonthsExpenseSnapshot } from '../../hooks/use_dashboard_s
 
 interface RecentTwoMonthsExpensesChartProps {
   data: RecentTwoMonthsExpenseSnapshot[];
+  timeInterval?: number;
 }
 
-export const RecentTwoMonthsExpensesChart: React.FC<RecentTwoMonthsExpensesChartProps> = ({ data }) => {
+export const RecentTwoMonthsExpensesChart: React.FC<RecentTwoMonthsExpensesChartProps> = ({ data, timeInterval = 5 }) => {
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
 
   return (
@@ -31,7 +32,7 @@ export const RecentTwoMonthsExpensesChart: React.FC<RecentTwoMonthsExpensesChart
       axisBottom={{
         tickSize: 5,
         tickValues: 5,
-        tickPadding: 5,
+        tickPadding: timeInterval,
         tickRotation: 0,
         legendOffset: -12,
         legendPosition: 'middle',

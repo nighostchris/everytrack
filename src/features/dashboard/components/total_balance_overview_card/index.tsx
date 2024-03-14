@@ -42,7 +42,7 @@ const AssetInformationCard: React.FC<AssetInformationCardProps> = ({
         <Icon className={clsx('h-5 w-5', textColor)} />
       </span>
       <div className="flex flex-col items-center space-y-1">
-        <CardTitle className="w-min text-center text-sm !font-normal leading-tight">{title}</CardTitle>
+        <CardTitle className="w-full text-center text-sm !font-normal leading-tight md:w-min">{title}</CardTitle>
         <p className="overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">{`${currency} ${value}`}</p>
       </div>
     </Card>
@@ -63,7 +63,7 @@ export const TotalBalanceOverviewCard: React.FC<TotalBalanceOverviewCardProps> =
       <h4 className="text-sm font-medium text-gray-500">Overview</h4>
       <h5 className="my-1 text-lg font-semibold">Total Balance</h5>
       <div className="flex h-full w-full flex-col">
-        <p className="mb-3 overflow-hidden text-ellipsis whitespace-nowrap text-5xl font-semibold">{`${symbol} ${totalBalance}`}</p>
+        <p className="mb-3 overflow-hidden text-ellipsis whitespace-nowrap text-3xl font-semibold md:text-5xl">{`${symbol} ${totalBalance}`}</p>
         <div className="relative mb-6 flex h-[220px] w-full flex-col items-center justify-center">
           <AssetDistributionChart data={assetDistribution} />
         </div>
