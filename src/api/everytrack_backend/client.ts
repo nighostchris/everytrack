@@ -10,13 +10,13 @@ export const client = axios.create({
 });
 
 client.interceptors.request.use((config) => {
-  const { url } = config;
+  const { url, headers } = config;
   const token = localStorage.getItem('token');
   const refreshToken = localStorage.getItem('refresh');
   if (url === '/v1/auth/refresh' && refreshToken) {
     config.headers.Authorization = `Bearer ${refreshToken}`;
   }
-  if (url !== '/v1/auth/refresh' && token) {
+  if (url !== '/v1/auth/refresh' && token && typeof headers.Authorization === 'undefined') {
     config.headers.Authorization = `Bearer ${token}`;
   }
   config.headers['X-Request-Id'] = v4();
@@ -38,6 +38,10 @@ client.interceptors.response.use(undefined, async (error: AxiosError) => {
   } = await refresh();
   localStorage.setItem('token', token);
   localStorage.setItem('refresh', refreshToken);
+  console.log();
+  // This is trying to fix the IOS Safari issue where it doesn't know how to consume the latest
+  // local storage access token the 1st time after calling /refresh endpoint
+  response.config.headers.Authorization = `Bearer ${token}`;
   // Continue with original request
   return axios.request(response.config);
 });
