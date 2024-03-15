@@ -107,16 +107,16 @@ export const BrokersPage: React.FC = () => {
               { icon: GiMoneyStack, title: 'Total Account Balance', value: currentBrokerMetrics.totalBalance },
               { icon: AiOutlineStock, title: 'Total Account Returns', value: currentBrokerMetrics.totalReturns },
             ].map(({ icon: Icon, title, value }, index) => (
-              <Card className="flex flex-col space-y-2 !bg-white px-6 py-4">
+              <Card className="flex flex-col space-y-2 !bg-white px-4 py-4 md:px-6">
                 <span
-                  className={clsx('flex w-fit flex-row items-center justify-center rounded-full p-3', {
+                  className={clsx('flex w-fit flex-row items-center justify-center rounded-full p-2 md:p-3', {
                     'bg-yellow-200': index % 2 === 0,
                     'bg-green-200': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
                     'bg-red-200': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
                   })}
                 >
                   <Icon
-                    className={clsx('h-5 w-5', {
+                    className={clsx('h-4 w-4 md:h-5 md:w-5', {
                       'text-yellow-800': index % 2 === 0,
                       'text-green-800': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
                       'text-red-800': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
@@ -125,7 +125,7 @@ export const BrokersPage: React.FC = () => {
                 </span>
                 <p className="text-xs">{title}</p>
                 <p
-                  className={clsx('text-xl font-medium', {
+                  className={clsx('overflow-x-hidden text-ellipsis text-base font-medium md:text-xl', {
                     'text-green-800': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
                     'text-red-800': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
                   })}
@@ -133,12 +133,12 @@ export const BrokersPage: React.FC = () => {
               </Card>
             ))}
           </div>
-          <div className="flex flex-col rounded-lg border border-gray-300 lg:col-span-2">
-            <h3 className="p-6 pb-0 text-sm leading-none tracking-tight">Distribution</h3>
+          <Card className="flex flex-col !bg-white p-6 lg:col-span-2">
+            <h4 className="text-sm font-medium text-gray-500">Distribution</h4>
             <div className="relative flex h-[220px] w-full flex-col items-center justify-center">
               <StockHoldingDistributionChart data={assetDistribution} />
             </div>
-          </div>
+          </Card>
         </div>
         {currentBroker && (
           <div className="mt-6 flex flex-col">
@@ -149,7 +149,7 @@ export const BrokersPage: React.FC = () => {
             </div>
             <Button
               variant="outlined"
-              className="mt-6 h-10 w-full !border-none text-xs hover:shadow-md"
+              className="mt-6 w-full text-xs"
               onClick={() => {
                 populateAddNewAccountModalState(currentBroker.id);
                 updateOpenAddNewAccountModal(true);

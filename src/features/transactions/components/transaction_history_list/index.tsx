@@ -52,7 +52,7 @@ export const TransactionHistoryList: React.FC<TransactionHistoryListProps> = ({ 
         <h2 className="font-medium text-gray-900">History</h2>
         <Button
           variant="contained"
-          className="h-6 !bg-slate-100 text-xs !text-gray-700 hover:!bg-slate-200"
+          className="h-fit text-xs !text-gray-700"
           onClick={() => {
             updateOpenAddNewTransactionModal(true);
           }}
