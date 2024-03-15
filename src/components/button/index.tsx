@@ -19,8 +19,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={clsx(
           className,
           {
+            'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-800': variant === 'contained',
             'border border-gray-200 bg-white hover:border-gray-300': variant === 'outlined',
-            'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-100': variant === 'contained',
           },
           'inline-flex h-10 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium shadow-sm transition-colors focus:outline-none active:scale-95 disabled:pointer-events-none disabled:opacity-50',
         )}

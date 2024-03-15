@@ -97,7 +97,7 @@ export const HookedCombobox: React.FC<HookedComboboxProps> = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent asChild className="!p-0" style={{ width: 'var(--radix-popper-anchor-width)' }}>
-              <Command filter={(value, search) => (value.includes(search) ? 1 : 0)}>
+              <Command filter={(value, search) => (value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0)}>
                 <CommandInput />
                 <CommandEmpty>No category found</CommandEmpty>
                 <div className="flex max-h-64 w-full flex-col overflow-y-auto">

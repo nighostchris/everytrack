@@ -8,6 +8,7 @@ import { IoIosRemoveCircle } from 'react-icons/io';
 import { useShallow } from 'zustand/react/shallow';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 
+import { Button } from '@components';
 import { store } from '../../zustand';
 import { BrokerAccount } from '@features/brokers/hooks/use_brokers_state';
 
@@ -59,37 +60,41 @@ export const BrokerAccountHoldingsTable: React.FC<BrokerAccountHoldingsTableProp
 
   return (
     <div className={clsx('flex flex-col rounded-lg bg-white shadow-sm', className)}>
-      <div className="flex flex-col space-y-2 px-6 pt-4 md:flex-row md:justify-between md:space-y-0 md:px-8">
+      <div className="flex flex-col space-y-4 px-6 pt-4 md:flex-row md:justify-between md:space-y-0 md:px-8">
         <div className="flex flex-row items-center space-x-1">
           <h1 className="text-lg font-semibold text-gray-900">{`Holdings - ${name}`}</h1>
           <span className="group relative">
             <IoInformationCircleOutline className="h-4 w-4" />
             <div className="absolute -left-4 bottom-5 hidden w-44 rounded-md bg-gray-700 px-3 py-2 group-hover:block">
               <p className="text-xs text-gray-200">
-                Market prices are provided by <strong>Twelve Data</strong>
+                Market prices are provided by <strong>Yahoo Finance</strong>
               </p>
             </div>
           </span>
         </div>
         <div className="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
-          <span
-            className="rounded-lg border border-gray-200 px-3 py-2 text-center text-xs shadow-sm hover:cursor-pointer md:text-left"
+          <Button
+            type="button"
+            variant="outlined"
+            className="h-fit text-xs font-normal"
             onClick={() => {
               populateAddNewStockHoldingModalState(accountId);
               updateOpenAddNewStockHoldingModal(true);
             }}
           >
             Add New Holding
-          </span>
-          <span
-            className="rounded-lg border border-gray-200 px-3 py-2 text-center text-xs shadow-sm hover:cursor-pointer md:text-left"
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            className="h-fit text-xs font-normal"
             onClick={() => {
               populateDeleteAccountModalState(accountId);
               updateOpenDeleteAccountModal(true);
             }}
           >
             Delete Account
-          </span>
+          </Button>
         </div>
       </div>
       <table className="mt-6 md:mt-0">
