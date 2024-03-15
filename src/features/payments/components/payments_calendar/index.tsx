@@ -81,7 +81,7 @@ export const PaymentsCalendar: React.FC<PaymentsCalendarProps> = ({ events, clas
               symbol: string;
               amount: string;
               rolling: boolean;
-              frequency: number;
+              frequency: string;
             };
             return (
               <Popover>

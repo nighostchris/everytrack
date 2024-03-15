@@ -38,7 +38,6 @@ client.interceptors.response.use(undefined, async (error: AxiosError) => {
   } = await refresh();
   localStorage.setItem('token', token);
   localStorage.setItem('refresh', refreshToken);
-  console.log();
   // This is trying to fix the IOS Safari issue where it doesn't know how to consume the latest
   // local storage access token the 1st time after calling /refresh endpoint
   response.config.headers.Authorization = `Bearer ${token}`;

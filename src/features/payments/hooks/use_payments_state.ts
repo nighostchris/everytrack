@@ -14,6 +14,7 @@ export interface PaymentsTableRow {
   remarks: string;
   income: boolean;
   rolling: boolean;
+  category: string;
   frequency: number;
   accountId: string;
   currencyId: string;
@@ -45,7 +46,7 @@ export const usePaymentsState = () => {
     if (futurePayments && currencies) {
       // Generate a currency map
       currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
-      futurePayments.forEach(({ id, name, amount, income, rolling, remarks, frequency, accountId, currencyId, scheduledAt }) => {
+      futurePayments.forEach(({ id, name, amount, income, rolling, remarks, category, frequency, accountId, currencyId, scheduledAt }) => {
         const displayCurrency = currenciesMap.get(currencyId)!.symbol;
         result.push({
           id,
@@ -54,9 +55,10 @@ export const usePaymentsState = () => {
           income,
           remarks,
           rolling,
-          frequency,
+          category,
           accountId,
           currencyId,
+          frequency: frequency === null ? 0 : frequency,
           scheduledDate: dayjs.unix(scheduledAt).format('MMM DD, YYYY'),
           displayAmount: `${displayCurrency} ${new BigNumber(amount).toFormat(2)}`,
         });

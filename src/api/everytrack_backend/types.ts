@@ -107,6 +107,7 @@ export interface CreateNewFuturePaymentRequest {
   amount: string;
   income: string; // boolean in string
   rolling: string; // boolean in string
+  category: string;
   accountId: string;
   currencyId: string;
   scheduledAt: number;
@@ -121,6 +122,7 @@ export interface UpdateFuturePaymentRequest {
   amount: string;
   income: string; // boolean in string
   rolling: string; // boolean in string
+  category: string;
   accountId: string;
   currencyId: string;
   scheduledAt: number;
@@ -315,8 +317,9 @@ export interface FuturePayment {
   remarks: string;
   income: boolean;
   rolling: boolean;
-  frequency: number; // in milliseconds
   accountId: string;
   currencyId: string;
   scheduledAt: number;
+  frequency: number | null; // in milliseconds
+  category: TransactionCategory;
 }

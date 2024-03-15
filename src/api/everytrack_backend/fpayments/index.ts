@@ -25,13 +25,14 @@ export async function getAllFuturePayments() {
 }
 
 export async function createNewFuturePayment(params: CreateNewFuturePaymentRequest) {
-  const { name, amount, income, rolling, frequency, remarks, accountId, currencyId, scheduledAt } = params;
+  const { name, amount, income, rolling, category, frequency, remarks, accountId, currencyId, scheduledAt } = params;
   try {
     const { data } = await client.post('/v1/fpayments', {
       name,
       amount,
       income,
       rolling,
+      category,
       frequency,
       remarks,
       accountId,
@@ -49,7 +50,7 @@ export async function createNewFuturePayment(params: CreateNewFuturePaymentReque
 }
 
 export async function updateFuturePayment(params: UpdateFuturePaymentRequest) {
-  const { id, name, amount, income, rolling, frequency, remarks, accountId, currencyId, scheduledAt } = params;
+  const { id, name, amount, income, rolling, category, frequency, remarks, accountId, currencyId, scheduledAt } = params;
   try {
     const { data } = await client.put('/v1/fpayments', {
       id,
@@ -57,6 +58,7 @@ export async function updateFuturePayment(params: UpdateFuturePaymentRequest) {
       amount,
       income,
       rolling,
+      category,
       frequency,
       remarks,
       accountId,

@@ -8,8 +8,9 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { Currency, createNewFuturePayment } from '@api/everytrack_backend';
+import { TRANSACTION_CATEGORIES } from '@consts';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useFuturePayments } from '@hooks';
+import { Currency, TransactionCategory, createNewFuturePayment } from '@api/everytrack_backend';
 import { Button, DatePicker, Dialog, Input, RadioGroup, HookedSelect, SelectOption, Switch } from '@components';
 
 export const AddNewFuturePaymentModal: React.FC = () => {
@@ -37,6 +38,9 @@ export const AddNewFuturePaymentModal: React.FC = () => {
             .positive('Amount must be greater than 0')
             .transform((input) => String(input)),
           frequency: z.coerce.number().positive('Frequency must not be negative').optional(),
+          category: z.custom<TransactionCategory>((input: unknown) => {
+            return typeof input === 'string' && (TRANSACTION_CATEGORIES as unknown as string[]).includes(input);
+          }, 'Invalid category'),
         })
         .superRefine((data, ctx) => {
           const { accountId, currencyId } = data;
@@ -74,6 +78,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
       name: undefined,
       amount: undefined,
       remarks: undefined,
+      category: undefined,
       frequency: undefined,
       accountId: undefined,
       currencyId: undefined,
@@ -84,6 +89,10 @@ export const AddNewFuturePaymentModal: React.FC = () => {
   const watchSelectedRolling = watch('rolling');
   const watchSelectedScheduledAt = watch('scheduledAt');
 
+  const categoryOptions: SelectOption[] = TRANSACTION_CATEGORIES.map((category) => ({
+    value: category,
+    display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
+  })).sort((a, b) => (a.value > b.value ? 1 : -1));
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
     [currencies],
@@ -110,7 +119,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
 
   const onSubmitAddNewPaymentForm = async (data: any) => {
     setIsLoading(true);
-    const { name, amount, income, rolling, frequency, remarks, accountId, currencyId, scheduledAt } = data as z.infer<
+    const { name, amount, income, rolling, category, frequency, remarks, accountId, currencyId, scheduledAt } = data as z.infer<
       typeof addNewFuturePaymentFormSchema
     >;
     try {
@@ -118,6 +127,7 @@ export const AddNewFuturePaymentModal: React.FC = () => {
         name,
         amount,
         remarks,
+        category,
         accountId,
         frequency,
         currencyId,
@@ -208,7 +218,18 @@ export const AddNewFuturePaymentModal: React.FC = () => {
             />
           )}
         </div>
-        <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+          <HookedSelect
+            label="Category"
+            formId="category"
+            control={control as Control<any, any>}
+            className="!max-w-none"
+            options={categoryOptions}
+            placeholder="Select category..."
+            error={errors.category && errors.category.message?.toString()}
+          />
+          <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+        </div>
       </div>
       <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button

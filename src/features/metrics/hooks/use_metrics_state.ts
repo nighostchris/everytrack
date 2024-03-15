@@ -84,7 +84,7 @@ export const useMetricsState = () => {
         | undefined
       > = new Map();
       futurePayments.forEach(({ frequency, scheduledAt, amount, currencyId, rolling, income }) => {
-        const newRecord = { amount, frequency, currencyId, rolling, income };
+        const newRecord = { amount, frequency: frequency === null ? 0 : frequency, currencyId, rolling, income };
         if (futurePaymentsMap.has(scheduledAt)) {
           futurePaymentsMap.set(scheduledAt, [...futurePaymentsMap.get(scheduledAt)!, newRecord]);
         } else {

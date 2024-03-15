@@ -5,6 +5,7 @@ export type ModalStateSlice = {
   income?: boolean;
   remarks?: string;
   rolling?: boolean;
+  category?: string;
   frequency?: number;
   accountId?: string;
   currencyId?: string;
@@ -19,6 +20,7 @@ export type ModalStateSlice = {
     income,
     remarks,
     rolling,
+    category,
     frequency,
     accountId,
     currencyId,
@@ -30,6 +32,7 @@ export type ModalStateSlice = {
     remarks: string;
     income: boolean;
     rolling: boolean;
+    category: string;
     frequency: number;
     accountId: string;
     currencyId: string;

@@ -9,7 +9,8 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
-import { Currency, updateFuturePayment } from '@api/everytrack_backend';
+import { TRANSACTION_CATEGORIES } from '@consts';
+import { Currency, TransactionCategory, updateFuturePayment } from '@api/everytrack_backend';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useFuturePayments } from '@hooks';
 import { Button, DatePicker, Dialog, Input, RadioGroup, HookedSelect, SelectOption, Switch } from '@components';
 
@@ -26,6 +27,7 @@ export const EditFuturePaymentModal: React.FC = () => {
     rolling,
     remarks,
     setOpen,
+    category,
     frequency,
     accountId,
     currencyId,
@@ -40,6 +42,7 @@ export const EditFuturePaymentModal: React.FC = () => {
         amount,
         rolling,
         remarks,
+        category,
         frequency,
         accountId,
         currencyId,
@@ -56,6 +59,7 @@ export const EditFuturePaymentModal: React.FC = () => {
         rolling,
         remarks,
         setOpen,
+        category,
         frequency,
         accountId,
         currencyId,
@@ -81,7 +85,7 @@ export const EditFuturePaymentModal: React.FC = () => {
             .transform((input) => String(input)),
           frequency: z.coerce
             .number()
-            .positive('Frequency must not be negative')
+            .nonnegative('Frequency must not be negative')
             .transform((input) => String(input))
             .optional(),
           name: z.string().min(1, 'Name cannot be empty'),
@@ -89,6 +93,9 @@ export const EditFuturePaymentModal: React.FC = () => {
           currencyId: z.string({ required_error: 'Invalid currency' }),
           scheduledAt: z.number({ required_error: 'Invalid schedule date' }),
           futurePaymentId: z.string().min(1, 'Future payment id cannot be empty'),
+          category: z.custom<TransactionCategory>((input: unknown) => {
+            return typeof input === 'string' && (TRANSACTION_CATEGORIES as unknown as string[]).includes(input);
+          }, 'Invalid category'),
         })
         .superRefine((data, ctx) => {
           const { accountId, currencyId } = data;
@@ -126,6 +133,7 @@ export const EditFuturePaymentModal: React.FC = () => {
       name: undefined,
       amount: undefined,
       remarks: undefined,
+      category: undefined,
       frequency: undefined,
       accountId: undefined,
       currencyId: undefined,
@@ -140,6 +148,10 @@ export const EditFuturePaymentModal: React.FC = () => {
     () => (futurePayments && futurePaymentId ? futurePayments.filter(({ id }) => id === futurePaymentId)[0].name : ''),
     [futurePaymentId],
   );
+  const categoryOptions: SelectOption[] = TRANSACTION_CATEGORIES.map((category) => ({
+    value: category,
+    display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
+  })).sort((a, b) => (a.value > b.value ? 1 : -1));
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map(({ id, ticker }) => ({ value: id, display: ticker })) : []),
     [currencies],
@@ -166,13 +178,13 @@ export const EditFuturePaymentModal: React.FC = () => {
 
   const onSubmitEditAccountBalanceForm = async (data: any) => {
     setIsLoading(true);
-    const { name, amount, income, rolling, remarks, currencyId, accountId, frequency, scheduledAt, futurePaymentId } = data as z.infer<
-      typeof editFuturePaymentFormSchema
-    >;
+    const { name, amount, income, rolling, remarks, category, currencyId, accountId, frequency, scheduledAt, futurePaymentId } =
+      data as z.infer<typeof editFuturePaymentFormSchema>;
     try {
       const { success } = await updateFuturePayment({
         name,
         amount,
+        category,
         accountId,
         currencyId,
         scheduledAt,
@@ -200,6 +212,7 @@ export const EditFuturePaymentModal: React.FC = () => {
       name &&
       amount &&
       currencyId &&
+      category &&
       accountId &&
       scheduledAt &&
       futurePaymentId &&
@@ -218,6 +231,7 @@ export const EditFuturePaymentModal: React.FC = () => {
         scheduledAt,
         futurePaymentId,
         frequency: frequency.toString(),
+        category: category as TransactionCategory,
         remarks: remarks.length > 0 ? remarks : undefined,
       });
     }
@@ -295,7 +309,18 @@ export const EditFuturePaymentModal: React.FC = () => {
             />
           )}
         </div>
-        <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
+          <HookedSelect
+            label="Category"
+            formId="category"
+            control={control as Control<any, any>}
+            className="!max-w-none"
+            options={categoryOptions}
+            placeholder="Select category..."
+            error={errors.category && errors.category.message?.toString()}
+          />
+          <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+        </div>
       </div>
       <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
         <Button

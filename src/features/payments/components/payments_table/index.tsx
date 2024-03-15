@@ -159,6 +159,7 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({ data, className })
                         amount: row.original.amount,
                         rolling: row.original.rolling,
                         remarks: row.original.remarks,
+                        category: row.original.category,
                         futurePaymentId: row.original.id,
                         frequency: row.original.frequency,
                         accountId: row.original.accountId,
