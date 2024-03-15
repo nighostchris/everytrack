@@ -1,17 +1,20 @@
 /* eslint-disable max-len */
 import { z } from 'zod';
+import clsx from 'clsx';
 import React from 'react';
 import dayjs from 'dayjs';
 import BigNumber from 'bignumber.js';
 import { toast } from 'react-toastify';
-import { Control, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
+import { Button, Dialog } from '@components';
 import { TRANSACTION_CATEGORIES } from '@consts';
 import { useBankAccounts, useCurrencies, useTransactions } from '@hooks';
-import { Currency, TransactionCategory, createNewTransaction } from '@api/everytrack_backend';
-import { Button, DatePicker, Dialog, Input, HookedSelect, SelectOption, Switch } from '@components';
+import { TransactionCategory, createNewTransaction } from '@api/everytrack_backend';
+import AddNewTransactionModalSecondStage from './AddNewTransactionModalSecondStage';
+import { AddNewTransactionModalFirstStage } from './AddNewTransactionModalFirstStage';
 
 export const AddNewTransactionModal: React.FC = () => {
   const { currencies } = useCurrencies();
@@ -20,6 +23,7 @@ export const AddNewTransactionModal: React.FC = () => {
   const { refetch: refetchBankAccounts } = useBankAccounts();
   const { openAddNewTransactionModal: open, updateOpenAddNewTransactionModal: setOpen } = store();
 
+  const [stage, setStage] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const addNewTransactionFormSchema = React.useMemo(
@@ -27,10 +31,9 @@ export const AddNewTransactionModal: React.FC = () => {
       z
         .object({
           income: z.boolean(),
+          accountId: z.string(),
           executedAt: z.number(),
-          useAccount: z.boolean(),
           remarks: z.string().optional(),
-          accountId: z.string().optional(),
           name: z.string().min(1, 'Name cannot be empty'),
           currencyId: z.string({ required_error: 'Invalid currency' }),
           amount: z.coerce
@@ -72,6 +75,7 @@ export const AddNewTransactionModal: React.FC = () => {
   const {
     reset,
     watch,
+    trigger,
     control,
     register,
     setValue,
@@ -81,7 +85,6 @@ export const AddNewTransactionModal: React.FC = () => {
     defaultValues: {
       income: false,
       name: undefined,
-      useAccount: false,
       amount: undefined,
       remarks: undefined,
       category: undefined,
@@ -91,30 +94,6 @@ export const AddNewTransactionModal: React.FC = () => {
     },
     resolver: zodResolver(addNewTransactionFormSchema),
   });
-  const watchSelectedExecutedAt = watch('executedAt');
-  const watchSelectedUseAccount = watch('useAccount');
-
-  const currencyOptions: SelectOption[] = React.useMemo(
-    () => (currencies ? currencies.map((currency) => ({ value: currency.id, display: currency.ticker })) : []),
-    [currencies],
-  );
-  const categoryOptions: SelectOption[] = TRANSACTION_CATEGORIES.map((category) => ({
-    value: category,
-    display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
-  })).sort((a, b) => (a.value > b.value ? 1 : -1));
-  const bankOptions: SelectOption[] = React.useMemo(() => {
-    if (bankAccounts && currencies) {
-      const currenciesMap = new Map<string, Currency>();
-      currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
-      return bankAccounts.map(({ id, name, balance, currencyId }) => {
-        const currency = (currenciesMap.get(currencyId) as Currency).symbol;
-        return { value: id, display: `${name} - ${currency} ${new BigNumber(balance).toFormat(2)}` };
-      });
-    }
-    return [];
-  }, [bankAccounts]);
-
-  const executionDate = React.useMemo(() => dayjs.unix(watchSelectedExecutedAt).toDate(), [watchSelectedExecutedAt]);
 
   const onSubmitAddNewTransactionForm = async (data: any) => {
     setIsLoading(true);
@@ -137,6 +116,7 @@ export const AddNewTransactionModal: React.FC = () => {
         refetchTransactions();
         refetchBankAccounts();
       }
+      setStage(0);
       setIsLoading(false);
       toast.info('Success!');
     } catch (error: any) {
@@ -152,89 +132,51 @@ export const AddNewTransactionModal: React.FC = () => {
   }, [isSubmitSuccessful]);
 
   return (
-    <Dialog open={open} className="max-h-[540px] overflow-y-auto md:max-h-none md:max-w-2xl lg:max-w-4xl lg:overflow-visible">
-      <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900">Add New Transaction</h3>
-        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-          <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
-          <HookedSelect
-            label="Category"
-            formId="category"
-            control={control as Control<any, any>}
-            className="!max-w-none"
-            options={categoryOptions}
-            placeholder="Select category..."
-            error={errors.category && errors.category.message?.toString()}
-          />
+    <Dialog open={open} className="max-h-[540px] md:max-h-none md:max-w-sm md:overflow-visible">
+      <h3 className="px-4 pb-6 pt-5 text-lg font-medium text-gray-900 md:px-6 md:py-6">Add New Transaction</h3>
+      {stage === 0 && (
+        <AddNewTransactionModalFirstStage watch={watch} errors={errors} control={control} register={register} setValue={setValue} />
+      )}
+      {stage === 1 && (
+        <AddNewTransactionModalSecondStage errors={errors} control={control} currencies={currencies} bankAccounts={bankAccounts} />
+      )}
+      <div
+        className={clsx('flex flex-col space-y-2 rounded-b-md bg-gray-50 px-4 py-5 md:flex-row md:space-y-0 md:px-6 md:py-3', {
+          'justify-end': stage === 0,
+          'justify-between': stage !== 0,
+        })}
+      >
+        {stage === 1 && (
+          <Button type="button" variant="contained" onClick={() => setStage(0)} className="w-full md:w-fit">
+            Back
+          </Button>
+        )}
+        <div className="flex flex-col space-y-2 md:flex-row-reverse md:space-y-0">
+          <Button
+            type="button"
+            variant="contained"
+            isLoading={isLoading}
+            onClick={
+              stage === 0
+                ? () => {
+                    trigger(['name', 'amount', 'income', 'remarks', 'executedAt']);
+                    setStage(1);
+                  }
+                : handleSubmit(onSubmitAddNewTransactionForm)
+            }
+            className={clsx('w-full md:ml-2 md:w-fit', { '!bg-gray-700 !text-gray-200 hover:!bg-gray-800': stage !== 0 })}
+          >
+            {stage === 0 ? 'Next' : 'Add'}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => setOpen(false)}
+            className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 md:w-fit"
+          >
+            Cancel
+          </Button>
         </div>
-        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <HookedSelect
-            label="Currency"
-            formId="currencyId"
-            control={control as Control<any, any>}
-            className="!max-w-none"
-            options={currencyOptions}
-            placeholder="Select currency..."
-            error={errors.currencyId && errors.currencyId.message?.toString()}
-          />
-          <Switch
-            formId="income"
-            label="Is it income?"
-            control={control as Control<any, any>}
-            error={errors.income && errors.income.message?.toString()}
-          />
-          <DatePicker
-            label="Execution Date"
-            date={executionDate}
-            toDate={new Date()}
-            setDate={(newDate) => {
-              if (newDate) {
-                setValue('executedAt', dayjs(newDate).unix());
-              }
-            }}
-            className="[&>button]:w-full"
-          />
-        </div>
-        <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <Switch
-            label="Use Account"
-            formId="useAccount"
-            control={control as Control<any, any>}
-            error={errors.useAccount && errors.useAccount.message?.toString()}
-          />
-          {watchSelectedUseAccount && (
-            <HookedSelect
-              label="Related Account"
-              formId="accountId"
-              control={control as Control<any, any>}
-              className="!max-w-none md:col-span-2"
-              options={bankOptions}
-              placeholder="Select account..."
-              error={errors.accountId && errors.accountId.message?.toString()}
-            />
-          )}
-        </div>
-        <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
-      </div>
-      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-        <Button
-          type="button"
-          variant="contained"
-          isLoading={isLoading}
-          onClick={handleSubmit(onSubmitAddNewTransactionForm)}
-          className="w-full sm:ml-2 sm:w-fit"
-        >
-          Add
-        </Button>
-        <Button
-          type="button"
-          variant="outlined"
-          onClick={() => setOpen(false)}
-          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 sm:w-fit"
-        >
-          Cancel
-        </Button>
       </div>
     </Dialog>
   );
