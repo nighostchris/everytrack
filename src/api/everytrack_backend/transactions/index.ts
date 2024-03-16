@@ -37,9 +37,9 @@ export async function createNewTransaction(params: CreateNewTransactionRequest) 
 }
 
 export async function deleteTransaction(params: DeleteTransactionRequest) {
-  const { transactionId: id, revertBalance } = params;
+  const { transactionId: id } = params;
   try {
-    const { data } = await client.delete('/v1/transactions', { params: { id, revertBalance } });
+    const { data } = await client.delete('/v1/transactions', { params: { id } });
     return data as DeleteTransactionResponse;
   } catch (error) {
     const { response } = error as AxiosError;

@@ -212,16 +212,15 @@ export interface CreateNewTransactionRequest {
   amount: string;
   income: string; // boolean in string
   category: string;
+  accountId: string;
   executedAt: number;
   currencyId: string;
   remarks?: string;
-  accountId?: string;
 }
 export interface CreateNewTransactionResponse extends BaseResponse {}
 // DELETE /v1/transactions
 export interface DeleteTransactionRequest {
   transactionId: string;
-  revertBalance: boolean;
 }
 export interface DeleteTransactionResponse extends BaseResponse {}
 
