@@ -24,7 +24,6 @@ export const HookedSelect = React.forwardRef<React.ElementRef<typeof Root>, Hook
   ({ label, placeholder, options, control, error, formId = camelCase(label), className, triggerClassName }, ref) => {
     return (
       <div className={clsx(className, 'flex w-full max-w-sm flex-col')}>
-        {/* dark:text-gray-200 */}
         {label && <label className="mb-2 block text-sm font-medium leading-none text-gray-700">{label}</label>}
         <Controller
           name={formId}

@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { TRANSACTION_GROUPS } from '@consts';
 import { store } from '@features/transactions/zustand';
-import { Button, type ComboboxGroups, HookedCombobox, Input, HookedSelect } from '@components';
+import { Button, type ComboboxGroups, HookedMultiCombobox, Input, HookedSelect } from '@components';
 
 const searchCriteriasSchema = z.object({
   search: z.string(),
@@ -106,7 +106,7 @@ export const AdvancedSearchToolbox: React.FC<AdvancedSearchToolboxProps> = ({ cl
           ]}
           error={errors.sorting && errors.sorting.message?.toString()}
         />
-        <HookedCombobox
+        <HookedMultiCombobox
           label="Categories"
           formId="categories"
           placeholder="Select categories..."

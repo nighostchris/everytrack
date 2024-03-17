@@ -2,9 +2,10 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { Control, FieldErrors } from 'react-hook-form';
 
-import { TRANSACTION_CATEGORIES } from '@consts';
-import { HookedSelect, SelectOption } from '@components';
+import { capitalize } from 'lodash';
+import { TRANSACTION_GROUPS } from '@consts';
 import { Account, Currency, TransactionCategory } from '@api/everytrack_backend';
+import { ComboboxGroups, HookedSelect, HookedSingleCombobox, SelectOption } from '@components';
 
 interface AddNewTransactionModalSecondStageProps {
   control: Control<any, any>;
@@ -34,10 +35,21 @@ export const AddNewTransactionModalSecondStage: React.FC<AddNewTransactionModalS
     }
     return [];
   }, [bankAccounts]);
-  const categoryOptions: SelectOption[] = TRANSACTION_CATEGORIES.map((category) => ({
-    value: category,
-    display: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
-  })).sort((a, b) => (a.value > b.value ? 1 : -1));
+  const categoryGroups = TRANSACTION_GROUPS.reduce<ComboboxGroups>(
+    (acc, { display, categories }) => ({
+      ...acc,
+      [display]: categories
+        .map((category) => ({
+          value: category,
+          display: category
+            .split('-')
+            .map((v) => capitalize(v))
+            .join(' '),
+        }))
+        .sort((a, b) => (a.display > b.display ? 1 : -1)),
+    }),
+    {},
+  );
 
   return (
     <div className="flex flex-col space-y-6 px-4 pb-6 md:px-6">
@@ -59,13 +71,13 @@ export const AddNewTransactionModalSecondStage: React.FC<AddNewTransactionModalS
         placeholder="Select account..."
         error={errors.accountId && errors.accountId.message?.toString()}
       />
-      <HookedSelect
+      <HookedSingleCombobox
         label="Category"
         formId="category"
+        groups={categoryGroups}
+        placeholder="Select category..."
         control={control as Control<any, any>}
         className="!max-w-none"
-        options={categoryOptions}
-        placeholder="Select category..."
         error={errors.category && errors.category.message?.toString()}
       />
     </div>
