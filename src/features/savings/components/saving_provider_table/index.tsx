@@ -1,15 +1,19 @@
 /* eslint-disable max-len */
+import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { IoIosRemoveCircle } from 'react-icons/io';
 
+import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/savings/zustand';
 import { SavingProviderTableRow } from '../../hooks/use_savings_state';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button } from '@components';
 
 interface SavingProviderTableProps {
-  data: SavingProviderTableRow;
+  data: SavingProviderTableRow[];
 }
 
-export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data: { id, name, icon, accounts } }) => {
+export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data }) => {
   const {
     updateOpenDeleteAccountModal,
     updateOpenAddNewAccountModal,
@@ -18,59 +22,45 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data: 
     updateOpenEditAccountBalanceModal,
     populateEditAccountBalanceModalState,
   } = store();
+  const { symbol, error: displayCurrencyError } = useDisplayCurrency();
 
   return (
-    <table className="min-w-full">
-      <tbody className="bg-white">
-        <tr>
-          <th colSpan={5} scope="colgroup" className="bg-gray-100 px-4">
-            <div className="flex flex-row items-center justify-between py-2">
-              <img src={icon} alt={name} className="h-16 w-24 object-scale-down" />
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  populateAddNewAccountModalState(id);
-                  updateOpenAddNewAccountModal(true);
-                }}
-                className="text-sm font-medium text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-              >
-                Add New Account
-              </a>
-            </div>
-          </th>
-        </tr>
-        {accounts.map(({ id, name, balance, accountTypeId, currency: { id: currencyId, symbol } }) => (
-          <tr key={id} className="border-t border-gray-300">
-            <td className="w-1/4 whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">{name}</td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(balance).toFormat(2)}`}</td>
-            <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
-              <div className="flex flex-row justify-end">
-                {/* <a
-                  onClick={(e) => {
-                    e.preventDefault();
-                    populateEditAccountBalanceModalState({ balance, currencyId, accountTypeId });
-                    updateOpenEditAccountBalanceModal(true);
-                  }}
-                  className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-                >
-                  Edit
-                </a> */}
-                <a
-                  onClick={(e) => {
-                    e.preventDefault();
-                    populateDeleteAccountModalState(id);
-                    updateOpenDeleteAccountModal(true);
-                  }}
-                  className="ml-4 text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-                >
-                  Delete
-                </a>
+    <Accordion className="mt-8">
+      {data.map(({ id, name, icon, accounts }, providerIndex) => (
+        <AccordionItem value={id} className={clsx({ 'border-t border-gray-200': providerIndex !== 0 })}>
+          <AccordionTrigger className="!py-0">
+            <img src={icon} alt={name} className="h-16 w-24 object-scale-down" />
+          </AccordionTrigger>
+          <AccordionContent className="bg-white px-4 py-2">
+            {accounts.map(({ id: accountId, name, balance }, accountIndex) => (
+              <div className={clsx('grid grid-cols-8 gap-x-2 py-4', { 'border-t border-gray-200': accountIndex !== 0 })}>
+                <h4 className="col-span-3 text-sm font-medium text-gray-900">{name}</h4>
+                <h4 className="col-span-3 text-sm text-gray-500">{`${symbol} ${new BigNumber(balance).toFormat(2)}`}</h4>
+                <span className="col-span-2 flex flex-row items-center justify-end">
+                  <IoIosRemoveCircle
+                    className="h-4 w-4 text-gray-600 hover:cursor-pointer"
+                    onClick={() => {
+                      populateDeleteAccountModalState(accountId);
+                      updateOpenDeleteAccountModal(true);
+                    }}
+                  />
+                </span>
               </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+            ))}
+            <Button
+              variant="outlined"
+              className="my-4 w-full text-xs"
+              onClick={() => {
+                populateAddNewAccountModalState(id);
+                updateOpenAddNewAccountModal(true);
+              }}
+            >
+              Add New Account
+            </Button>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 };
 

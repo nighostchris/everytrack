@@ -9,7 +9,7 @@ export const AccordionContent = React.forwardRef<React.ElementRef<typeof Content
       className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
       {...props}
     >
-      <div className={clsx('pb-4 pt-0', className)}>{children}</div>
+      <div className={clsx(className)}>{children}</div>
     </Content>
   ),
 );
