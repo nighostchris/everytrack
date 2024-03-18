@@ -42,7 +42,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 '!pl-10': icon && icon.orientation === 'leading',
                 '!pr-10': icon && icon.orientation === 'trailing',
               },
-              'h-9 w-full rounded-md px-3 py-1 focus:border-none focus:outline-none focus:ring-1 focus:ring-gray-500 sm:text-sm',
+              'h-9 w-full rounded-md px-3 py-1 text-sm focus:border-none focus:outline-none focus:ring-1 focus:ring-gray-500',
             )}
           />
           {!error && icon && icon.orientation === 'trailing' && (

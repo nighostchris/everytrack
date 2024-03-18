@@ -12,7 +12,7 @@ export const SelectItem = React.forwardRef<React.ElementRef<typeof Item>, React.
         {...props}
         className={clsx(
           className,
-          'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-medium outline-none focus:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:focus:bg-slate-700',
+          'relative flex cursor-default select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-gray-800 outline-none focus:bg-gray-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         )}
       >
         <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">

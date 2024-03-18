@@ -13,7 +13,7 @@ export const SelectContent = React.forwardRef<React.ElementRef<typeof Content>, 
           position={position}
           className={clsx(
             className,
-            'animate-in fade-in-80 relative z-50 max-h-64 min-w-[8rem] overflow-hidden rounded-md border border-slate-100 bg-white text-slate-700 shadow-md dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400',
+            'animate-in fade-in-80 relative z-50 max-h-64 min-w-[8rem] overflow-hidden rounded-md border border-gray-200 bg-white shadow-md',
           )}
         >
           <Viewport className={clsx('p-1', { 'w-full min-w-[var(--radix-select-trigger-width)]': position === 'popper' })}>

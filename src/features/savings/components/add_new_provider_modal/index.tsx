@@ -6,9 +6,9 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
-import { createNewAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
+import { Account, createNewAccount } from '@api/everytrack_backend';
 import { useCountries, useCurrencies, useBankAccounts, useBankDetails } from '@hooks';
+import { Button, Dialog, Input, HookedSelect, SelectOption, ComboboxGroups, HookedSingleCombobox } from '@components';
 
 const addNewProviderFormSchema = z.object({
   name: z.string(),
@@ -31,6 +31,7 @@ export const AddNewProviderModal: React.FC = () => {
     watch,
     control,
     register,
+    setValue,
     handleSubmit,
     formState: { errors, isSubmitSuccessful },
   } = useForm<z.infer<typeof addNewProviderFormSchema>>({
@@ -42,29 +43,35 @@ export const AddNewProviderModal: React.FC = () => {
     },
     resolver: zodResolver(addNewProviderFormSchema),
   });
-  const watchSelectedCountry = watch('countryId');
   const watchSelectedCurrency = watch('currencyId');
   const watchSelectedBank = watch('assetProviderId');
 
-  const countryOptions: SelectOption[] = React.useMemo(
-    () => (countries ? countries.map(({ id, name }) => ({ value: id, display: name })) : []),
-    [countries],
-  );
+  const providerCountryIdMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    if (bankDetails) {
+      bankDetails.forEach(({ id, countryId }) => map.set(id, countryId));
+    }
+    return map;
+  }, [bankDetails]);
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map(({ id, ticker }) => ({ value: id, display: ticker })) : []),
     [currencies],
   );
-  const bankOptions: SelectOption[] = React.useMemo(
-    () =>
-      bankDetails && bankAccounts && watchSelectedCountry
-        ? bankDetails
-            .filter(({ countryId }) => countryId === watchSelectedCountry)
-            .map(({ id, name }) => ({ value: id, display: name }))
-            .filter(({ value }) => !bankAccounts.some(({ assetProviderId }) => value === assetProviderId))
-            .sort((a, b) => (a.display > b.display ? 1 : -1))
-        : [],
-    [bankDetails, bankAccounts, watchSelectedCountry],
-  );
+  const bankByCountryGroups: ComboboxGroups = React.useMemo(() => {
+    if (countries && bankDetails && bankAccounts) {
+      const providerExistenceMap = new Map<string, boolean>();
+      bankAccounts.forEach(({ assetProviderId }) => providerExistenceMap.set(assetProviderId, true));
+      return countries.reduce((acc, { id, code }) => {
+        const originalGroups = { ...acc };
+        const potentialNewGroupItems = bankDetails
+          .filter(({ id: assetProviderId, countryId }) => id === countryId && !providerExistenceMap.has(assetProviderId))
+          .map(({ id, name }) => ({ value: id, display: name }))
+          .sort((a, b) => (a.display > b.display ? 1 : -1));
+        return potentialNewGroupItems.length > 0 ? { ...acc, [code]: potentialNewGroupItems } : originalGroups;
+      }, {});
+    }
+    return {};
+  }, [countries, bankDetails, bankAccounts]);
 
   const onSubmitAddNewProviderForm = async (data: any) => {
     setIsLoading(true);
@@ -89,30 +96,25 @@ export const AddNewProviderModal: React.FC = () => {
     }
   }, [isSubmitSuccessful]);
 
+  React.useEffect(() => {
+    if (bankDetails && watchSelectedBank) {
+      setValue('countryId', providerCountryIdMap.get(watchSelectedBank)!);
+    }
+  }, [bankDetails, watchSelectedBank]);
+
   return (
-    <Dialog open={open}>
-      <div className="rounded-t-md bg-white p-6 sm:p-6">
+    <Dialog open={open} className="md:max-w-sm">
+      <div className="rounded-t-md bg-white px-4 pb-6 pt-5 md:px-6 md:py-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Provider</h3>
-        <HookedSelect
-          label="Country"
-          formId="countryId"
+        <HookedSingleCombobox
+          label="Bank"
+          formId="assetProviderId"
+          groups={bankByCountryGroups}
+          placeholder="Select bank..."
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
-          options={countryOptions}
-          placeholder="Select country of bank..."
-          error={errors.countryId && errors.countryId.message?.toString()}
+          error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
         />
-        {watchSelectedCountry && (
-          <HookedSelect
-            label="Bank"
-            formId="assetProviderId"
-            control={control as Control<any, any>}
-            className="mt-4 !max-w-none"
-            options={bankOptions}
-            placeholder="Select bank..."
-            error={errors.assetProviderId && errors.assetProviderId.message?.toString()}
-          />
-        )}
         {watchSelectedBank && (
           <HookedSelect
             label="Currency"
@@ -128,21 +130,24 @@ export const AddNewProviderModal: React.FC = () => {
           <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
-      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+      <div className="flex flex-col space-y-2 rounded-b-md bg-gray-50 px-4 py-5 md:flex-row-reverse md:space-y-0 md:px-6 md:py-3">
         <Button
           type="button"
           variant="contained"
           isLoading={isLoading}
           onClick={handleSubmit(onSubmitAddNewProviderForm)}
-          className="w-full sm:ml-2 sm:w-28"
+          className="w-full md:ml-2 md:w-fit"
         >
           Add
         </Button>
         <Button
           type="button"
           variant="outlined"
-          onClick={() => setOpen(false)}
-          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 hover:!text-gray-800 sm:mt-0 sm:w-28"
+          onClick={() => {
+            reset();
+            setOpen(false);
+          }}
+          className="w-full !text-gray-700 md:w-fit"
         >
           Cancel
         </Button>

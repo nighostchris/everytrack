@@ -168,12 +168,7 @@ export const AddNewTransactionModal: React.FC = () => {
           >
             {stage === 0 ? 'Next' : 'Add'}
           </Button>
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={() => setOpen(false)}
-            className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 md:w-fit"
-          >
+          <Button type="button" variant="outlined" onClick={() => setOpen(false)} className="w-full !text-gray-700 md:w-fit">
             Cancel
           </Button>
         </div>
