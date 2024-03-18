@@ -15,7 +15,6 @@ import {
   AddNewProviderModal,
   SavingProviderTable,
   EditCashBalanceModal,
-  EditAccountBalanceModal,
 } from '@features/savings/components';
 import { StatCard } from '@components';
 import { useDisplayCurrency } from '@hooks';
@@ -32,7 +31,6 @@ export const SavingsPage: React.FC = () => {
     openAddNewAccountModal,
     openDeleteAccountModal,
     openAddNewProviderModal,
-    openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
   } = store(
     useShallow(
@@ -43,7 +41,6 @@ export const SavingsPage: React.FC = () => {
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
-        openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
       }) => ({
         openEditCashModal,
@@ -52,7 +49,6 @@ export const SavingsPage: React.FC = () => {
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
-        openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
       }),
     ),
@@ -68,7 +64,6 @@ export const SavingsPage: React.FC = () => {
       <DeleteAccountModal />
       <AddNewProviderModal />
       <EditCashBalanceModal />
-      <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-8 py-6', {
           'z-0':
@@ -76,7 +71,6 @@ export const SavingsPage: React.FC = () => {
             openAddNewCashModal ||
             openAddNewProviderModal ||
             openDeleteAccountModal ||
-            openEditAccountBalanceModal ||
             openAddNewAccountModal ||
             openDeleteCashModal,
           'z-10':
@@ -85,7 +79,6 @@ export const SavingsPage: React.FC = () => {
             !openAddNewCashModal &&
             !openAddNewProviderModal &&
             !openDeleteAccountModal &&
-            !openEditAccountBalanceModal &&
             !openAddNewAccountModal,
         })}
       >
@@ -107,13 +100,7 @@ export const SavingsPage: React.FC = () => {
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
         </StatCard>
-        {savingProviderTableRows.map((row) => (
-          <div key={`provider-table-${row.id}`} className="mt-8 flex flex-col">
-            <div className="overflow-x-auto rounded-lg border border-gray-300">
-              <SavingProviderTable data={row} />
-            </div>
-          </div>
-        ))}
+        <SavingProviderTable data={savingProviderTableRows} />
         <div className="mt-8 flex flex-col">
           <div className="overflow-x-auto rounded-lg border border-gray-300">
             <CashTable data={cashTableRecords} />

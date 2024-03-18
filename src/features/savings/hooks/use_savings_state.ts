@@ -1,7 +1,9 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { Currency } from '@api/everytrack_backend';
 import { store as globalStore } from '@lib/zustand';
+import { generateSavingProviderTableRows } from '../utils';
 import { canAddNewProvider, calculateDisplayAmount } from '@utils';
 import { useCash, useCurrencies, useBankDetails, useBankAccounts, useExchangeRates } from '@hooks';
 
@@ -20,6 +22,7 @@ export interface SavingProviderTableRow {
   id: string;
   name: string;
   icon: string;
+  balance: string;
   accounts: SavingProviderTableAccount[];
 }
 
@@ -52,6 +55,12 @@ export const useSavingsState = () => {
     [fetchCashError, fetchCurrenciesError, fetchBankDetailsError, fetchBankAccountsError, fetchExchangeRatesError],
   );
 
+  const currenciesMap = React.useMemo(() => {
+    const map: Map<string, Currency> = new Map();
+    (currencies ?? []).forEach((currency) => map.set(currency.id, currency));
+    return map;
+  }, [currencies]);
+
   const totalBalance = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
     if (cash && bankAccounts && exchangeRates && currencyId) {
@@ -65,34 +74,13 @@ export const useSavingsState = () => {
     return totalBalance.toFormat(2);
   }, [cash, currencyId, bankAccounts, exchangeRates]);
 
-  const savingProviderTableRows = React.useMemo(() => {
-    const currenciesMap = new Map<string, string>();
-    const bankDetailsMap = new Map<string, SavingProviderTableRow>();
-    const result: SavingProviderTableRow[] = [];
-    if (bankDetails && bankAccounts && currencies) {
-      // Generate a currency map
-      currencies.forEach(({ id, symbol }) => currenciesMap.set(id, symbol));
-      // Generate a bank detail map
-      bankDetails.forEach(({ id, name, icon }) => bankDetailsMap.set(id, { id, name, icon, accounts: [] }));
-      bankAccounts.forEach(({ id, name, balance, currencyId, accountTypeId, assetProviderId }) => {
-        const savingProviderTableRow = bankDetailsMap.get(assetProviderId) as SavingProviderTableRow;
-        bankDetailsMap.set(assetProviderId, {
-          ...savingProviderTableRow,
-          accounts: [
-            ...savingProviderTableRow.accounts,
-            { id, name, balance, accountTypeId, currency: { id: currencyId, symbol: currenciesMap.get(currencyId) as string } },
-          ].sort((a, b) => (a.name > b.name ? 1 : -1)),
-        });
-      });
-      // Extract all entries in bankDetailsMap into result array
-      Array.from(bankDetailsMap.values()).forEach((savingProviderTableRow) => {
-        if (savingProviderTableRow.accounts.length > 0) {
-          result.push(savingProviderTableRow);
-        }
-      });
-    }
-    return result.sort((a, b) => (a.name > b.name ? 1 : -1));
-  }, [bankDetails, bankAccounts, currencies]);
+  const savingProviderTableRows = React.useMemo(
+    () =>
+      currencyId && currencies && bankDetails && bankAccounts && exchangeRates
+        ? generateSavingProviderTableRows(currencyId, bankAccounts, bankDetails, exchangeRates, currenciesMap)
+        : [],
+    [currencyId, currencies, bankDetails, bankAccounts, exchangeRates],
+  );
 
   const cashTableRecords = React.useMemo(() => {
     const currenciesMap = new Map<string, { ticker: string; symbol: string }>();
