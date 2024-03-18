@@ -65,7 +65,7 @@ export const SavingsPage: React.FC = () => {
       <AddNewProviderModal />
       <EditCashBalanceModal />
       <div
-        className={clsx('relative h-full overflow-y-auto px-8 py-6', {
+        className={clsx('relative h-full overflow-y-auto px-6 py-6 md:px-8', {
           'z-0':
             openEditCashModal ||
             openAddNewCashModal ||
