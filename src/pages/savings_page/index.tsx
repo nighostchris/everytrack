@@ -15,7 +15,6 @@ import {
   AddNewProviderModal,
   SavingProviderTable,
   EditCashBalanceModal,
-  EditAccountBalanceModal,
 } from '@features/savings/components';
 import { StatCard } from '@components';
 import { useDisplayCurrency } from '@hooks';
@@ -32,7 +31,6 @@ export const SavingsPage: React.FC = () => {
     openAddNewAccountModal,
     openDeleteAccountModal,
     openAddNewProviderModal,
-    openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
   } = store(
     useShallow(
@@ -43,7 +41,6 @@ export const SavingsPage: React.FC = () => {
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
-        openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
       }) => ({
         openEditCashModal,
@@ -52,7 +49,6 @@ export const SavingsPage: React.FC = () => {
         openAddNewAccountModal,
         openDeleteAccountModal,
         openAddNewProviderModal,
-        openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
       }),
     ),
@@ -68,7 +64,6 @@ export const SavingsPage: React.FC = () => {
       <DeleteAccountModal />
       <AddNewProviderModal />
       <EditCashBalanceModal />
-      <EditAccountBalanceModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-8 py-6', {
           'z-0':
@@ -76,7 +71,6 @@ export const SavingsPage: React.FC = () => {
             openAddNewCashModal ||
             openAddNewProviderModal ||
             openDeleteAccountModal ||
-            openEditAccountBalanceModal ||
             openAddNewAccountModal ||
             openDeleteCashModal,
           'z-10':
@@ -85,7 +79,6 @@ export const SavingsPage: React.FC = () => {
             !openAddNewCashModal &&
             !openAddNewProviderModal &&
             !openDeleteAccountModal &&
-            !openEditAccountBalanceModal &&
             !openAddNewAccountModal,
         })}
       >
