@@ -125,11 +125,11 @@ export const BrokersPage: React.FC = () => {
                 </span>
                 <p className="text-xs">{title}</p>
                 <p
-                  className={clsx('overflow-x-hidden text-ellipsis text-base font-medium md:text-xl', {
+                  className={clsx('overflow-x-hidden text-ellipsis text-base font-medium', {
                     'text-green-800': index % 2 === 1 && new BigNumber(value ?? 0).isPositive(),
                     'text-red-800': index % 2 === 1 && new BigNumber(value ?? 0).isNegative(),
                   })}
-                >{`${symbol}${new BigNumber(value ?? 0).toFormat(2)}`}</p>
+                >{`${symbol} ${new BigNumber(value ?? 0).toFormat(2)}`}</p>
               </Card>
             ))}
           </div>

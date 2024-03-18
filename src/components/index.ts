@@ -13,6 +13,7 @@ export * from './spinner';
 export * from './combobox';
 export * from './timeline';
 export * from './calendar';
+export * from './accordion';
 export * from './radio_group';
 export * from './date_picker';
 export * from './dropdown_menu';

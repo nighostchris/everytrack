@@ -17,7 +17,7 @@ import {
   EditCashBalanceModal,
   EditAccountBalanceModal,
 } from '@features/savings/components';
-import { StatCard } from '@components';
+import { Accordion, StatCard } from '@components';
 import { useDisplayCurrency } from '@hooks';
 import { store } from '@features/savings/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
@@ -107,6 +107,7 @@ export const SavingsPage: React.FC = () => {
         <StatCard title="Total Balance" icon={FaSackDollar} className="mt-6 sm:max-w-xs">
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
         </StatCard>
+        <Accordion className="mt-8" />
         {savingProviderTableRows.map((row) => (
           <div key={`provider-table-${row.id}`} className="mt-8 flex flex-col">
             <div className="overflow-x-auto rounded-lg border border-gray-300">
