@@ -2,6 +2,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { VscEdit } from 'react-icons/vsc';
 import { useShallow } from 'zustand/react/shallow';
 import { IoIosRemoveCircle } from 'react-icons/io';
 
@@ -15,22 +16,32 @@ interface SavingProviderTableProps {
 }
 
 export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data }) => {
-  const { updateOpenDeleteAccountModal, updateOpenAddNewAccountModal, populateDeleteAccountModalState, populateAddNewAccountModalState } =
-    store(
-      useShallow(
-        ({
-          updateOpenDeleteAccountModal,
-          updateOpenAddNewAccountModal,
-          populateDeleteAccountModalState,
-          populateAddNewAccountModalState,
-        }) => ({
-          updateOpenDeleteAccountModal,
-          updateOpenAddNewAccountModal,
-          populateDeleteAccountModalState,
-          populateAddNewAccountModalState,
-        }),
-      ),
-    );
+  const {
+    updateOpenDeleteAccountModal,
+    updateOpenAddNewAccountModal,
+    populateDeleteAccountModalState,
+    populateAddNewAccountModalState,
+    updateOpenEditAccountBalanceModal,
+    populateEditAccountBalanceModalState,
+  } = store(
+    useShallow(
+      ({
+        updateOpenDeleteAccountModal,
+        updateOpenAddNewAccountModal,
+        populateDeleteAccountModalState,
+        populateAddNewAccountModalState,
+        updateOpenEditAccountBalanceModal,
+        populateEditAccountBalanceModalState,
+      }) => ({
+        updateOpenDeleteAccountModal,
+        updateOpenAddNewAccountModal,
+        populateDeleteAccountModalState,
+        populateAddNewAccountModalState,
+        updateOpenEditAccountBalanceModal,
+        populateEditAccountBalanceModalState,
+      }),
+    ),
+  );
   const { symbol: globalSymbol, error: displayCurrencyError } = useDisplayCurrency();
 
   return (
@@ -52,23 +63,32 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data }
             </div>
           </AccordionTrigger>
           <AccordionContent className="bg-white py-2">
-            {accounts.map(({ id: accountId, name, balance: accountBalance, currency: { symbol } }, accountIndex) => (
-              <div className={clsx('grid grid-cols-8 gap-x-2 py-4', { 'border-t border-gray-200': accountIndex !== 0 })}>
-                <h4 className="col-span-3 text-sm text-gray-900">{name}</h4>
-                <span className="col-span-3 flex flex-row items-center">
-                  <h4 className="text-sm text-gray-500">{`${symbol}${new BigNumber(accountBalance).toFormat(2)}`}</h4>
-                </span>
-                <span className="col-span-2 flex flex-row items-center justify-end">
-                  <IoIosRemoveCircle
-                    className="h-4 w-4 text-gray-600 hover:cursor-pointer"
-                    onClick={() => {
-                      populateDeleteAccountModalState(accountId);
-                      updateOpenDeleteAccountModal(true);
-                    }}
-                  />
-                </span>
-              </div>
-            ))}
+            {accounts.map(
+              ({ id: accountId, name, balance: accountBalance, currency: { id: currencyId, symbol }, accountTypeId }, accountIndex) => (
+                <div className={clsx('grid grid-cols-8 gap-x-2 py-4', { 'border-t border-gray-200': accountIndex !== 0 })}>
+                  <h4 className="col-span-3 text-sm text-gray-900">{name}</h4>
+                  <span className="col-span-3 flex flex-row items-center">
+                    <h4 className="text-sm text-gray-500">{`${symbol}${new BigNumber(accountBalance).toFormat(2)}`}</h4>
+                  </span>
+                  <span className="col-span-2 flex flex-row items-center justify-end space-x-4">
+                    <VscEdit
+                      className="h-4 w-4 hover:cursor-pointer"
+                      onClick={() => {
+                        populateEditAccountBalanceModalState({ balance: accountBalance, currencyId, accountTypeId });
+                        updateOpenEditAccountBalanceModal(true);
+                      }}
+                    />
+                    <IoIosRemoveCircle
+                      className="h-4 w-4 text-gray-600 hover:cursor-pointer"
+                      onClick={() => {
+                        populateDeleteAccountModalState(accountId);
+                        updateOpenDeleteAccountModal(true);
+                      }}
+                    />
+                  </span>
+                </div>
+              ),
+            )}
             <Button
               variant="outlined"
               className="my-4 w-full text-xs"

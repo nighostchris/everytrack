@@ -14,6 +14,16 @@ export type ModalStateSlice = {
   openAddNewAccountModal: boolean;
   openDeleteAccountModal: boolean;
   openAddNewProviderModal: boolean;
+  openEditAccountBalanceModal: boolean;
+  populateEditAccountBalanceModalState: ({
+    balance,
+    currencyId,
+    accountTypeId,
+  }: {
+    balance: string;
+    currencyId: string;
+    accountTypeId: string;
+  }) => void;
   resetEditCashModalState: () => void;
   resetDeleteCashModalState: () => void;
   resetAddNewAccountModalState: () => void;
@@ -28,6 +38,7 @@ export type ModalStateSlice = {
   updateOpenAddNewAccountModal: (newModalState: boolean) => void;
   updateOpenAddNewProviderModal: (newModalState: boolean) => void;
   populateAddNewAccountModalState: (assetProviderId: string) => void;
+  updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
   populateEditCashModalState: ({ id, amount, currencyId }: { id: string; amount: string; currencyId: string }) => void;
 };
 

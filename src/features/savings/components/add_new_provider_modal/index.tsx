@@ -6,7 +6,7 @@ import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '@features/savings/zustand';
-import { Account, createNewAccount } from '@api/everytrack_backend';
+import { createNewAccount } from '@api/everytrack_backend';
 import { useCountries, useCurrencies, useBankAccounts, useBankDetails } from '@hooks';
 import { Button, Dialog, Input, HookedSelect, SelectOption, ComboboxGroups, HookedSingleCombobox } from '@components';
 
