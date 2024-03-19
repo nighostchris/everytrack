@@ -13,9 +13,12 @@ import { Button, Dialog, Input, ComboboxGroups, HookedSingleCombobox } from '@co
 import { useCountries, useCurrencies, useBankAccounts, useBankDetails, useTransactions } from '@hooks';
 
 const transferBetweenAccountsFormSchema = z.object({
-  amount: z.string(),
-  sourceAccountId: z.string(),
-  targetAccountId: z.string(),
+  amount: z.coerce
+    .number()
+    .positive('Amount must be greater than 0')
+    .transform((input) => String(input)),
+  sourceAccountId: z.string().min(1, 'Invalid source account'),
+  targetAccountId: z.string().min(1, 'Invalid target account'),
 });
 
 export const TransferBetweenAccountsModal: React.FC = () => {
@@ -54,9 +57,10 @@ export const TransferBetweenAccountsModal: React.FC = () => {
         currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
         const bankDetailsMap = new Map<string, Provider>();
         bankDetails.forEach((bankDetail) => bankDetailsMap.set(bankDetail.id, bankDetail));
-        const bankAccountToCountryIdMap = new Map<string, { countryId: string; assetProviderName: string }>();
-        bankAccounts.forEach(({ id: bankAccountId, assetProviderId }) =>
-          bankAccountToCountryIdMap.set(bankAccountId, {
+        const bankAccountDetailsMap = new Map<string, { countryId: string; currencyId: string; assetProviderName: string }>();
+        bankAccounts.forEach(({ id: bankAccountId, assetProviderId, currencyId }) =>
+          bankAccountDetailsMap.set(bankAccountId, {
+            currencyId,
             countryId: bankDetailsMap.get(assetProviderId)!.countryId,
             assetProviderName: bankDetailsMap.get(assetProviderId)!.name,
           }),
@@ -65,14 +69,15 @@ export const TransferBetweenAccountsModal: React.FC = () => {
           const originalGroups = { ...acc };
           const potentialNewGroupItems = bankAccounts
             .filter(
-              ({ id: bankAccountId, balance }) =>
+              ({ id: bankAccountId, balance, currencyId }) =>
                 (enableRecipients ? bankAccountId !== watchSourceAccountId : true) &&
                 (enableRecipients ? true : new BigNumber(balance).isGreaterThan(0)) &&
-                id === bankAccountToCountryIdMap.get(bankAccountId)!.countryId,
+                (enableRecipients ? currencyId === bankAccountDetailsMap.get(watchSourceAccountId)!.currencyId : true) &&
+                id === bankAccountDetailsMap.get(bankAccountId)!.countryId,
             )
             .map(({ id: bankAccountId, name, balance, currencyId }) => ({
               value: bankAccountId,
-              display: `${bankAccountToCountryIdMap.get(bankAccountId)!.assetProviderName}(${name}) - ${currenciesMap.get(currencyId)!.symbol}${balance}`,
+              display: `${bankAccountDetailsMap.get(bankAccountId)!.assetProviderName}(${name}) - ${currenciesMap.get(currencyId)!.symbol}${balance}`,
             }))
             .sort((a, b) => (a.display > b.display ? 1 : -1));
           return potentialNewGroupItems.length > 0 ? { ...acc, [code]: potentialNewGroupItems } : originalGroups;
