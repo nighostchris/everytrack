@@ -10,7 +10,9 @@ export const createGlobalStateSlice: StateCreator<
 > = (set) => ({
   username: undefined,
   currencyId: undefined,
+  openTransferBetweenAccountModal: false,
   updateUsername: (newUsername) => set((state) => ({ ...state, username: newUsername })),
   updateCurrencyId: (newCurrencyId) => set((state) => ({ ...state, currencyId: newCurrencyId })),
   updateClientSettings: ({ username, currencyId }) => set((state) => ({ ...state, username, currencyId })),
+  updateOpenTransferBetweenAccountModal: (newModalState) => set((state) => ({ ...state, openTransferBetweenAccountModal: newModalState })),
 });

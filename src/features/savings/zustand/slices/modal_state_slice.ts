@@ -22,7 +22,6 @@ export const createModalStateSlice: StateCreator<
   openDeleteAccountModal: false,
   openAddNewProviderModal: false,
   openEditAccountBalanceModal: false,
-  openTransferBetweenAccountModal: false,
   populateEditAccountBalanceModalState: ({ balance, currencyId, accountTypeId }) =>
     set((state) => ({ ...state, balance, currencyId, accountTypeId })),
   resetDeleteCashModalState: () => set((state) => ({ ...state, cashId: undefined })),
@@ -42,5 +41,4 @@ export const createModalStateSlice: StateCreator<
   resetEditCashModalState: () => set((state) => ({ ...state, cashId: undefined, amount: undefined, currencyId: undefined })),
   populateEditCashModalState: ({ id, amount, currencyId }) => set((state) => ({ ...state, cashId: id, amount, currencyId })),
   updateOpenEditAccountBalanceModal: (newModalState) => set((state) => ({ ...state, openEditAccountBalanceModal: newModalState })),
-  updateOpenTransferBetweenAccountModal: (newModalState) => set((state) => ({ ...state, openTransferBetweenAccountModal: newModalState })),
 });

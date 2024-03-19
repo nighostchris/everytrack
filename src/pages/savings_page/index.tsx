@@ -16,12 +16,13 @@ import {
   SavingProviderTable,
   EditCashBalanceModal,
   EditAccountBalanceModal,
-  TransferBetweenAccountsModal,
 } from '@features/savings/components';
 import { useDisplayCurrency } from '@hooks';
 import { Button, StatCard } from '@components';
-import { store } from '@features/savings/zustand';
+import { store as savingsStore } from '@features/savings/zustand';
+import { store as accountsStore } from '@features/accounts/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
+import { TransferBetweenAccountsModal } from '@features/accounts/components';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -35,9 +36,7 @@ export const SavingsPage: React.FC = () => {
     openAddNewProviderModal,
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
-    openTransferBetweenAccountModal,
-    updateOpenTransferBetweenAccountModal,
-  } = store(
+  } = savingsStore(
     useShallow(
       ({
         openEditCashModal,
@@ -48,8 +47,6 @@ export const SavingsPage: React.FC = () => {
         openAddNewProviderModal,
         openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
-        openTransferBetweenAccountModal,
-        updateOpenTransferBetweenAccountModal,
       }) => ({
         openEditCashModal,
         openAddNewCashModal,
@@ -59,10 +56,14 @@ export const SavingsPage: React.FC = () => {
         openAddNewProviderModal,
         openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
-        openTransferBetweenAccountModal,
-        updateOpenTransferBetweenAccountModal,
       }),
     ),
+  );
+  const { openTransferBetweenAccountModal, updateOpenTransferBetweenAccountModal } = accountsStore(
+    useShallow(({ openTransferBetweenAccountModal, updateOpenTransferBetweenAccountModal }) => ({
+      openTransferBetweenAccountModal,
+      updateOpenTransferBetweenAccountModal,
+    })),
   );
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
   const { error: savingsStateError, totalBalance, enableAddNewProvider, savingProviderTableRows, cashTableRecords } = useSavingsState();

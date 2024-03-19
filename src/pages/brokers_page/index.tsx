@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 import { GiMoneyStack } from 'react-icons/gi';
 import { AiOutlineStock } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
+import { useShallow } from 'zustand/react/shallow';
 import { FaSackDollar, FaMoneyBillTrendUp } from 'react-icons/fa6';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,13 +23,26 @@ import {
   StockHoldingDistributionChart,
 } from '@features/brokers/components';
 import { useDisplayCurrency } from '@hooks';
-import { store } from '@features/brokers/zustand';
+import { store as brokersStore } from '@features/brokers/zustand';
+import { store as accountsStore } from '@features/accounts/zustand';
 import { Button, Select, type SelectOption, Card } from '@components';
 import { useBrokersState } from '@features/brokers/hooks/use_brokers_state';
+import { TransferBetweenAccountsModal } from '@features/accounts/components';
 
 export const BrokersPage: React.FC = () => {
   const { symbol, error: displayCurrencyError } = useDisplayCurrency();
-  const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = store();
+  const { updateOpenTransferBetweenAccountModal } = accountsStore(
+    useShallow(({ updateOpenTransferBetweenAccountModal }) => ({
+      updateOpenTransferBetweenAccountModal,
+    })),
+  );
+  const { updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState } = brokersStore(
+    useShallow(({ updateOpenAddNewBrokerModal, updateOpenAddNewAccountModal, populateAddNewAccountModalState }) => ({
+      updateOpenAddNewBrokerModal,
+      updateOpenAddNewAccountModal,
+      populateAddNewAccountModalState,
+    })),
+  );
   const { brokers, brokerAccountMetrics, assetDistribution, enableAddNewProvider, error: brokersStateError } = useBrokersState();
 
   const [currentBrokerId, setCurrentBrokerId] = React.useState<string>();
@@ -57,10 +71,10 @@ export const BrokersPage: React.FC = () => {
   const brokerOptions: SelectOption[] = React.useMemo(() => brokers.map(({ id, name }) => ({ value: id, display: name })), [brokers]);
 
   React.useEffect(() => {
-    if (brokers.length > 0) {
+    if (brokers.length > 0 && !currentBrokerId) {
       setCurrentBrokerId(brokers[0].id);
     }
-  }, [brokers]);
+  }, [currentBrokerId, brokers]);
 
   return (
     <Root>
@@ -71,6 +85,7 @@ export const BrokersPage: React.FC = () => {
       <DeleteStockHoldingModal />
       <AddNewStockHoldingModal />
       <EditStockHoldingCostModal />
+      <TransferBetweenAccountsModal />
       <div className={clsx('relative h-full overflow-y-auto px-8 py-6')}>
         <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div className="flex flex-col space-y-1 md:space-y-2">
@@ -156,6 +171,9 @@ export const BrokersPage: React.FC = () => {
               }}
             >
               Add New Account
+            </Button>
+            <Button variant="outlined" className="mt-4 w-full text-xs" onClick={() => updateOpenTransferBetweenAccountModal(true)}>
+              Transfer Between Accounts
             </Button>
           </div>
         )}

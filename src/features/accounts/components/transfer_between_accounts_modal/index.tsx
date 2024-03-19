@@ -7,10 +7,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { Control, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { store } from '@features/savings/zustand';
+import { store } from '../../zustand';
 import { Currency, Provider, transferBetweenAccounts } from '@api/everytrack_backend';
 import { Button, Dialog, Input, ComboboxGroups, HookedSingleCombobox } from '@components';
-import { useCountries, useCurrencies, useBankAccounts, useBankDetails, useTransactions } from '@hooks';
+import { useCountries, useCurrencies, useBankAccounts, useBankDetails, useTransactions, useBrokerAccounts, useBrokerDetails } from '@hooks';
 
 const transferBetweenAccountsFormSchema = z.object({
   amount: z.coerce
@@ -25,8 +25,10 @@ export const TransferBetweenAccountsModal: React.FC = () => {
   const { countries } = useCountries();
   const { currencies } = useCurrencies();
   const { bankDetails } = useBankDetails();
+  const { brokerDetails } = useBrokerDetails();
   const { refetch: refetchTransactions } = useTransactions();
   const { bankAccounts, refetch: refetchBankAccounts } = useBankAccounts();
+  const { brokerAccounts, refetch: refetchBrokerAccounts } = useBrokerAccounts();
   const { open, setOpen } = store(
     useShallow(({ openTransferBetweenAccountModal: open, updateOpenTransferBetweenAccountModal: setOpen }) => ({ open, setOpen })),
   );
@@ -50,34 +52,34 @@ export const TransferBetweenAccountsModal: React.FC = () => {
   });
   const watchSourceAccountId = watch('sourceAccountId');
 
-  const bankAccountByCountryGroups: (enableRecipients: boolean) => ComboboxGroups = React.useCallback(
+  const accountByCountryGroups: (enableRecipients: boolean) => ComboboxGroups = React.useCallback(
     (enableRecipients) => {
-      if (countries && currencies && bankDetails && bankAccounts) {
+      if (countries && currencies && bankDetails && brokerDetails && bankAccounts && brokerAccounts) {
         const currenciesMap = new Map<string, Currency>();
         currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
-        const bankDetailsMap = new Map<string, Provider>();
-        bankDetails.forEach((bankDetail) => bankDetailsMap.set(bankDetail.id, bankDetail));
-        const bankAccountDetailsMap = new Map<string, { countryId: string; currencyId: string; assetProviderName: string }>();
-        bankAccounts.forEach(({ id: bankAccountId, assetProviderId, currencyId }) =>
-          bankAccountDetailsMap.set(bankAccountId, {
+        const assetProviderDetailsMap = new Map<string, Provider>();
+        [...bankDetails, ...brokerDetails].forEach((detail) => assetProviderDetailsMap.set(detail.id, detail));
+        const accountDetailsMap = new Map<string, { countryId: string; currencyId: string; assetProviderName: string }>();
+        [...bankAccounts, ...brokerAccounts].forEach(({ id: accountId, assetProviderId, currencyId }) =>
+          accountDetailsMap.set(accountId, {
             currencyId,
-            countryId: bankDetailsMap.get(assetProviderId)!.countryId,
-            assetProviderName: bankDetailsMap.get(assetProviderId)!.name,
+            countryId: assetProviderDetailsMap.get(assetProviderId)!.countryId,
+            assetProviderName: assetProviderDetailsMap.get(assetProviderId)!.name,
           }),
         );
         return countries.reduce((acc, { id, code }) => {
           const originalGroups = { ...acc };
-          const potentialNewGroupItems = bankAccounts
+          const potentialNewGroupItems = [...bankAccounts, ...brokerAccounts]
             .filter(
-              ({ id: bankAccountId, balance, currencyId }) =>
-                (enableRecipients ? bankAccountId !== watchSourceAccountId : true) &&
+              ({ id: accountId, balance, currencyId }) =>
+                (enableRecipients ? accountId !== watchSourceAccountId : true) &&
                 (enableRecipients ? true : new BigNumber(balance).isGreaterThan(0)) &&
-                (enableRecipients ? currencyId === bankAccountDetailsMap.get(watchSourceAccountId)!.currencyId : true) &&
-                id === bankAccountDetailsMap.get(bankAccountId)!.countryId,
+                (enableRecipients ? currencyId === accountDetailsMap.get(watchSourceAccountId)!.currencyId : true) &&
+                id === accountDetailsMap.get(accountId)!.countryId,
             )
-            .map(({ id: bankAccountId, name, balance, currencyId }) => ({
-              value: bankAccountId,
-              display: `${bankAccountDetailsMap.get(bankAccountId)!.assetProviderName}(${name}) - ${currenciesMap.get(currencyId)!.symbol}${balance}`,
+            .map(({ id: accountId, name, balance, currencyId }) => ({
+              value: accountId,
+              display: `${accountDetailsMap.get(accountId)!.assetProviderName}(${name}) - ${currenciesMap.get(currencyId)!.symbol}${balance}`,
             }))
             .sort((a, b) => (a.display > b.display ? 1 : -1));
           return potentialNewGroupItems.length > 0 ? { ...acc, [code]: potentialNewGroupItems } : originalGroups;
@@ -85,7 +87,7 @@ export const TransferBetweenAccountsModal: React.FC = () => {
       }
       return {};
     },
-    [countries, currencies, bankDetails, bankAccounts, watchSourceAccountId],
+    [countries, currencies, bankDetails, brokerDetails, bankAccounts, brokerAccounts, watchSourceAccountId],
   );
 
   const onSubmitTransferBetweenAccountsForm = async (data: any) => {
@@ -97,6 +99,7 @@ export const TransferBetweenAccountsModal: React.FC = () => {
         setOpen(false);
         refetchBankAccounts();
         refetchTransactions();
+        refetchBrokerAccounts();
       }
       setIsLoading(false);
       toast.info('Success!');
@@ -119,7 +122,7 @@ export const TransferBetweenAccountsModal: React.FC = () => {
         <HookedSingleCombobox
           label="Source Account"
           formId="sourceAccountId"
-          groups={bankAccountByCountryGroups(false)}
+          groups={accountByCountryGroups(false)}
           placeholder="Select source account..."
           control={control as Control<any, any>}
           className="mt-4 !max-w-none"
@@ -130,7 +133,7 @@ export const TransferBetweenAccountsModal: React.FC = () => {
             <HookedSingleCombobox
               label="Target Account"
               formId="targetAccountId"
-              groups={bankAccountByCountryGroups(true)}
+              groups={accountByCountryGroups(true)}
               placeholder="Select target account..."
               control={control as Control<any, any>}
               className="mt-4 !max-w-none"

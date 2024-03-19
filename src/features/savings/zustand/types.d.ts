@@ -15,7 +15,6 @@ export type ModalStateSlice = {
   openDeleteAccountModal: boolean;
   openAddNewProviderModal: boolean;
   openEditAccountBalanceModal: boolean;
-  openTransferBetweenAccountModal: boolean;
   populateEditAccountBalanceModalState: ({
     balance,
     currencyId,
@@ -40,7 +39,6 @@ export type ModalStateSlice = {
   updateOpenAddNewProviderModal: (newModalState: boolean) => void;
   populateAddNewAccountModalState: (assetProviderId: string) => void;
   updateOpenEditAccountBalanceModal: (newModalState: boolean) => void;
-  updateOpenTransferBetweenAccountModal: (newModalState: boolean) => void;
   populateEditCashModalState: ({ id, amount, currencyId }: { id: string; amount: string; currencyId: string }) => void;
 };
 
