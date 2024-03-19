@@ -19,6 +19,13 @@ export interface CreateNewAccountRequest {
   assetProviderId: string;
 }
 export interface CreateNewAccountResponse extends BaseResponse {}
+// POST /v1/accounts/transfer
+export interface TransferBetweenAccountsRequest {
+  amount: string;
+  sourceAccountId: string;
+  targetAccountId: string;
+}
+export interface TransferBetweenAccountsResponse extends BaseResponse {}
 // PUT /v1/accounts
 export interface UpdateAccountRequest {
   balance: string;

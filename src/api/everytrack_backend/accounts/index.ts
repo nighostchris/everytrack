@@ -9,6 +9,8 @@ import {
   GetAllAccountsResponse,
   CreateNewAccountRequest,
   CreateNewAccountResponse,
+  TransferBetweenAccountsRequest,
+  TransferBetweenAccountsResponse,
 } from '../types';
 import { client } from '../client';
 
@@ -36,6 +38,20 @@ export async function createNewAccount(params: CreateNewAccountRequest) {
       throw new Error('Unexpected error. Please try again.');
     }
     throw new Error((response.data as CreateNewAccountResponse).error);
+  }
+}
+
+export async function transferBetweenAccounts(params: TransferBetweenAccountsRequest) {
+  const { amount, sourceAccountId, targetAccountId } = params;
+  try {
+    const { data } = await client.post('/v1/accounts/transfer', { amount, sourceAccountId, targetAccountId });
+    return data as TransferBetweenAccountsResponse;
+  } catch (error) {
+    const { response } = error as AxiosError;
+    if (!response) {
+      throw new Error('Unexpected error. Please try again.');
+    }
+    throw new Error((response.data as TransferBetweenAccountsResponse).error);
   }
 }
 

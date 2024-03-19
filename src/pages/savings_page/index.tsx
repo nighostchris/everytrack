@@ -16,9 +16,10 @@ import {
   SavingProviderTable,
   EditCashBalanceModal,
   EditAccountBalanceModal,
+  TransferBetweenAccountsModal,
 } from '@features/savings/components';
-import { StatCard } from '@components';
 import { useDisplayCurrency } from '@hooks';
+import { Button, StatCard } from '@components';
 import { store } from '@features/savings/zustand';
 import { useSavingsState } from '@features/savings/hooks/use_savings_state';
 
@@ -34,6 +35,8 @@ export const SavingsPage: React.FC = () => {
     openAddNewProviderModal,
     openEditAccountBalanceModal,
     updateOpenAddNewProviderModal,
+    openTransferBetweenAccountModal,
+    updateOpenTransferBetweenAccountModal,
   } = store(
     useShallow(
       ({
@@ -45,6 +48,8 @@ export const SavingsPage: React.FC = () => {
         openAddNewProviderModal,
         openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
+        openTransferBetweenAccountModal,
+        updateOpenTransferBetweenAccountModal,
       }) => ({
         openEditCashModal,
         openAddNewCashModal,
@@ -54,6 +59,8 @@ export const SavingsPage: React.FC = () => {
         openAddNewProviderModal,
         openEditAccountBalanceModal,
         updateOpenAddNewProviderModal,
+        openTransferBetweenAccountModal,
+        updateOpenTransferBetweenAccountModal,
       }),
     ),
   );
@@ -69,6 +76,7 @@ export const SavingsPage: React.FC = () => {
       <AddNewProviderModal />
       <EditCashBalanceModal />
       <EditAccountBalanceModal />
+      <TransferBetweenAccountsModal />
       <div
         className={clsx('relative h-full overflow-y-auto px-6 py-6 md:px-8', {
           'z-0':
@@ -78,7 +86,8 @@ export const SavingsPage: React.FC = () => {
             openDeleteAccountModal ||
             openEditAccountBalanceModal ||
             openAddNewAccountModal ||
-            openDeleteCashModal,
+            openDeleteCashModal ||
+            openTransferBetweenAccountModal,
           'z-10':
             !openEditCashModal &&
             !openDeleteCashModal &&
@@ -86,7 +95,8 @@ export const SavingsPage: React.FC = () => {
             !openAddNewProviderModal &&
             !openDeleteAccountModal &&
             !openEditAccountBalanceModal &&
-            !openAddNewAccountModal,
+            !openAddNewAccountModal &&
+            !openTransferBetweenAccountModal,
         })}
       >
         <div className="sm:flex sm:items-center">
@@ -108,6 +118,9 @@ export const SavingsPage: React.FC = () => {
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
         </StatCard>
         <SavingProviderTable data={savingProviderTableRows} />
+        <Button variant="outlined" className="mt-4 w-full text-xs" onClick={() => updateOpenTransferBetweenAccountModal(true)}>
+          Transfer Between Accounts
+        </Button>
         <div className="mt-8 flex flex-col">
           <div className="overflow-x-auto rounded-lg border border-gray-300">
             <CashTable data={cashTableRecords} />
