@@ -89,16 +89,18 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data }
                 </div>
               ),
             )}
-            <Button
-              variant="outlined"
-              className="my-4 w-full text-xs"
-              onClick={() => {
-                populateAddNewAccountModalState(id);
-                updateOpenAddNewAccountModal(true);
-              }}
-            >
-              Add New Account
-            </Button>
+            <div className="my-4 flex flex-col space-y-3">
+              <Button
+                variant="outlined"
+                className="w-full text-xs"
+                onClick={() => {
+                  populateAddNewAccountModalState(id);
+                  updateOpenAddNewAccountModal(true);
+                }}
+              >
+                Add New Account
+              </Button>
+            </div>
           </AccordionContent>
         </AccordionItem>
       ))}
