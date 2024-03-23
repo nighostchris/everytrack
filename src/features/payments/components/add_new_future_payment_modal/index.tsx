@@ -11,7 +11,7 @@ import { store } from '../../zustand';
 import { TRANSACTION_CATEGORIES } from '@consts';
 import { useBankAccounts, useBrokerAccounts, useCurrencies, useFuturePayments } from '@hooks';
 import { Currency, TransactionCategory, createNewFuturePayment } from '@api/everytrack_backend';
-import { Button, DatePicker, Dialog, Input, RadioGroup, HookedSelect, SelectOption, Switch } from '@components';
+import { Button, DatePicker, Dialog, HookedInput, RadioGroup, HookedSelect, SelectOption, Switch } from '@components';
 
 export const AddNewFuturePaymentModal: React.FC = () => {
   const { currencies } = useCurrencies();
@@ -158,8 +158,8 @@ export const AddNewFuturePaymentModal: React.FC = () => {
       <div className="space-y-6 rounded-t-md bg-white p-6 sm:p-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Future Payment</h3>
         <div className="grid gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-0">
-          <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-          <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
+          <HookedInput label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
+          <HookedInput label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
           <HookedSelect
             label="Currency"
             formId="currencyId"
@@ -228,7 +228,13 @@ export const AddNewFuturePaymentModal: React.FC = () => {
             placeholder="Select category..."
             error={errors.category && errors.category.message?.toString()}
           />
-          <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+          <HookedInput
+            label="Remarks (optional)"
+            formId="remarks"
+            register={register}
+            error={errors.remarks?.message}
+            className="!max-w-none"
+          />
         </div>
       </div>
       <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

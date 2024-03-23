@@ -8,7 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Root } from '@layouts/root';
 import { store } from '@lib/zustand';
 import { useCurrencies } from '@hooks';
-import { Button, Input, HookedSelect, SelectOption } from '@components';
+import { Button, HookedInput, HookedSelect, SelectOption } from '@components';
 import { getAllClientSettings, updateSettings } from '@api/everytrack_backend';
 
 const updateSettingsSchema = z.object({
@@ -74,7 +74,7 @@ export const SettingsPage: React.FC = () => {
     <Root>
       <div className="flex w-full flex-col p-6 lg:px-10">
         <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-        <Input label="Username" formId="username" register={register} error={errors['username']?.message} className="mt-4" />
+        <HookedInput label="Username" formId="username" register={register} error={errors['username']?.message} className="mt-4" />
         <HookedSelect
           label="Currency"
           formId="currencyId"

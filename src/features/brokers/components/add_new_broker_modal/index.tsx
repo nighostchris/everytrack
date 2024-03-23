@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { store } from '../../zustand';
 import { createNewAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
+import { Button, Dialog, HookedInput, HookedSelect, SelectOption } from '@components';
 import { useBrokerAccounts, useBrokerDetails, useCountries, useCurrencies } from '@hooks';
 
 const addNewBrokerFormSchema = z.object({
@@ -125,7 +125,7 @@ export const AddNewBrokerModal: React.FC = () => {
           />
         )}
         {watchSelectedCurrency && (
-          <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
+          <HookedInput label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

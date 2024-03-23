@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCash, useCurrencies } from '@hooks';
 import { store } from '@features/savings/zustand';
 import { createNewCash } from '@api/everytrack_backend';
-import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
+import { Button, Dialog, HookedInput, HookedSelect, SelectOption } from '@components';
 
 const addNewCashFormSchema = z.object({
   amount: z.string(),
@@ -87,7 +87,7 @@ export const AddNewCashModal: React.FC = () => {
           error={errors.currencyId && errors.currencyId.message?.toString()}
         />
         {watchSelectedCurrency && (
-          <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="mt-4 !max-w-none" />
+          <HookedInput label="Amount" formId="amount" register={register} error={errors.amount?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

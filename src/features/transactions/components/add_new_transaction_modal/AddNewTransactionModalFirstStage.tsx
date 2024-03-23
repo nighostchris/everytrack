@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 
-import { DatePicker, Input, Switch } from '@components';
+import { DatePicker, HookedInput, Switch } from '@components';
 
 interface AddNewTransactionModalFirstStageProps {
   watch: UseFormWatch<any>;
@@ -25,8 +25,8 @@ export const AddNewTransactionModalFirstStage: React.FC<AddNewTransactionModalFi
 
   return (
     <div className="flex flex-col space-y-6 px-4 pb-6 md:px-6">
-      <Input label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
-      <Input label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
+      <HookedInput label="Name" formId="name" register={register} error={errors.name?.message} className="!max-w-none" />
+      <HookedInput label="Amount" formId="amount" register={register} error={errors.amount?.message} className="!max-w-none" />
       <DatePicker
         label="Execution Date"
         date={executionDate}
@@ -44,7 +44,13 @@ export const AddNewTransactionModalFirstStage: React.FC<AddNewTransactionModalFi
         control={control as Control<any, any>}
         error={errors.income && errors.income.message?.toString()}
       />
-      <Input label="Remarks (optional)" formId="remarks" register={register} error={errors.remarks?.message} className="!max-w-none" />
+      <HookedInput
+        label="Remarks (optional)"
+        formId="remarks"
+        register={register}
+        error={errors.remarks?.message}
+        className="!max-w-none"
+      />
     </div>
   );
 };

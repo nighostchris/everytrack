@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '@features/savings/zustand';
 import { createNewAccount } from '@api/everytrack_backend';
 import { useCountries, useCurrencies, useBankAccounts, useBankDetails } from '@hooks';
-import { Button, Dialog, Input, HookedSelect, SelectOption, ComboboxGroups, HookedSingleCombobox } from '@components';
+import { Button, Dialog, HookedInput, HookedSelect, SelectOption, ComboboxGroups, HookedSingleCombobox } from '@components';
 
 const addNewProviderFormSchema = z.object({
   name: z.string(),
@@ -127,7 +127,7 @@ export const AddNewProviderModal: React.FC = () => {
           />
         )}
         {watchSelectedCurrency && (
-          <Input label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
+          <HookedInput label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
       <div className="flex flex-col space-y-2 rounded-b-md bg-gray-50 px-4 py-5 md:flex-row-reverse md:space-y-0 md:px-6 md:py-3">

@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Input, Button } from '@components';
 import { login } from '@api/everytrack_backend';
+import { HookedInput, Button } from '@components';
 
 const loginFormSchema = z.object({
   email: z
@@ -78,7 +78,7 @@ export const HomePage: React.FC = () => {
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="mt-8 px-8 sm:mx-auto sm:w-full sm:max-w-sm sm:px-0">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmitLoginForm)}>
-            <Input
+            <HookedInput
               type="email"
               label="Email Address"
               formId="email"
@@ -86,7 +86,7 @@ export const HomePage: React.FC = () => {
               error={errors['email']?.message}
               className="!max-w-none"
             />
-            <Input
+            <HookedInput
               type="password"
               label="Password"
               formId="password"

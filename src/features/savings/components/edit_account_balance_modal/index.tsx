@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '@features/savings/zustand';
 import { useBankAccounts, useCurrencies } from '@hooks';
 import { updateAccount } from '@api/everytrack_backend';
-import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
+import { Button, Dialog, HookedInput, HookedInputWithAddOn, HookedSelect, SelectOption } from '@components';
 
 const editAccountBalanceFormSchema = z.object({
   balance: z.string(),
@@ -32,6 +32,7 @@ export const EditAccountBalanceModal: React.FC = () => {
 
   const {
     reset,
+    watch,
     control,
     register,
     handleSubmit,
@@ -44,6 +45,7 @@ export const EditAccountBalanceModal: React.FC = () => {
     },
     resolver: zodResolver(editAccountBalanceFormSchema),
   });
+  const watchCurrencyId = watch('currencyId');
 
   const bankAccountName = React.useMemo(
     () => (bankAccounts && accountTypeId ? bankAccounts.filter(({ accountTypeId: id }) => id === accountTypeId)[0].name : ''),
@@ -52,6 +54,10 @@ export const EditAccountBalanceModal: React.FC = () => {
   const currencyOptions: SelectOption[] = React.useMemo(
     () => (currencies ? currencies.map(({ id, ticker }) => ({ value: id, display: ticker })) : []),
     [currencies],
+  );
+  const currencySymbol = React.useMemo(
+    () => (currencies && watchCurrencyId ? currencies.filter(({ id }) => id === watchCurrencyId)[0].symbol : ''),
+    [currencies, watchCurrencyId],
   );
 
   const onSubmitEditAccountBalanceForm = async (data: any) => {
@@ -89,7 +95,14 @@ export const EditAccountBalanceModal: React.FC = () => {
       <div className="rounded-t-md bg-white px-4 pb-6 pt-5 md:px-6 md:py-6">
         <h3 className="text-lg font-medium text-gray-900">Edit Account Balance</h3>
         <p className="mt-1 text-sm">{`You are editing balance for ${bankAccountName}`}</p>
-        <Input label="Balance" formId="balance" register={register} error={errors['balance']?.message} className="mt-4 !max-w-none" />
+        <HookedInputWithAddOn
+          addOn={currencySymbol}
+          label="Balance"
+          formId="balance"
+          register={register}
+          error={errors['balance']?.message}
+          className="mt-4 !max-w-none"
+        />
         <HookedSelect
           label="Currency"
           formId="currencyId"

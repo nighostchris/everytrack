@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { store } from '../../zustand';
 import { createNewStockHolding } from '@api/everytrack_backend';
 import { useStocks, useStockHoldings, useBrokerAccounts } from '@hooks';
-import { Button, Dialog, Input, HookedSelect, SelectOption } from '@components';
+import { Button, Dialog, HookedInput, HookedSelect, SelectOption } from '@components';
 
 const addNewStockHoldingFormSchema = z.object({
   unit: z.string(),
@@ -113,8 +113,8 @@ export const AddNewStockHoldingModal: React.FC = () => {
         />
         {watchSelectedStock && (
           <>
-            <Input label="Unit" formId="unit" register={register} error={errors['unit']?.message} className="mt-4 !max-w-none" />
-            <Input label="Cost" formId="cost" register={register} error={errors['cost']?.message} className="mt-4 !max-w-none" />
+            <HookedInput label="Unit" formId="unit" register={register} error={errors['unit']?.message} className="mt-4 !max-w-none" />
+            <HookedInput label="Cost" formId="cost" register={register} error={errors['cost']?.message} className="mt-4 !max-w-none" />
           </>
         )}
       </div>
