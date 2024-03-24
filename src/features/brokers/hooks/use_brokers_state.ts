@@ -52,12 +52,12 @@ export interface BrokerAccountMetrics {
 export const useBrokersState = () => {
   const { currencyId } = globalStore();
 
-  const { stocks, error: fetchStocksError } = useStocks();
-  const { currencies, error: fetchCurrenciesError } = useCurrencies();
+  const { stocks, stocksMap, error: fetchStocksError } = useStocks();
   const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
   const { stockHoldings, error: fetchStockHoldingsError } = useStockHoldings();
   const { brokerDetails, error: fetchBrokerDetailsError } = useBrokerDetails();
   const { brokerAccounts, error: fetchBrokerAccountsError } = useBrokerAccounts();
+  const { currencies, currenciesMap, error: fetchCurrenciesError } = useCurrencies();
 
   const error = React.useMemo(
     () =>
@@ -76,18 +76,6 @@ export const useBrokersState = () => {
       fetchBrokerAccountsError,
     ],
   );
-
-  const stocksMap = React.useMemo(() => {
-    const map: Map<string, Stock> = new Map();
-    (stocks ?? []).forEach((stock) => map.set(stock.id, stock));
-    return map;
-  }, [stocks]);
-
-  const currenciesMap = React.useMemo(() => {
-    const map: Map<string, Currency> = new Map();
-    (currencies ?? []).forEach((currency) => map.set(currency.id, currency));
-    return map;
-  }, [currencies]);
 
   const assetDistribution: StockHoldingDistributionData[] = React.useMemo(() => {
     if (stocks && currencyId && exchangeRates && brokerAccounts && stockHoldings) {

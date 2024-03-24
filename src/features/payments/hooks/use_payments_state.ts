@@ -32,8 +32,8 @@ export interface PaymentsCalendarEvent extends Event {
 }
 
 export const usePaymentsState = () => {
-  const { currencies, error: fetchCurrenciesError } = useCurrencies();
   const { futurePayments, error: fetchFuturePaymentsError } = useFuturePayments();
+  const { currencies, currenciesMap, error: fetchCurrenciesError } = useCurrencies();
 
   const error = React.useMemo(
     () => fetchCurrenciesError?.message ?? fetchFuturePaymentsError?.message,
@@ -42,10 +42,7 @@ export const usePaymentsState = () => {
 
   const paymentsTableRows = React.useMemo(() => {
     const result: PaymentsTableRow[] = [];
-    const currenciesMap = new Map<string, Currency>();
     if (futurePayments && currencies) {
-      // Generate a currency map
-      currencies.forEach((currency) => currenciesMap.set(currency.id, currency));
       futurePayments.forEach(({ id, name, amount, income, rolling, remarks, category, frequency, accountId, currencyId, scheduledAt }) => {
         const displayCurrency = currenciesMap.get(currencyId)!.symbol;
         result.push({
@@ -65,7 +62,7 @@ export const usePaymentsState = () => {
       });
     }
     return result.sort((a, b) => (dayjs(a.scheduledDate).isAfter(dayjs(b.scheduledDate)) ? 1 : -1));
-  }, [futurePayments, currencies]);
+  }, [currencies, futurePayments]);
 
   const paymentCalendarEvents = React.useMemo(
     () => generatePaymentsCalendarEvents(futurePayments || [], currencies || []),

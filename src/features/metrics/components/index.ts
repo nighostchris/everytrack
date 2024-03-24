@@ -1,1 +1,1 @@
-export * from './future_total_asset_prediction_graph';
+export * from './future_total_asset_prediction_chart';

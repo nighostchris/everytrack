@@ -40,10 +40,10 @@ export const useSavingsState = () => {
   const { currencyId } = globalStore();
 
   const { cash, error: fetchCashError } = useCash();
-  const { currencies, error: fetchCurrenciesError } = useCurrencies();
   const { bankDetails, error: fetchBankDetailsError } = useBankDetails();
   const { bankAccounts, error: fetchBankAccountsError } = useBankAccounts();
   const { exchangeRates, error: fetchExchangeRatesError } = useExchangeRates();
+  const { currencies, currenciesMap, error: fetchCurrenciesError } = useCurrencies();
 
   const error = React.useMemo(
     () =>
@@ -54,12 +54,6 @@ export const useSavingsState = () => {
       fetchExchangeRatesError?.message,
     [fetchCashError, fetchCurrenciesError, fetchBankDetailsError, fetchBankAccountsError, fetchExchangeRatesError],
   );
-
-  const currenciesMap = React.useMemo(() => {
-    const map: Map<string, Currency> = new Map();
-    (currencies ?? []).forEach((currency) => map.set(currency.id, currency));
-    return map;
-  }, [currencies]);
 
   const totalBalance = React.useMemo(() => {
     let totalBalance = new BigNumber(0);
