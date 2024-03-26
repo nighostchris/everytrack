@@ -79,8 +79,8 @@ export const AddNewAccountModal: React.FC = () => {
   }, [isSubmitSuccessful]);
 
   return (
-    <Dialog open={open}>
-      <div className="rounded-t-md bg-white p-6 sm:p-6">
+    <Dialog open={open} className="md:max-w-sm">
+      <div className="rounded-t-md bg-white px-4 pb-6 pt-5 md:px-6 md:py-6">
         <h3 className="text-lg font-medium text-gray-900">Add New Account</h3>
         <p className="mt-1 text-sm">{`You are adding account for ${bankName}`}</p>
         <HookedSelect
@@ -96,22 +96,17 @@ export const AddNewAccountModal: React.FC = () => {
           <HookedInput label="Account Name" formId="name" register={register} error={errors.name?.message} className="mt-4 !max-w-none" />
         )}
       </div>
-      <div className="rounded-b-md bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+      <div className="flex flex-col space-y-2 rounded-b-md bg-gray-50 px-4 py-5 md:flex-row-reverse md:space-y-0 md:px-6 md:py-3">
         <Button
           type="button"
           variant="contained"
           isLoading={isLoading}
           onClick={handleSubmit(onSubmitAddNewAccountForm)}
-          className="w-full sm:ml-2 sm:w-fit"
+          className="w-full md:ml-2 md:w-fit"
         >
           Add
         </Button>
-        <Button
-          type="button"
-          variant="outlined"
-          onClick={() => setOpen(false)}
-          className="mt-3 w-full !border-gray-300 !text-gray-700 hover:!bg-gray-200 sm:mt-0 sm:w-fit"
-        >
+        <Button type="button" variant="outlined" onClick={() => setOpen(false)} className="w-full !text-gray-700 md:w-fit">
           Cancel
         </Button>
       </div>

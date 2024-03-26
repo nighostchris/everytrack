@@ -119,14 +119,10 @@ export const SavingsPage: React.FC = () => {
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl font-semibold">{`${symbol} ${totalBalance}`}</p>
         </StatCard>
         <SavingProviderTable data={savingProviderTableRows} />
-        <Button variant="outlined" className="mt-4 w-full text-xs" onClick={() => updateOpenTransferBetweenAccountModal(true)}>
+        <Button variant="outlined" className="my-4 w-full text-xs" onClick={() => updateOpenTransferBetweenAccountModal(true)}>
           Transfer Between Accounts
         </Button>
-        <div className="mt-8 flex flex-col">
-          <div className="overflow-x-auto rounded-lg border border-gray-300">
-            <CashTable data={cashTableRecords} />
-          </div>
-        </div>
+        <CashTable data={cashTableRecords} />
         {cashTableRecords.length === 0 && savingProviderTableRows.length === 0 && (
           <div className="flex w-full flex-col items-center py-6">
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Oops! 😢</h1>

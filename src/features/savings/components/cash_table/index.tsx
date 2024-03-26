@@ -1,8 +1,12 @@
 /* eslint-disable max-len */
+import clsx from 'clsx';
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { VscEdit } from 'react-icons/vsc';
 import { useShallow } from 'zustand/react/shallow';
+import { IoIosRemoveCircle } from 'react-icons/io';
 
+import { Button } from '@components';
 import { store } from '@features/savings/zustand';
 import { CashTableRecord } from '../../hooks/use_savings_state';
 
@@ -36,58 +40,46 @@ export const CashTable: React.FC<CashTableProps> = ({ data }) => {
   );
 
   return (
-    <table className="min-w-full">
-      <tbody className="bg-white">
-        <tr>
-          <th colSpan={5} scope="colgroup" className="bg-gray-100 px-4">
-            <div className="flex flex-row items-center justify-between py-2">
-              <div className="flex h-16 flex-col justify-center">
-                <h2 className="text-sm font-normal text-gray-700">Cash Holdings</h2>
-              </div>
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  updateOpenAddNewCashModal(true);
+    <div className="w-full overflow-hidden rounded-lg bg-white shadow-sm">
+      <div className="text-md w-full bg-white px-6 pb-2 pt-6 font-semibold text-gray-900 md:px-8">Cash Holdings</div>
+      <div className="py-2">
+        {data.map(({ id, amount, currency: { id: currencyId, ticker, symbol } }, cashIndex) => (
+          <div className={clsx('grid grid-cols-8 gap-x-2 px-6 py-4 md:px-8', { 'border-t border-gray-200': cashIndex !== 0 })}>
+            <h4 className="col-span-3 text-sm text-gray-900">{ticker}</h4>
+            <span className="col-span-3 flex flex-row items-center">
+              <h4 className="text-sm text-gray-500">{`${symbol}${new BigNumber(amount).toFormat(2)}`}</h4>
+            </span>
+            <span className="col-span-2 flex flex-row items-center justify-end space-x-4">
+              <VscEdit
+                className="h-4 w-4 hover:cursor-pointer"
+                onClick={() => {
+                  populateEditCashModalState({ id, amount, currencyId });
+                  updateOpenEditCashModal(true);
                 }}
-                className="text-sm font-medium text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-              >
-                Add New Currency
-              </a>
-            </div>
-          </th>
-        </tr>
-        {data.map(({ id, amount, currency: { id: currencyId, ticker, symbol } }) => (
-          <tr key={id} className="border-t border-gray-300">
-            <td className="w-1/4 whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900">{ticker}</td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{`${symbol} ${new BigNumber(amount).toFormat(2)}`}</td>
-            <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
-              <div className="flex flex-row justify-end">
-                <a
-                  onClick={(e) => {
-                    e.preventDefault();
-                    populateEditCashModalState({ id, amount, currencyId });
-                    updateOpenEditCashModal(true);
-                  }}
-                  className="text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-                >
-                  Edit
-                </a>
-                <a
-                  onClick={(e) => {
-                    e.preventDefault();
-                    populateDeleteCashModalState(id);
-                    updateOpenDeleteCashModal(true);
-                  }}
-                  className="ml-4 text-indigo-600 hover:cursor-pointer hover:text-indigo-900"
-                >
-                  Delete
-                </a>
-              </div>
-            </td>
-          </tr>
+              />
+              <IoIosRemoveCircle
+                className="h-4 w-4 text-gray-600 hover:cursor-pointer"
+                onClick={() => {
+                  populateDeleteCashModalState(id);
+                  updateOpenDeleteCashModal(true);
+                }}
+              />
+            </span>
+          </div>
         ))}
-      </tbody>
-    </table>
+        <div className="flex flex-col px-6 pb-6 pt-4 md:px-8">
+          <Button
+            variant="outlined"
+            className="w-full text-xs"
+            onClick={() => {
+              updateOpenAddNewCashModal(true);
+            }}
+          >
+            Add New Currency
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

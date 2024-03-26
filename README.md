@@ -2,15 +2,7 @@
 
 Web application that aims to get everything tracked and provide easy-to-understand metrics. From your account balances, expenses to rolling subscription, Everytrack will assist you in getting them organized with minimal input.
 
-# Table of Contents
-
-- [Features](#features)
-  - [Future Roadmap](#future-roadmap)
-- [How to start developing](#how-to-start)
-  - [Pre-requisite](#pre-requisite)
-  - [Commands](#commands)
-  - [Import Alias](#import-alias)
-  - [How to enable HTTPS for localhost](#how-to-enable-https-for-localhost)
+![Project Statistics](https://repobeats.axiom.co/api/embed/d9f0991ccbcbbc5c42d25a63d9da344729164fe1.svg 'Project Statistics')
 
 ## Features
 
@@ -29,7 +21,7 @@ Web application that aims to get everything tracked and provide easy-to-understa
 - Customize Dashboard
 - Net Worth
 
-## How to use developing
+## How to start developing
 
 ### Pre-requisite
 

@@ -46,6 +46,7 @@ export const SavingProviderTable: React.FC<SavingProviderTableProps> = ({ data }
 
   return (
     <Accordion className="mt-8">
+      <div className="text-md w-full bg-white px-6 pb-2 pt-6 font-semibold text-gray-900 md:px-8">Bank Accounts</div>
       {data.map(({ id, name, icon, balance, accounts }, providerIndex) => (
         <AccordionItem value={id} className={clsx({ 'border-t border-gray-200': providerIndex !== 0 })}>
           <AccordionTrigger className="!py-0 !no-underline">
